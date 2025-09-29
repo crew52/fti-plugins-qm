@@ -12,6 +12,8 @@ C:\Users\dungn\.m2\repository\com\qcadoo\qcadoo-localization\1.5-SNAPSHOT\qcadoo
 C:\Users\dungn\.m2\repository\org\springframework\spring-aspects\3.2.11.RELEASE\spring-aspects-3.2.11.RELEASE.jar;C:\Users\dungn\.m2\repository\org\springframework\security\spring-security-aspects\3.2.5.RELEASE\spring-security-aspects-3.2.5.RELEASE.jar
 -d
 D:\qcadoo_demo\mes\mes-plugins\fti-plugins-qm\target\classes
+D:\qcadoo_demo\mes\mes-plugins\fti-plugins-qm\src\main\java\com\fti\qm\constants\IncomingQualityStandardH.java
+D:\qcadoo_demo\mes\mes-plugins\fti-plugins-qm\src\main\java\com\fti\qm\constants\IncomingQualityStandardL.java
 D:\qcadoo_demo\mes\mes-plugins\fti-plugins-qm\src\main\java\com\fti\qm\constants\MeasuringEquipmentFields.java
 D:\qcadoo_demo\mes\mes-plugins\fti-plugins-qm\src\main\java\com\fti\qm\constants\QMConstants.java
 D:\qcadoo_demo\mes\mes-plugins\fti-plugins-qm\src\main\java\com\fti\qm\constants\QualityCriteriaFields.java

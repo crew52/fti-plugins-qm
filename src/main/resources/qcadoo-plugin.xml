@@ -34,6 +34,8 @@
 		<model:model model="qm" resource="model/qm.xml" />
 		<model:model model="measuringEquipment" resource="model/measuringEquipment.xml" />
 		<model:model model="qualityCriteria" resource="model/qualityCriteria.xml" />
+		<model:model model="incomingQualityStandardH" resource="model/incomingQualityStandardH.xml" />
+		<model:model model="incomingQualityStandardL" resource="model/incomingQualityStandardL.xml" />
 
 		<menu:menu-category name="qm" />
 

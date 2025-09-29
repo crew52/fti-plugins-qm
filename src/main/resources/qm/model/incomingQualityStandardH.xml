@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="incomingQualityStandardH" deletable="false"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/model" xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <boolean name="active" required="true" defaultValue="true" />
+
+        <belongsTo name="product" plugin="basic" model="product" required="true" />
+
+        <belongsTo name="incomingQualityStandardL" model="incomingQualityStandardL" required="true" />
+    </fields>
+
+    <identifier expression="#product['number'] + ' - ' + #incomingQualityStandardL['position']" />
+    <hooks />
+</model>
