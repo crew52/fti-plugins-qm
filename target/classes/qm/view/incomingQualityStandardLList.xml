@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="incomingQualityStandardLList" modelName="incomingQualityStandardL" menuAccessible="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+    
+    <component type="window" name="window">
+        <ribbon>
+            <template name="standardGridTemplate"/>
+        </ribbon>
+
+        <component type="grid" name="incomingQualityStandardLList" reference="grid">
+            <option type="column" name="position" fields="position" link="true" width="100"/>
+            <option type="column" name="description" fields="description" width="200"/>
+            <option type="column" name="targetValue" fields="targetValue" width="100"/>
+            <option type="column" name="tolerance" fields="tolerance" width="100"/>
+            <option type="column" name="upValue" fields="upValue" width="100"/>
+            <option type="column" name="downValue" fields="downValue" width="100"/>
+            <option type="column" name="sampleSize" fields="sampleSize" width="100"/>
+            <option type="column" name="qualityCriteria" fields="qualityCriteria" expression="#qualityCriteria['number']" width="150"/>
+            <option type="column" name="measuringEquipment" fields="measuringEquipment" expression="#measuringEquipment['number']" width="150"/>
+
+            <option type="searchable" value="position,description"/>
+            <option type="orderable" value="position,description"/>
+            <option type="order" column="position" direction="asc"/>
+
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
+
+            <option type="correspondingView" value="qm/incomingQualityStandardLDetails" />
+            <option type="correspondingComponent" value="form" />
+        </component>
+        <option type="fixedHeight" value="true" />
+        <option type="header" value="false" />
+    </component>
+</view>
