@@ -56,6 +56,7 @@
 		<view:view resource="view/qualityCriteriaList.xml" />
 		<view:view resource="view/qualityCriteriaDetails.xml" />
 		<view:view resource="view/incomingQualityStandardLList.xml" />
+		<view:view resource="view/incomingQualityStandardLDetails.xml" />
 		
 		<view:resource uri="public/**/*" />
 		
