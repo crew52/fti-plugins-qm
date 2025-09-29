@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="measuringEquipmentList" modelName="measuringEquipment" menuAccessible="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+    <component type="window" name="window">
+        <ribbon>
+            <group name="measuringEquipmentListActions">
+                <bigButton name="new" icon="newIcon24.png" state="enabled" action="#{grid}.performNew;"/>
+            </group>
+            <group name="actions">
+                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{window}.performRefresh;"/>
+            </group>
+            <template name="standardGridTemplate" excludeGroups="actions"/>
+        </ribbon>
+        <component type="grid" name="measuringEquipmentList" reference="grid">
+            <option type="column" name="number" fields="number" link="true" width="150" />
+            <option type="column" name="name" fields="name" width="300" />
+            <option type="order" column="name" direction="asc" />
+            <option type="correspondingView" value="qm/measuringEquipmentDetails" />
+            <option type="correspondingComponent" value="form" />
+            <option type="searchable" value="name,number" />
+            <option type="orderable" value="name,number" />
+            <option type="fullscreen" value="true" />
+            <option type="multiselect" value="true" />
+        </component>
+        <option type="fixedHeight" value="true" />
+        <option type="header" value="false" />
+    </component>
+</view>
