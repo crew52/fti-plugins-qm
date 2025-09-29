@@ -45,6 +45,8 @@
 			view="measuringEquipmentList" />
 		<menu:menu-item name="qualityCriteria" category="qm"
 			view="qualityCriteriaList" />
+		<menu:menu-item name="incomingQualityStandardH" category="qm"
+			view="incomingQualityStandardHList" />
 
 		<view:view resource="view/qmList.xml" />
 		<view:view resource="view/qmDetails.xml" />
@@ -53,6 +55,7 @@
 		<view:view resource="view/measuringEquipmentDetails.xml" />
 		<view:view resource="view/qualityCriteriaList.xml" />
 		<view:view resource="view/qualityCriteriaDetails.xml" />
+		<view:view resource="view/incomingQualityStandardHList.xml" />
 		
 		<view:resource uri="public/**/*" />
 		
