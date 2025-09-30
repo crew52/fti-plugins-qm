@@ -1,0 +1,84 @@
+<view name="incomingQualityStandardLDetails" modelName="incomingQualityStandardL"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+    <component type="window" name="window">
+        <ribbon>
+            <template name="standardFormTemplate" includeItems="navigation.back, actions.save, actions.saveBack, actions.saveNew"/>
+        </ribbon>
+        <windowTab name="mainTab">
+            <component type="form" name="incomingQualityStandardLDetails" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="2" rows="6">
+                    <layoutElement column="1" row="1">
+                        <component type="lookup" name="qualityCriteria" field="qualityCriteria" reference="qualityCriteria" hasDescription="true">
+                            <option type="column" name="name" fields="name" />
+                            <option type="column" name="type" fields="type" />
+                            <option type="column" name="unit" fields="unit" />
+
+                            <option type="searchable" value="number,name,unit,type" />
+                            <option type="orderable" value="number,name" />
+
+                            <option type="expression" value="#number + ' - ' + #name + ' (' + #unit + ', ' + #type + ')'" />
+                            <option type="fieldCode" value="number" />
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="1" row="2">
+                        <component type="lookup" name="measuringEquipment" field="measuringEquipment" reference="measuringEquipment" hasDescription="true">
+                            <option type="column" name="name" fields="name" />
+
+                            <option type="searchable" value="number,name" />
+                            <option type="orderable" value="number,name" />
+
+                            <option type="expression" value="#number + ' - ' + #name" />
+                            <option type="fieldCode" value="number" />
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="1" row="3">
+                        <component type="input" name="sampleSize" field="sampleSize" reference="sampleSize"/>
+                    </layoutElement>
+
+                    <!-- Field: position -->
+                    <layoutElement column="1" row="4">
+                        <component type="input" name="position" field="position" reference="position" />
+                    </layoutElement>
+
+                    <!-- Field: description -->
+                    <layoutElement column="1" row="5" height="2">
+                        <component type="textarea" name="description" field="description" reference="description" />
+                    </layoutElement>
+
+                    <!-- Field: targetValue -->
+                    <layoutElement column="2" row="1">
+                        <component type="input" name="targetValue" field="targetValue" reference="targetValue" />
+                    </layoutElement>
+
+                    <!-- Field: tolerance -->
+                    <layoutElement column="2" row="2">
+                        <component type="input" name="tolerance" field="tolerance" reference="tolerance" />
+                    </layoutElement>
+
+                    <!-- Field: upValue -->
+                    <layoutElement column="2" row="3">
+                        <component type="input" name="upValue" field="upValue" reference="upValue" />
+                    </layoutElement>
+
+                    <!-- Field: downValue -->
+                    <layoutElement column="2" row="4">
+                        <component type="input" name="downValue" field="downValue" reference="downValue" />
+                    </layoutElement>
+
+                    <!-- Field: unit (dictionary select) -->
+                    <layoutElement column="2" row="5">
+                        <component type="select" name="unit" field="unit" reference="unit" />
+                    </layoutElement>
+
+                </component>
+                <option type="header" value="true"/>
+                <option type="expression" 
+                    value="(#position != null ? #position + ' - ' : '') + (#description != null ? #description + ' | ' : '') + #qualityCriteria['number'] + ' - ' + #qualityCriteria['name'] + ' | ' + #measuringEquipment['number'] + ' - ' + #measuringEquipment['name'] + ' | ' + 'Size: ' + #sampleSize" />
+
+            </component>
+        </windowTab>
+    </component>
+</view>
