@@ -7,7 +7,7 @@
 
         <belongsTo name="product" plugin="basic" model="product" required="true" />
 
-        <belongsTo name="incomingQualityStandardL" model="incomingQualityStandardL" required="true" />
+        <hasMany name="incomingQualityStandardLs" model="incomingQualityStandardL" joinField="incomingQualityStandardH" />
     </fields>
 
     <identifier expression="#product['number'] + ' - ' + #incomingQualityStandardL['position']" />

@@ -21,11 +21,13 @@
 
         <integer name="sampleSize" required="true" />
 
+        <dictionary name="unit" dictionary="units"/>
+
         <belongsTo name="qualityCriteria" model="qualityCriteria" required="true" />
 
         <belongsTo name="measuringEquipment" model="measuringEquipment" required="true" />
 
-        <hasMany name="incomingQualityStandardHs" model="incomingQualityStandardH" joinField="incomingQualityStandardL" />
+        <belongsTo name="incomingQualityStandardH" model="incomingQualityStandardH" required="true" />
 
     </fields>
 
