@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model name="incomingQualityStandardL" deletable="false"
+<model name="incomingQualityStandardL"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="http://schema.qcadoo.org/model" xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
@@ -21,11 +21,13 @@
 
         <integer name="sampleSize" required="true" />
 
+        <dictionary name="unit" dictionary="units"/>
+
         <belongsTo name="qualityCriteria" model="qualityCriteria" required="true" />
 
         <belongsTo name="measuringEquipment" model="measuringEquipment" required="true" />
 
-        <hasMany name="incomingQualityStandardHs" model="incomingQualityStandardH" joinField="incomingQualityStandardL" />
+        <belongsTo name="incomingQualityStandardH" model="incomingQualityStandardH" required="true" />
 
     </fields>
 

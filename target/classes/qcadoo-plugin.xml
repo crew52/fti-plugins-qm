@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin plugin="qm" group="framework" version="1.5-SNAPSHOT"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xmlns:report="http://schema.qcadoo.org/modules/report"
-	xsi:schemaLocation="
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model"
+	xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:menu="http://schema.qcadoo.org/modules/menu"
+	xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:report="http://schema.qcadoo.org/modules/report" xsi:schemaLocation="
        http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
        http://schema.qcadoo.org/modules/model
@@ -30,7 +32,7 @@
 
 	<modules>
 		<localization:translation path="locales" />
-		
+
 		<model:model model="qm" resource="model/qm.xml" />
 		<model:model model="measuringEquipment" resource="model/measuringEquipment.xml" />
 		<model:model model="qualityCriteria" resource="model/qualityCriteria.xml" />
@@ -39,14 +41,10 @@
 
 		<menu:menu-category name="qm" />
 
-		<menu:menu-item name="qm" category="qm"
-			view="qmList" />
-		<menu:menu-item name="measuringEquipment" category="qm"
-			view="measuringEquipmentList" />
-		<menu:menu-item name="qualityCriteria" category="qm"
-			view="qualityCriteriaList" />
-		<menu:menu-item name="incomingQualityStandardL" category="qm"
-			view="incomingQualityStandardLList" />
+		<menu:menu-item name="qm" category="qm" view="qmList" />
+		<menu:menu-item name="measuringEquipment" category="qm" view="measuringEquipmentList" />
+		<menu:menu-item name="qualityCriteria" category="qm" view="qualityCriteriaList" />
+		<menu:menu-item name="incomingQualityStandardH" category="qm" view="incomingQualityStandardHList" />
 
 		<view:view resource="view/qmList.xml" />
 		<view:view resource="view/qmDetails.xml" />
@@ -55,10 +53,12 @@
 		<view:view resource="view/measuringEquipmentDetails.xml" />
 		<view:view resource="view/qualityCriteriaList.xml" />
 		<view:view resource="view/qualityCriteriaDetails.xml" />
-		<view:view resource="view/incomingQualityStandardLList.xml" />
-		
+		<view:view resource="view/incomingQualityStandardHList.xml" />
+		<view:view resource="view/incomingQualityStandardHDetails.xml" />
+		<!-- <view:view resource="view/incomingQualityStandardLDetails.xml" /> -->
+
 		<view:resource uri="public/**/*" />
-		
+
 		<report:report-template name="sample" resource="report/sample.jrxml" />
 
 	</modules>

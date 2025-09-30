@@ -12,9 +12,10 @@ public class IncomingQualityStandardL {
     public static final String UP_VALUE = "upValue";
     public static final String DOWN_VALUE = "downValue";
     public static final String SAMPLE_SIZE = "sampleSize";
+    public static final String UNIT = "unit";
 
     public static final String QUALITY_CRITERIA = "qualityCriteria";
     public static final String MEASURING_EQUIPMENT = "measuringEquipment";
 
-    public static final String INCOMING_QUALITY_STANDARD_HS = "incomingQualityStandardHs";
+    public static final String INCOMING_QUALITY_STANDARD_H = "incomingQualityStandardH";
 }
