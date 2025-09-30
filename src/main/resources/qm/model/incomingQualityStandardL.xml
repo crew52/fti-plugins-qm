@@ -31,7 +31,10 @@
 
     </fields>
 
-    <identifier expression="#position + ' - ' + #description + ' | ' + #qualityCriteria['number'] + ' | ' + #measuringEquipment['number']" />
+    <identifier expression="(#position != null ? #position + ' - ' : '') + (#description != null ? #description + ' | ' : '') + #qualityCriteria['number'] + ' - ' + #qualityCriteria['name'] + ' | ' + #measuringEquipment['number'] + ' - ' + #measuringEquipment['name'] + ' | ' + 'Size: ' + #sampleSize" />
 
-    <hooks />
+    <hooks>
+        <onSave class="com.fti.qm.hooks.IncomingQualityStandardLHooks" method="onSave" />
+    </hooks>
+
 </model>

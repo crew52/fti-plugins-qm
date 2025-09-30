@@ -33,7 +33,7 @@
                             <option type="column" name="qualityCriteriaNumber" fields="qualityCriteria" expression="#qualityCriteria['number']" link="true"/>
                             <option type="column" name="qualityCriteriaName" fields="qualityCriteria" expression="#qualityCriteria['name']"/>
                             <option type="column" name="qualityCriteriaType" fields="qualityCriteria" expression="#qualityCriteria['type']"/>
-                            <option type="column" name="qualityCriteriaUnit" fields="qualityCriteria" expression="#qualityCriteria['unit']"/>
+                            <!-- <option type="column" name="qualityCriteriaUnit" fields="qualityCriteria" expression="#qualityCriteria['unit']"/> -->
                             <!-- line -->
                             <option type="column" name="unit" fields="unit"/>
                             <option type="column" name="description" fields="description"/>
