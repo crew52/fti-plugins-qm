@@ -12,6 +12,7 @@ public final class QMConstants {
     public static final String MODEL_MEASURING_EQUIPMENT = "measuringEquipment";
     public static final String MODEL_QUALITY_CRITERIA = "qualityCriteria";
     public static final String MODEL_INCOMING_QUALITY_STANDARD_L = "incomingQualityStandardL";
+    public static final String MODEL_IQSH_ATTACHMENT = "iQSHAttachment";
     public static final String MODEL_INCOMING_QUALITY_STANDARD_H = "incomingQualityStandardH";
 
     // VIEW - Measuring Equipment
