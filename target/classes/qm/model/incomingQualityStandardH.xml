@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model name="incomingQualityStandardH" deletable="false" activable="true"
+<model name="incomingQualityStandardH" activable="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="http://schema.qcadoo.org/model" xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
@@ -10,6 +10,6 @@
         <hasMany name="incomingQualityStandardLs" model="incomingQualityStandardL" joinField="incomingQualityStandardH" />
     </fields>
 
-    <identifier expression="#product['number'] + ' - ' + #incomingQualityStandardL['position']" />
+    <identifier expression="#product['number'] + ' - ' + #product['name']" />
     <hooks />
 </model>
