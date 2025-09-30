@@ -28,9 +28,9 @@
                         <!-- Grid cho incomingQualityStandardL -->
                         <component type="grid" name="incomingQualityStandardLs" reference="incomingQualityStandardLs" source="#{form}.incomingQualityStandardLs">
                             <!-- line -->
-                            <option type="column" name="position" fields="position"/>
+                            <option type="column" name="position" fields="position" link="true"/>
                             <!-- qualityCriteria -->
-                            <option type="column" name="qualityCriteriaNumber" fields="qualityCriteria" expression="#qualityCriteria['number']"/>
+                            <option type="column" name="qualityCriteriaNumber" fields="qualityCriteria" expression="#qualityCriteria['number']" link="true"/>
                             <option type="column" name="qualityCriteriaName" fields="qualityCriteria" expression="#qualityCriteria['name']"/>
                             <option type="column" name="qualityCriteriaType" fields="qualityCriteria" expression="#qualityCriteria['type']"/>
                             <option type="column" name="qualityCriteriaUnit" fields="qualityCriteria" expression="#qualityCriteria['unit']"/>
@@ -53,6 +53,7 @@
 
                             <option type="correspondingView" value="qm/incomingQualityStandardLDetails"/>
                             <option type="correspondingComponent" value="form"/>
+                            <option type="correspondingViewInModal" value="true"/>
 
                             <option type="fullscreen" value="true"/>
                             <option type="multiselect" value="true"/>
