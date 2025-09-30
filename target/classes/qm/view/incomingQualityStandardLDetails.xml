@@ -39,7 +39,7 @@
                 </layoutElement>
 
                 <layoutElement column="1" row="9">
-                    <component type="lookup" name="qualityCriteria" field="qualityCriteria" reference="qualityCriteria" hasDescription="true"> 
+                    <component type="lookup" name="qualityCriteria" field="qualityCriteria" reference="qualityCriteria" hasDescription="true">
                         <option type="column" name="name" fields="name"/>
                         <option type="column" name="type" fields="type"/>
                         <option type="column" name="unit" fields="unit"/>
@@ -53,7 +53,6 @@
                     </component>
                 </layoutElement>
 
-
                 <layoutElement column="1" row="10">
                     <component type="lookup" name="measuringEquipment" field="measuringEquipment" reference="measuringEquipment" hasDescription="true">
                         <option type="column" name="name" fields="name"/>
@@ -61,6 +60,41 @@
                         <option type="orderable" value="number,name"/>
                         <option type="expression" value="#number + ' - ' + #name"/>
                         <option type="fieldCode" value="number"/>
+                    </component>
+                </layoutElement>
+
+                <layoutElement column="2" row="1" width="2" height="9">
+                    <component type="lookup" name="iQSHLookup" reference="iQSHLookup" field="#{form}.incomingQualityStandardHs" defaultVisible="false" persistent="false" hasLabel="false">
+                        <!-- <option type="column" name="active" fields="active"/> -->
+                        <option type="column" name="productNumber" fields="product" expression="#product['number']"/>
+                        <option type="column" name="productName" fields="product" expression="#product['name']"/>
+                        <option type="searchable" value="productNumber,productName"/>
+                        <option type="orderable" value="productNumber,productName"/>
+
+                        <option type="expression" value="#productNumber + ' ' + #productName"/>
+                        <option type="fieldCode" value="active"/>
+
+                        <option type="multiselect" value="true"/>
+                    </component>
+                    <component type="grid" name="incomingQualityStandardHs" reference="incomingQualityStandardHs" source="#{form}.incomingQualityStandardHs">
+                        <option type="column" name="productNumber" fields="product" expression="#product['number']"/>
+                        <option type="column" name="productName" fields="product" expression="#product['name']"/>
+                        <option type="column" name="active" fields="active"/>
+
+                        <option type="order" column="productNumber" direction="asc"/>
+
+                        <option type="searchable" value="productNumber,productName"/>
+                        <option type="orderable" value="productNumber,productName"/>
+
+                        <option type="weakRelation" value="true"/>
+                        <option type="correspondingLookup" value="iQSHLookup"/>
+
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="creatable" value="true"/>
+
+                        <option type="fixedHeight" value="true"/>
                     </component>
                 </layoutElement>
 
