@@ -8,6 +8,7 @@
         <belongsTo name="product" plugin="basic" model="product" required="true" />
 
         <hasMany name="incomingQualityStandardLs" model="incomingQualityStandardL" joinField="incomingQualityStandardH" />
+        <hasMany name="attachments" model="iQSHAttachment" joinField="incomingQualityStandardH" cascade="delete"/>
     </fields>
 
     <identifier expression="#product['number'] + ' - ' + #product['name']" />
