@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-    <artifactId>mes-plugins</artifactId>
-    <groupId>com.qcadoo.mes</groupId>
-    <version>1.5-SNAPSHOT</version>
-  </parent>
+		<artifactId>mes-plugins</artifactId>
+		<groupId>com.qcadoo.mes</groupId>
+		<version>1.5-SNAPSHOT</version>
+	</parent>
 
 	<artifactId>fti-plugins-qm</artifactId>
 	<groupId>com.fti</groupId>
@@ -68,30 +69,30 @@
 		</repository>
 	</repositories>
 
-        <pluginRepositories>
-            <pluginRepository>
-                <id>qcadoo-releases-plugin-repository</id>
-                <url>http://nexus.qcadoo.org/content/repositories/releases</url>
-                <releases>
-                    <updatePolicy>never</updatePolicy>
-                </releases>
-                <snapshots>
-                    <enabled>false</enabled>
-                    <updatePolicy>never</updatePolicy>
-                </snapshots>
-             </pluginRepository>
-             <pluginRepository>
-                <id>qcadoo-snapshots-plugin-repository</id>
-                <url>http://nexus.qcadoo.org/content/repositories/snapshots</url>
-                <releases>
-                    <enabled>false</enabled>
-                    <updatePolicy>never</updatePolicy>
-                </releases>
-                <snapshots>
-                    <updatePolicy>interval:5</updatePolicy>
-                </snapshots>
-            </pluginRepository>
-        </pluginRepositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>qcadoo-releases-plugin-repository</id>
+			<url>http://nexus.qcadoo.org/content/repositories/releases</url>
+			<releases>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+				<updatePolicy>never</updatePolicy>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>qcadoo-snapshots-plugin-repository</id>
+			<url>http://nexus.qcadoo.org/content/repositories/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<updatePolicy>interval:5</updatePolicy>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<dependencies>
 		<dependency>
@@ -113,6 +114,11 @@
 			<groupId>com.qcadoo</groupId>
 			<artifactId>qcadoo-view</artifactId>
 			<version>${qcadoo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-basic</artifactId>
+			<version>1.5-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
