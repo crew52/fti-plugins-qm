@@ -103,4 +103,8 @@
             </component>
         </windowTab>
     </component>
+
+    <hooks>
+        <beforeRender class="com.fti.qm.hooks.IncomingQualityStandardHDetailsHooks" method="setIQSHIdForMultiUploadField"/>
+    </hooks>
 </view>
