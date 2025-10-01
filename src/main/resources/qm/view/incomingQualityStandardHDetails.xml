@@ -67,5 +67,44 @@
                 <option type="expression" value="#product['number'] + ' - ' + #product['name']" />
             </component>
         </windowTab>
+
+        <windowTab name="attachments">
+            <component type="gridLayout" name="attachmentsLayout" columns="3" rows="6" hasBorders="false">
+
+                <!-- Cột trái: Giao diện upload -->
+                <layoutElement column="1" row="1" height="6">
+                    <component type="staticPage" name="multiUpload">
+                        <option type="page" value="qm/multiUpload.jsp"/>
+                    </component>
+
+                    <!-- Trường ẩn: ID thực thể -->
+                    <component type="input" name="iQSHIdForMultiUpload" reference="iQSHIdForMultiUpload" defaultVisible="false">
+                        <option type="alignment" value="right"/>
+                    </component>
+
+                    <!-- Trường ẩn: Locale -->
+                    <component type="input" name="iQSHMultiUploadLocale" reference="iQSHMultiUploadLocale" defaultVisible="false" />
+                </layoutElement>
+
+                <!-- Cột phải: Grid danh sách file đã đính kèm -->
+                <layoutElement column="2" row="1" width="2" height="6">
+                    <component type="grid" name="attachments" reference="attachmentsGrid" source="#{form}.attachments">
+                        <option type="column" name="attachment" fields="name" correspondingField="attachmentLocation" link="true" attachment="true"/>
+                        <option type="column" name="attachmentLocation" fields="attachment" hidden="true"/>
+                        <option type="column" name="size" fields="size"/>
+                        <option type="order" column="attachment" direction="desc"/>
+
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+
+            </component>
+        </windowTab>
     </component>
+
+    <hooks>
+        <beforeRender class="com.fti.qm.hooks.IncomingQualityStandardHDetailsHooks" method="setIQSHIdForMultiUploadField"/>
+    </hooks>
 </view>

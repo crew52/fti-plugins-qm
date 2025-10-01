@@ -38,6 +38,7 @@
 		<model:model model="qualityCriteria" resource="model/qualityCriteria.xml" />
 		<model:model model="incomingQualityStandardH" resource="model/incomingQualityStandardH.xml" />
 		<model:model model="incomingQualityStandardL" resource="model/incomingQualityStandardL.xml" />
+		<model:model model="iQSHAttachment" resource="model/iQSHAttachment.xml" />
 
 		<menu:menu-category name="qm" />
 
