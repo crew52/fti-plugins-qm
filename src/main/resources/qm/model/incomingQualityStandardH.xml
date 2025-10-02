@@ -10,5 +10,7 @@
     </fields>
 
     <identifier expression="#product['number'] + ' - ' + #product['name']" />
-    <hooks />
+    <hooks>
+        <onSave class="com.fti.qm.hooks.IncomingQualityStandardHHooks" method="onSave" />
+    </hooks>
 </model>
