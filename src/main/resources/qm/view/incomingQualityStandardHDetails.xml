@@ -4,6 +4,19 @@
     <component type="window" name="window">
         <ribbon>
             <template name="standardFormTemplate"/>
+            <group name="atachments">
+                <bigButton name="downloadAtachment" icon="generateIcon24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('downloadAttachment', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
         <windowTab name="mainTab">
             <component type="form" name="incomingQualityStandardHDetails" reference="form">
@@ -65,6 +78,8 @@
                 </component>
                 <option type="header" value="true"/>
                 <option type="expression" value="#product['number'] + ' - ' + #product['name']" />
+
+                <listener event="downloadAttachment" method="downloadAttachment" class="com.fti.qm.listeners.IQSHAttachmentsListeners"/>
             </component>
         </windowTab>
 
