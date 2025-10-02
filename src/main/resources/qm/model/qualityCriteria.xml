@@ -9,9 +9,7 @@
         <string name="name" required="true">
             <validatesLength max="255" />
         </string>
-        <string name="type" required="true">
-            <validatesLength max="255" />
-        </string>
+        <enum name="type" values="01qualitative,02quantitative" />
         <dictionary name="unit" dictionary="units" required="true"/>
     </fields>
     <hooks />
