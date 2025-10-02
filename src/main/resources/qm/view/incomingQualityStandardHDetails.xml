@@ -46,7 +46,7 @@
                             <option type="column" name="measuringEquipmentNumber" fields="measuringEquipment" expression="#measuringEquipment['number']"/>
 
                             <option type="order" column="position" direction="asc"/>
-                            <option type="searchable" value="position,description,qualityCriteriaNumber,qualityCriteriaName,qualityCriteriaType,qualityCriteriaUnit,unit,measuringEquipmentNumber,measuringEquipmentName"/>
+                            <option type="searchable" value="position,qualityCriteriaNumber,qualityCriteriaName,qualityCriteriaType,unit,description,targetValue,upValue,downValue,sampleSize,measuringEquipmentName,measuringEquipmentNumber"/>
                             <option type="orderable" value="position,description,qualityCriteriaNumber,qualityCriteriaName,measuringEquipmentNumber,measuringEquipmentName,targetValue,upValue,downValue,sampleSize"/>
 
                             <option type="weakRelation" value="false"/>
