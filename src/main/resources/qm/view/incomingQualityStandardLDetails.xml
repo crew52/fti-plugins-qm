@@ -19,6 +19,7 @@
 
                             <option type="expression" value="#number + ' - ' + #name + ' (' + #unit + ', ' + #type + ')'" />
                             <option type="fieldCode" value="number" />
+                            <listener event="onSelectedEntityChange" class="com.fti.qm.listeners.IQSLDetailsListeners" method="onQualityCriteriaChange"/>
                         </component>
                     </layoutElement>
 
