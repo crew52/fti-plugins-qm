@@ -7,4 +7,5 @@ public class IncomingQualityStandardHFields {
 
     public static final String ACTIVE = "active";
     public static final String PRODUCT = "product";
+    public static final String PRODUCT_ID = PRODUCT + ".id";
 }
