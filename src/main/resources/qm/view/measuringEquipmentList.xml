@@ -15,11 +15,12 @@
         <component type="grid" name="measuringEquipmentList" reference="grid">
             <option type="column" name="number" fields="number" link="true" width="150" />
             <option type="column" name="name" fields="name" width="300" />
+            <option type="column" name="measuringMethod" fields="measuringMethod" width="300" />
             <option type="order" column="name" direction="asc" />
             <option type="correspondingView" value="qm/measuringEquipmentDetails" />
             <option type="correspondingComponent" value="form" />
-            <option type="searchable" value="name,number" />
-            <option type="orderable" value="name,number" />
+            <option type="searchable" value="name,number,measuringMethod" />
+            <option type="orderable" value="name,number,measuringMethod" />
             <option type="fullscreen" value="true" />
             <option type="multiselect" value="true" />
         </component>
