@@ -56,12 +56,16 @@
 
                     <!-- Field: quantitativeValue dinh luong -->
                     <layoutElement column="2" row="2">
-                        <component type="input" name="quantitativeValue" field="quantitativeValue" reference="quantitativeValue" />
+                        <component type="input" name="quantitativeValue" field="quantitativeValue" reference="quantitativeValue">
+                            <listener event="onInputChange" class="com.fti.qm.listeners.IQSLDetailsListeners" method="onQuantitativeOrToleranceChange"/>
+                        </component>
                     </layoutElement>
 
                     <!-- Field: tolerance -->
                     <layoutElement column="2" row="3">
-                        <component type="input" name="tolerance" field="tolerance" reference="tolerance" />
+                        <component type="input" name="tolerance" field="tolerance" reference="tolerance">
+                            <listener event="onInputChange" class="com.fti.qm.listeners.IQSLDetailsListeners" method="onQuantitativeOrToleranceChange"/>
+                        </component>
                     </layoutElement>
 
                     <!-- Field: upValue -->

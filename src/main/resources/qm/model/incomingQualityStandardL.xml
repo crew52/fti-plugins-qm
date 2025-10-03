@@ -13,13 +13,10 @@
 
         <enum name="qualitativeValue" values="01qualitative" />
 
-        <decimal name="quantitativeValue" />
-
-        <decimal name="tolerance" />
-
-        <decimal name="upValue" />
-
-        <decimal name="downValue" />
+        <decimal name="quantitativeValue" precision="10" scale="2" />
+        <decimal name="tolerance" precision="10" scale="2" />
+        <decimal name="upValue" precision="10" scale="2" />
+        <decimal name="downValue" precision="10" scale="2" />
 
         <integer name="sampleSize" required="true" />
 
