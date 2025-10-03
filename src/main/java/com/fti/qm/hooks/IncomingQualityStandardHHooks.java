@@ -1,5 +1,6 @@
 package com.fti.qm.hooks;
 
+import com.fti.qm.constants.IncomingQualityStandardHFields;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -17,12 +18,12 @@ public class IncomingQualityStandardHHooks {
             return;
         }
 
-        final Long productId = incomingStandardH.getBelongsToField("product").getId();
+        final Long productId = incomingStandardH.getBelongsToField(IncomingQualityStandardHFields.PRODUCT).getId();
         final Long currentId = incomingStandardH.getId();
 
         SearchCriteriaBuilder scb = dataDefinition.find()
-                .add(SearchRestrictions.eq("product.id", productId))
-                .add(SearchRestrictions.eq("active", true));
+                .add(SearchRestrictions.eq(IncomingQualityStandardHFields.PRODUCT_ID, productId))
+                .add(SearchRestrictions.eq(IncomingQualityStandardHFields.ACTIVE, true));
 
         if (currentId != null) {
             scb.add(SearchRestrictions.ne("id", currentId));
@@ -31,8 +32,8 @@ public class IncomingQualityStandardHHooks {
         Entity exists = scb.setMaxResults(1).uniqueResult();
 
         if (exists != null) {
-            incomingStandardH.addError(dataDefinition.getField("product"),
-                    "qcadooView.message.productAlreadyExistsWithActiveStandard");
+            incomingStandardH.addError(dataDefinition.getField(IncomingQualityStandardHFields.PRODUCT),
+                    "qm.message.error.productAlreadyExistsWithActiveStandard");
         }
     }
 }
