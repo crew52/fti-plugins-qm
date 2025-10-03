@@ -17,7 +17,7 @@
                             <option type="searchable" value="number,name,unit,type" />
                             <option type="orderable" value="number,name" />
 
-                            <option type="expression" value="#number + ' - ' + #name + ' (' + #unit + ', ' + #type + ')'" />
+                            <option type="expression" value="#number + ' - ' + #name + ' (' + #unit + ')'" />
                             <option type="fieldCode" value="number" />
                             <listener event="onSelectedEntityChange" class="com.fti.qm.listeners.IQSLDetailsListeners" method="onQualityCriteriaChange"/>
                         </component>
@@ -51,7 +51,7 @@
 
                     <!-- Field: qualitativeValue dinh tinh -->
                     <layoutElement column="2" row="1">
-                        <component type="checkbox" name="qualitativeValue" field="qualitativeValue" reference="qualitativeValue" hasDescription="true"/>
+                        <component type="select" name="qualitativeValue" field="qualitativeValue" reference="qualitativeValue"/>
                     </layoutElement>
 
                     <!-- Field: quantitativeValue dinh luong -->
