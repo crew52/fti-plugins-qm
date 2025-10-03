@@ -10,7 +10,7 @@
             <validatesLength max="255" />
         </string>
         <enum name="type" values="01qualitative,02quantitative" />
-        <dictionary name="unit" dictionary="units" required="true"/>
+        <dictionary name="unit" dictionary="units"/>
     </fields>
     <hooks />
     <identifier expression="#number + ' - ' + #name" />

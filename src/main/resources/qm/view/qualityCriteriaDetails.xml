@@ -35,7 +35,7 @@
                     </layoutElement>
                 </component>
                 <option type="header" value="true"/>
-                <option type="expression" value="#number + ' - ' + #name  + ' - ' + #unit" />
+                <option type="expression" value="#number + ' - ' + #name + (#unit != null ? ' (' + #unit + ')' : '')" />
             </component>
         </windowTab>
     </component>
