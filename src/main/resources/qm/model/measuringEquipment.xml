@@ -9,6 +9,9 @@
         <string name="name" required="true">
             <validatesLength max="255" />
         </string>
+        <string name="measuringMethod" required="true">
+            <validatesLength max="255" />
+        </string>
     </fields>
     <hooks />
     <identifier expression="#number + ' - ' + #name" />

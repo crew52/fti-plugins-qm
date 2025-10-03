@@ -11,7 +11,9 @@
             <validatesLength max="255" />
         </string>
 
-        <decimal name="targetValue" />
+        <boolean name="qualitativeValue" />
+
+        <decimal name="quantitativeValue" />
 
         <decimal name="tolerance" />
 

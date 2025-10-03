@@ -50,7 +50,8 @@
                             <!-- line -->
                             <option type="column" name="unit" fields="unit"/>
                             <option type="column" name="description" fields="description"/>
-                            <option type="column" name="targetValue" fields="targetValue"/>
+                            <option type="column" name="qualitativeValue" fields="qualitativeValue"/>
+                            <option type="column" name="quantitativeValue" fields="quantitativeValue"/>
                             <option type="column" name="upValue" fields="upValue"/>
                             <option type="column" name="downValue" fields="downValue"/>
                             <option type="column" name="sampleSize" fields="sampleSize"/>
@@ -59,8 +60,8 @@
                             <option type="column" name="measuringEquipmentNumber" fields="measuringEquipment" expression="#measuringEquipment['number']"/>
 
                             <option type="order" column="position" direction="asc"/>
-                            <option type="searchable" value="position,qualityCriteriaNumber,qualityCriteriaName,qualityCriteriaType,unit,description,targetValue,upValue,downValue,sampleSize,measuringEquipmentName,measuringEquipmentNumber"/>
-                            <option type="orderable" value="position,description,qualityCriteriaNumber,qualityCriteriaName,measuringEquipmentNumber,measuringEquipmentName,targetValue,upValue,downValue,sampleSize"/>
+                            <option type="searchable" value="position,qualityCriteriaNumber,qualityCriteriaName,qualityCriteriaType,unit,description,qualitativeValue,quantitativeValue,upValue,downValue,sampleSize,measuringEquipmentName,measuringEquipmentNumber"/>
+                            <option type="orderable" value="position,description,qualityCriteriaNumber,qualityCriteriaName,measuringEquipmentNumber,measuringEquipmentName,qualitativeValue,quantitativeValue,upValue,downValue,sampleSize"/>
 
                             <option type="weakRelation" value="false"/>
 

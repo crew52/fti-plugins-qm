@@ -18,19 +18,25 @@
         </ribbon>
         <windowTab name="mainTab">
             <component type="form" name="measuringEquipmentDetails" reference="form">
-                <component type="gridLayout" name="gridLayout" columns="3" rows="2">
+                <component type="gridLayout" name="gridLayout" columns="3" rows="3">
                     <layoutElement column="1" row="1">
-                        <component type="input" name="number" field="number" reference="number">
+                        <component type="input" name="number" field="number" reference="number" defaultEnabled="false">
                             <option type="alignment" value="right" />
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
-                        <component type="textarea" name="name" field="name"/>
+                        <component type="input" name="name" field="name"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="input" name="measuringMethod" field="measuringMethod"/>
                     </layoutElement>
                 </component>
                 <option type="header" value="true"/>
-                <option type="expression" value="#number + ' - ' + #name" />
+                <option type="expression" value="#number + ' - ' + #name + ' - ' + #measuringMethod" />
             </component>
         </windowTab>
     </component>
+    <hooks>
+        <beforeRender class="com.fti.qm.services.MeasuringEquipmentService" method="onBeforeRender"/>
+    </hooks>
 </view>
