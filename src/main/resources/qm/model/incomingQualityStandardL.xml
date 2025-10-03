@@ -11,7 +11,7 @@
             <validatesLength max="255" />
         </string>
 
-        <boolean name="qualitativeValue" />
+        <enum name="qualitativeValue" values="01qualitative" />
 
         <decimal name="quantitativeValue" />
 

@@ -58,10 +58,10 @@
                             <option type="column" name="sampleSize" fields="sampleSize"/>
                             <!-- measuringEquipment -->
                             <option type="column" name="measuringEquipmentName" fields="measuringEquipment" expression="#measuringEquipment['name']"/>
-                            <option type="column" name="measuringEquipmentNumber" fields="measuringEquipment" expression="#measuringEquipment['number']"/>
+                            <option type="column" name="measuringEquipmentMeasuringMethod" fields="measuringEquipment" expression="#measuringEquipment['measuringMethod']"/>
 
                             <option type="order" column="position" direction="asc"/>
-                            <option type="searchable" value="position,qualityCriteriaNumber,qualityCriteriaName,qualityCriteriaType,unit,description,qualitativeValue,quantitativeValue,upValue,downValue,sampleSize,measuringEquipmentName,measuringEquipmentNumber"/>
+                            <option type="searchable" value="position,qualityCriteriaNumber,qualityCriteriaName,qualityCriteriaType,unit,description,qualitativeValue,quantitativeValue,upValue,downValue,sampleSize,measuringEquipmentName,measuringEquipmentMeasuringMethod"/>
                             <option type="orderable" value="position,description,qualityCriteriaNumber,qualityCriteriaName,measuringEquipmentNumber,measuringEquipmentName,qualitativeValue,quantitativeValue,upValue,downValue,sampleSize"/>
 
                             <option type="weakRelation" value="false"/>
