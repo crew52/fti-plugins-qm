@@ -11,12 +11,12 @@
             <validatesLength max="255" />
         </string>
 
-        <enum name="qualitativeValue" values="01qualitative" />
+        <boolean name="qualitativeValue" />
 
-        <decimal name="quantitativeValue" precision="10" scale="2" />
-        <decimal name="tolerance" precision="10" scale="2" />
-        <decimal name="upValue" precision="10" scale="2" />
-        <decimal name="downValue" precision="10" scale="2" />
+        <decimal name="quantitativeValue" />
+        <decimal name="tolerance" />
+        <decimal name="upValue" />
+        <decimal name="downValue" />
 
         <integer name="sampleSize" required="true" />
 
@@ -30,7 +30,7 @@
 
     </fields>
 
-    <identifier expression="(#position != null ? #position + ' - ' : '') + (#description != null ? #description + ' | ' : '') + #qualityCriteria['number'] + ' - ' + #qualityCriteria['name'] + ' | ' + #measuringEquipment['number'] + ' - ' + #measuringEquipment['name'] + ' | ' + 'Size: ' + #sampleSize" />
+    <identifier expression="#qualityCriteria['number'] + ' - ' + #qualityCriteria['name']" />
 
     <hooks>
         <onSave class="com.fti.qm.hooks.IncomingQualityStandardLHooks" method="onSave" />

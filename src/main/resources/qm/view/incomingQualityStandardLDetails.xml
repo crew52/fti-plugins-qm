@@ -52,7 +52,7 @@
 
                     <!-- Field: qualitativeValue dinh tinh -->
                     <layoutElement column="2" row="1">
-                        <component type="select" name="qualitativeValue" field="qualitativeValue" reference="qualitativeValue"/>
+                        <component type="checkbox" name="qualitativeValue" field="qualitativeValue" reference="qualitativeValue" hasDescription="true"/>
                     </layoutElement>
 
                     <!-- Field: quantitativeValue dinh luong -->

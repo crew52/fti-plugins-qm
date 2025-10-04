@@ -65,7 +65,7 @@ public class IQSLDetailsListeners {
         String qValStr = safeToDot((String) quantitativeField.getFieldValue());
         String tolStr = safeToDot((String) toleranceField.getFieldValue());
 
-        if (qValStr == null || qValStr.isEmpty()) {
+        if (qValStr == null || qValStr.isEmpty() || tolStr == null || tolStr.isEmpty()) {
             return;
         }
 
