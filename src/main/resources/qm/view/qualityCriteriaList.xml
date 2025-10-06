@@ -4,13 +4,7 @@
     xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
     <component type="window" name="window">
         <ribbon>
-            <group name="qualityCriteriaListActions">
-                <bigButton name="new" icon="newIcon24.png" state="enabled" action="#{grid}.performNew;"/>
-            </group>
-            <group name="actions">
-                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{window}.performRefresh;"/>
-            </group>
-            <template name="standardGridTemplate" excludeGroups="actions"/>
+            <template name="standardGridTemplate"/>
         </ribbon>
         <component type="grid" name="qualityCriteriaList" reference="grid">
             <option type="column" name="number" fields="number" link="true" width="150" />
