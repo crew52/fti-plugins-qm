@@ -1,7 +1,7 @@
 package com.fti.qm.hooks.outgoingQualityStandard;
 
-import com.fti.qm.constants.OutgoingQualityStandardLFields;
 import com.fti.qm.constants.QualityCriteriaFields;
+import com.fti.qm.constants.outgoingQualityStandard.OutgoingQualityStandardLFields;
 import org.springframework.stereotype.Service;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.DataDefinition;

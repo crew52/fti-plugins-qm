@@ -38,7 +38,7 @@ public class OutgoingQualityStandardHHooks {
 
         if (exists != null) {
             outgoingStandardH.addError(dataDefinition.getField(OutgoingQualityStandardHFields.PRODUCT),
-                    "qm.message.error.productAlreadyExistsWithActiveStandard");
+                    "qm.message.error.outgoing.productAlreadyExistsWithActiveStandard");
         }
     }
 

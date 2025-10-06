@@ -1,4 +1,4 @@
-<view name="incomingQualityStandardHDetails" modelName="incomingQualityStandardH"
+<view name="outgoingQualityStandardHDetails" modelName="outgoingQualityStandardH"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
     <component type="window" name="window">
@@ -19,7 +19,7 @@
             </group>
         </ribbon>
         <windowTab name="mainTab">
-            <component type="form" name="incomingQualityStandardHDetails" reference="form">
+            <component type="form" name="outgoingQualityStandardHDetails" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="5" rows="1">
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="product" field="product" reference="product" hasDescription="true">
@@ -32,20 +32,19 @@
 
                             <option type="expression" value="#number + ' - ' + #name" />
                             <option type="fieldCode" value="number" />
-                            <criteriaModifier class="com.fti.qm.criteriaModifiers.ProductCriteriaModifiers" method="filterForQualityStandard"/>
+                            <criteriaModifier class="com.fti.qm.criteriaModifiers.ProductCriteriaModifiers" method="filterForOutgoingQualityStandard"/>
                         </component>
                     </layoutElement>
 
                     <layoutElement column="2" row="1" width="4">
-                        <!-- Grid cho incomingQualityStandardL -->
-                        <component type="grid" name="incomingQualityStandardLs" reference="incomingQualityStandardLs" source="#{form}.incomingQualityStandardLs">
+                        <!-- Grid cho outgoingQualityStandardL -->
+                        <component type="grid" name="outgoingQualityStandardLs" reference="outgoingQualityStandardLs" source="#{form}.outgoingQualityStandardLs">
                             <!-- line -->
                             <option type="column" name="position" fields="position" link="true"/>
                             <!-- qualityCriteria -->
                             <option type="column" name="qualityCriteriaNumber" fields="qualityCriteria" expression="#qualityCriteria['number']" link="true"/>
                             <option type="column" name="qualityCriteriaName" fields="qualityCriteria" expression="#qualityCriteria['name']"/>
                             <option type="column" name="qualityCriteriaType" fields="qualityCriteria" expression="#qualityCriteria['type']"/>
-                            <!-- <option type="column" name="qualityCriteriaUnit" fields="qualityCriteria" expression="#qualityCriteria['unit']"/> -->
                             <!-- line -->
                             <option type="column" name="unit" fields="unit"/>
                             <option type="column" name="description" fields="description"/>
@@ -64,7 +63,7 @@
 
                             <option type="weakRelation" value="false"/>
 
-                            <option type="correspondingView" value="qm/incomingQualityStandardLDetails"/>
+                            <option type="correspondingView" value="qm/outgoingQualityStandardLDetails"/>
                             <option type="correspondingComponent" value="form"/>
                             <option type="correspondingViewInModal" value="true"/>
 
@@ -89,16 +88,16 @@
                 <!-- Cột trái: Giao diện upload -->
                 <layoutElement column="1" row="1" height="6">
                     <component type="staticPage" name="multiUpload">
-                        <option type="page" value="qm/multiUpload.jsp"/>
+                        <option type="page" value="qm/multiUploadForOutgoing.jsp"/>
                     </component>
 
                     <!-- Trường ẩn: ID thực thể -->
-                    <component type="input" name="iQSHIdForMultiUpload" reference="iQSHIdForMultiUpload" defaultVisible="false">
+                    <component type="input" name="oQSHIdForMultiUpload" reference="oQSHIdForMultiUpload" defaultVisible="false">
                         <option type="alignment" value="right"/>
                     </component>
 
                     <!-- Trường ẩn: Locale -->
-                    <component type="input" name="iQSHMultiUploadLocale" reference="iQSHMultiUploadLocale" defaultVisible="false" />
+                    <component type="input" name="oQSHMultiUploadLocale" reference="oQSHMultiUploadLocale" defaultVisible="false" />
                 </layoutElement>
 
                 <!-- Cột phải: Grid danh sách file đã đính kèm -->
@@ -117,9 +116,10 @@
 
             </component>
         </windowTab>
+
     </component>
 
     <hooks>
-        <beforeRender class="com.fti.qm.hooks.IncomingQualityStandardHDetailsHooks" method="setIQSHIdForMultiUploadField"/>
+        <beforeRender class="com.fti.qm.hooks.outgoingQualityStandard.OutgoingQualityStandardHDetailsHooks" method="setOQSHIdForMultiUploadField"/>
     </hooks>
 </view>
