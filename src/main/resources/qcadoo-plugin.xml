@@ -39,6 +39,10 @@
 		<model:model model="incomingQualityStandardL" resource="model/incomingQualityStandardL.xml" />
 		<model:model model="iQSHAttachment" resource="model/iQSHAttachment.xml" />
 
+		<model:model model="outgoingQualityStandardH" resource="model/outgoingQualityStandard/outgoingQualityStandardH.xml" />
+		<model:model model="outgoingQualityStandardL" resource="model/outgoingQualityStandard/outgoingQualityStandardL.xml" />
+		<model:model model="oQSHAttachment" resource="model/outgoingQualityStandard/oQSHAttachment.xml" />
+
 		<menu:menu-category name="qm" />
 
 		<menu:menu-item name="measuringEquipment" category="qm" view="measuringEquipmentList" />
