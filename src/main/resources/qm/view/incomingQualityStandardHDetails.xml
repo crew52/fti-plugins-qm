@@ -79,7 +79,7 @@
                 <option type="header" value="true"/>
                 <option type="expression" value="#product['number'] + ' - ' + #product['name']" />
 
-                <listener event="downloadAttachment" method="downloadAttachment" class="com.fti.qm.listeners.IQSHAttachmentsListeners"/>
+                <listener event="downloadAttachment" method="downloadAttachment" class="com.fti.qm.listeners.AttachmentsListeners"/>
             </component>
         </windowTab>
 

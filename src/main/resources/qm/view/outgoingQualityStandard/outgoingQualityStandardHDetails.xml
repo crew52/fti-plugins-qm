@@ -4,7 +4,7 @@
     <component type="window" name="window">
         <ribbon>
             <template name="standardFormTemplate"/>
-            <!-- <group name="atachments">
+            <group name="atachments">
                 <bigButton name="downloadAtachment" icon="generateIcon24.png" state="enabled">
                     <script>
                         <![CDATA[
@@ -16,7 +16,7 @@
 						]]>
                     </script>
                 </bigButton>
-            </group> -->
+            </group>
         </ribbon>
         <windowTab name="mainTab">
             <component type="form" name="outgoingQualityStandardHDetails" reference="form">
@@ -78,7 +78,7 @@
                 <option type="header" value="true"/>
                 <option type="expression" value="#product['number'] + ' - ' + #product['name']" />
 
-                <!-- <listener event="downloadAttachment" method="downloadAttachment" class="com.fti.qm.listeners.IQSHAttachmentsListeners"/> -->
+                <listener event="downloadAttachment" method="downloadAttachment" class="com.fti.qm.listeners.AttachmentsListeners"/>
             </component>
         </windowTab>
 
@@ -88,16 +88,16 @@
                 <!-- Cột trái: Giao diện upload -->
                 <layoutElement column="1" row="1" height="6">
                     <component type="staticPage" name="multiUpload">
-                        <option type="page" value="qm/multiUpload.jsp"/>
+                        <option type="page" value="qm/multiUploadForOutgoing.jsp"/>
                     </component>
 
                     <!-- Trường ẩn: ID thực thể -->
-                    <component type="input" name="iQSHIdForMultiUpload" reference="iQSHIdForMultiUpload" defaultVisible="false">
+                    <component type="input" name="oQSHIdForMultiUpload" reference="oQSHIdForMultiUpload" defaultVisible="false">
                         <option type="alignment" value="right"/>
                     </component>
 
                     <!-- Trường ẩn: Locale -->
-                    <component type="input" name="iQSHMultiUploadLocale" reference="iQSHMultiUploadLocale" defaultVisible="false" />
+                    <component type="input" name="oQSHMultiUploadLocale" reference="oQSHMultiUploadLocale" defaultVisible="false" />
                 </layoutElement>
 
                 <!-- Cột phải: Grid danh sách file đã đính kèm -->
@@ -116,9 +116,10 @@
 
             </component>
         </windowTab>
+
     </component>
 
     <hooks>
-        <!-- <beforeRender class="com.fti.qm.hooks.IncomingQualityStandardHDetailsHooks" method="setIQSHIdForMultiUploadField"/> -->
+        <beforeRender class="com.fti.qm.hooks.outgoingQualityStandard.OutgoingQualityStandardHDetailsHooks" method="setOQSHIdForMultiUploadField"/>
     </hooks>
 </view>

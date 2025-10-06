@@ -16,10 +16,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-@Service
-public class IQSHAttachmentsListeners {
+@Service("qmAttachmentsListeners")
+public class AttachmentsListeners {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IQSHAttachmentsListeners.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AttachmentsListeners.class);
 
     @Autowired
     private FileService fileService;
