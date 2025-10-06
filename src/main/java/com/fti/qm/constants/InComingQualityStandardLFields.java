@@ -1,7 +1,7 @@
 package com.fti.qm.constants;
 
-public class InComingQualityStandardLFields {
-    private InComingQualityStandardLFields() {
+public class IncomingQualityStandardLFields {
+    private IncomingQualityStandardLFields() {
 
     }
 
