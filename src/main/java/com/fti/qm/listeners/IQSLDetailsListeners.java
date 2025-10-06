@@ -1,6 +1,6 @@
     package com.fti.qm.listeners;
 
-    import com.fti.qm.constants.OutgoingQualityStandardLFields;
+    import com.fti.qm.constants.InComingQualityStandardLFields;
     import com.fti.qm.constants.QualityCriteriaFields;
     import com.fti.qm.utils.DecimalFieldFormatter;
     import com.fti.qm.utils.DecimalFieldListenerUtils;
@@ -26,7 +26,7 @@
          * Khi thay đổi tiêu chí chất lượng, nếu field Đơn vị (unit) đang trống thì tự động lấy đơn vị từ tiêu chí chất lượng
          */
         public final void onQualityCriteriaChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-            LookupComponent qualityCriteriaField = (LookupComponent) view.getComponentByReference(OutgoingQualityStandardLFields.QUALITY_CRITERIA);
+            LookupComponent qualityCriteriaField = (LookupComponent) view.getComponentByReference(InComingQualityStandardLFields.QUALITY_CRITERIA);
 
             if (qualityCriteriaField.getFieldValue() == null) {
                 return;
@@ -37,7 +37,7 @@
                 return;
             }
 
-            FieldComponent unitField = (FieldComponent) view.getComponentByReference(OutgoingQualityStandardLFields.UNIT);
+            FieldComponent unitField = (FieldComponent) view.getComponentByReference(InComingQualityStandardLFields.UNIT);
 
             if (unitField.getFieldValue() != null && !"".equals(unitField.getFieldValue().toString())) {
                 return;
@@ -75,10 +75,10 @@
          * - Down Value = Quantitative Value - Tolerance
          */
         private void calculateUpAndDownValue(final ViewDefinitionState view) {
-            FieldComponent quantitativeField = (FieldComponent) view.getComponentByReference(OutgoingQualityStandardLFields.QUANTITATIVE_VALUE);
-            FieldComponent toleranceField = (FieldComponent) view.getComponentByReference(OutgoingQualityStandardLFields.TOLERANCE);
-            FieldComponent upValueField = (FieldComponent) view.getComponentByReference(OutgoingQualityStandardLFields.UP_VALUE);
-            FieldComponent downValueField = (FieldComponent) view.getComponentByReference(OutgoingQualityStandardLFields.DOWN_VALUE);
+            FieldComponent quantitativeField = (FieldComponent) view.getComponentByReference(InComingQualityStandardLFields.QUANTITATIVE_VALUE);
+            FieldComponent toleranceField = (FieldComponent) view.getComponentByReference(InComingQualityStandardLFields.TOLERANCE);
+            FieldComponent upValueField = (FieldComponent) view.getComponentByReference(InComingQualityStandardLFields.UP_VALUE);
+            FieldComponent downValueField = (FieldComponent) view.getComponentByReference(InComingQualityStandardLFields.DOWN_VALUE);
 
             BigDecimal qVal = decimalFieldFormatter.normalizeDecimalField(quantitativeField, true);
             BigDecimal tolVal = decimalFieldFormatter.normalizeDecimalField(toleranceField, true);
