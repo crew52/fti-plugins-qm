@@ -23,13 +23,11 @@
                 <component type="gridLayout" name="gridLayout" columns="5" rows="1">
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="product" field="product" reference="product" hasDescription="true">
-                            <option type="column" name="number" fields="number" />
                             <option type="column" name="name" fields="name" />
                             <option type="column" name="unit" fields="unit" />
                             <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial" />
-                            <option type="column" name="category" fields="category" expression="#category['name']"/>
 
-                            <option type="searchable" value="number,name" />
+                            <option type="searchable" value="number,name,unit,globalTypeOfMaterial" />
                             <option type="orderable" value="number,name" />
 
                             <option type="expression" value="#number + ' - ' + #name" />
