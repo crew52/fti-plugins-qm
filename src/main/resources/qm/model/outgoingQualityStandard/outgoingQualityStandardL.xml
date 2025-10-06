@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="outgoingQualityStandardL"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/model" xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <string name="position">
+            <validatesLength max="255" />
+        </string>
+
+        <string name="description">
+            <validatesLength max="255" />
+        </string>
+
+        <boolean name="qualitativeValue" />
+
+        <decimal name="quantitativeValue" />
+        <decimal name="tolerance" />
+        <decimal name="upValue" />
+        <decimal name="downValue" />
+
+        <integer name="sampleSize" required="true" />
+
+        <dictionary name="unit" dictionary="units"/>
+
+        <belongsTo name="qualityCriteria" model="qualityCriteria" required="true" />
+
+        <belongsTo name="measuringEquipment" model="measuringEquipment" required="true" />
+
+        <belongsTo name="outgoingQualityStandardH" model="outgoingQualityStandardH" required="true" />
+
+    </fields>
+
+    <identifier expression="#qualityCriteria['number'] + ' - ' + #qualityCriteria['name']" />
+
+    <hooks>
+        <onSave class="com.fti.qm.hooks.outgoingQualityStandard.OutgoingQualityStandardLHooks" method="onSave" />
+    </hooks>
+
+</model>

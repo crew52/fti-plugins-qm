@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="outgoingQualityStandardHList" modelName="outgoingQualityStandardH" menuAccessible="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+    <component type="window" name="window">
+        <ribbon>
+            <template name="standardGridTemplate"/>
+        </ribbon>
+        <component type="grid" name="outgoingQualityStandardHList" reference="grid">
+            <option type="column" name="productNumber" fields="product" expression="#product['number']" link="true" />
+            <option type="column" name="productName" fields="product" expression="#product['name']" />
+            <option type="column" name="statusText" fields="statusText" />
+            <option type="order" column="productName" direction="asc" />
+
+            <option type="correspondingView" value="qm/outgoingQualityStandardHDetails" />
+            <option type="correspondingComponent" value="form" />
+
+            <option type="searchable" value="productNumber,productName,statusText" />
+            <option type="orderable" value="productNumber,productName" />
+
+            <option type="fullscreen" value="true" />
+            <option type="multiselect" value="true" />
+        </component>
+        <option type="fixedHeight" value="true" />
+        <option type="header" value="false" />
+    </component>
+    <hooks>
+        <beforeRender class="com.fti.qm.hooks.outgoingQualityStandard.OutgoingQualityStandardHHooks" method="setStatusText"/>
+    </hooks>
+</view>
