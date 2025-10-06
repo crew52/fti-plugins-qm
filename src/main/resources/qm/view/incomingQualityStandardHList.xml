@@ -7,14 +7,15 @@
             <template name="standardGridTemplate"/>
         </ribbon>
         <component type="grid" name="incomingQualityStandardHList" reference="grid">
-            <option type="column" name="productNumber" fields="product" expression="#product['number']" link="true" width="120" />
-            <option type="column" name="productName" fields="product" expression="#product['name']" width="300" />
+            <option type="column" name="productNumber" fields="product" expression="#product['number']" link="true" />
+            <option type="column" name="productName" fields="product" expression="#product['name']" />
+            <option type="column" name="statusText" fields="statusText" />
             <option type="order" column="productName" direction="asc" />
 
             <option type="correspondingView" value="qm/incomingQualityStandardHDetails" />
             <option type="correspondingComponent" value="form" />
 
-            <option type="searchable" value="productNumber,productName" />
+            <option type="searchable" value="productNumber,productName,statusText" />
             <option type="orderable" value="productNumber,productName" />
 
             <option type="fullscreen" value="true" />
@@ -23,4 +24,7 @@
         <option type="fixedHeight" value="true" />
         <option type="header" value="false" />
     </component>
+    <hooks>
+        <beforeRender class="com.fti.qm.hooks.IncomingQualityStandardHHooks" method="setStatusText"/>
+    </hooks>
 </view>
