@@ -1,4 +1,4 @@
-package com.fti.qm.hooks;
+package com.fti.qm.hooks.outgoingQualityStandard;
 
 import com.fti.qm.constants.OutgoingQualityStandardLFields;
 import com.fti.qm.constants.QualityCriteriaFields;
@@ -7,7 +7,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.DataDefinition;
 
 @Service
-public class IncomingQualityStandardLHooks {
+public class OutgoingQualityStandardLHooks {
 
     public void onSave(DataDefinition dataDefinition, Entity entity) {
         if (entity.getField(OutgoingQualityStandardLFields.UNIT) == null) {
@@ -19,3 +19,4 @@ public class IncomingQualityStandardLHooks {
         }
     }
 }
+
