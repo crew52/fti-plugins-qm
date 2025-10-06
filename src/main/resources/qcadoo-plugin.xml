@@ -57,6 +57,8 @@
 		<view:view resource="view/incomingQualityStandardHDetails.xml" />
 		<view:view resource="view/incomingQualityStandardLDetails.xml" />
 
+		<view:view resource="view/outgoingQualityStandard/outgoingQualityStandardHList.xml" />
+
 		<view:resource uri="public/**/*" />
 
 		<report:report-template name="sample" resource="report/sample.jrxml" />
