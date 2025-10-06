@@ -58,6 +58,8 @@
 		<view:view resource="view/incomingQualityStandardLDetails.xml" />
 
 		<view:view resource="view/outgoingQualityStandard/outgoingQualityStandardHList.xml" />
+		<view:view resource="view/outgoingQualityStandard/outgoingQualityStandardHDetails.xml" />
+		<view:view resource="view/outgoingQualityStandard/outgoingQualityStandardLDetails.xml" />
 
 		<view:resource uri="public/**/*" />
 
