@@ -50,9 +50,9 @@
                         <component type="textarea" name="description" field="description" reference="description" />
                     </layoutElement>
 
-                    <!-- Field: qualitativeValue dinh tinh -->
+                    <!-- Field: checkbox hiển thị cho người dùng -->
                     <layoutElement column="2" row="1">
-                        <component type="checkbox" name="qualitativeValue" field="qualitativeValue" reference="qualitativeValue" hasDescription="true"/>
+                        <component type="checkbox" name="qualitativeCheckbox" field="qualitativeCheckbox" reference="qualitativeCheckbox" hasDescription="true" />
                     </layoutElement>
 
                     <!-- Field: quantitativeValue dinh luong -->
