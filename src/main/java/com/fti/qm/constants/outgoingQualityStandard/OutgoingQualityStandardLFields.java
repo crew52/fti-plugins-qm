@@ -8,6 +8,8 @@ public class OutgoingQualityStandardLFields {
     public static final String POSITION = "position";
     public static final String DESCRIPTION = "description";
     public static final String QUALITATIVE_VALUE = "qualitativeValue";
+    public static final String QUALITATIVE_VALUE_PASS = "01pass";
+    public static final String QUALITATIVE_CHECKBOX_VALUE = "qualitativeCheckbox";
     public static final String QUANTITATIVE_VALUE = "quantitativeValue";
     public static final String TOLERANCE = "tolerance";
     public static final String UP_VALUE = "upValue";

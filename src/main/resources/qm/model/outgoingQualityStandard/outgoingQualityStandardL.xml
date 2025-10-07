@@ -11,7 +11,8 @@
             <validatesLength max="255" />
         </string>
 
-        <boolean name="qualitativeValue" />
+        <enum name="qualitativeValue" values="01pass"/>
+        <boolean name="qualitativeCheckbox" persistent="false"/>
 
         <decimal name="quantitativeValue" />
         <decimal name="tolerance" />
@@ -34,6 +35,7 @@
 
     <hooks>
         <onSave class="com.fti.qm.hooks.outgoingQualityStandard.OutgoingQualityStandardLHooks" method="onSave" />
+        <onView class="com.fti.qm.hooks.outgoingQualityStandard.OutgoingQualityStandardLHooks" method="onView" />
     </hooks>
 
 </model>
