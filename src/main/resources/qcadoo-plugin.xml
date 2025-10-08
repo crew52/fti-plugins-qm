@@ -51,6 +51,7 @@
 
 		<view:view resource="view/measuringEquipmentList.xml" />
 		<view:view resource="view/measuringEquipmentDetails.xml" />
+		<view:view resource="view/measuringEquipmentsImport.xml" />
 		<view:view resource="view/qualityCriteriaList.xml" />
 		<view:view resource="view/qualityCriteriaDetails.xml" />
 		<view:view resource="view/incomingQualityStandardHList.xml" />
