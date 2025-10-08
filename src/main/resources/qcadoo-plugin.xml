@@ -51,6 +51,7 @@
 
 		<view:view resource="view/measuringEquipmentList.xml" />
 		<view:view resource="view/measuringEquipmentDetails.xml" />
+		<view:view resource="view/measuringEquipmentsImport.xml" />
 		<view:view resource="view/qualityCriteriaList.xml" />
 		<view:view resource="view/qualityCriteriaDetails.xml" />
 		<view:view resource="view/incomingQualityStandardHList.xml" />
@@ -60,6 +61,8 @@
 		<view:view resource="view/outgoingQualityStandard/outgoingQualityStandardHList.xml" />
 		<view:view resource="view/outgoingQualityStandard/outgoingQualityStandardHDetails.xml" />
 		<view:view resource="view/outgoingQualityStandard/outgoingQualityStandardLDetails.xml" />
+
+		<model:model-enum-value plugin="basic" model="log" enum="logType" value="measuringEquipmentImport" />
 
 		<view:resource uri="public/**/*" />
 

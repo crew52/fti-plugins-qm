@@ -6,5 +6,5 @@
     <context:component-scan base-package="com.fti.qm">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
-    <!--  <mvc:resources mapping="/rew52/resources/**" location="classpath:basic/public/resources/"/>  -->
+    <mvc:resources mapping="/qm/resources/**" location="classpath:qm/public/resources/"/>
 </beans>
