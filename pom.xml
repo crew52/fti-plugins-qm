@@ -15,14 +15,10 @@
 	<packaging>qcadoo-plugin</packaging>
 	<name>FTI Quality Management</name>
 	<version>1.5-SNAPSHOT</version>
-<!-- 
-	<properties>
+
+	<!-- <properties>
 		<qcadoo.version>0.4.3</qcadoo.version>
 	</properties> -->
-
-	<properties>
-		<qcadoo.version>1.5-SNAPSHOT</qcadoo.version>
-	</properties>
 
 	<build>
 		<plugins>
