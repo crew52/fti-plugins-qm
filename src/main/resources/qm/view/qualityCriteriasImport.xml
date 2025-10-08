@@ -50,7 +50,7 @@
                         	]]>
                         </script>
 
-                        <!-- <listener event="onInputChange" class="com.fti.qm.listeners.MeasuringEquipmentsImportListeners" method="onInputChange"/> -->
+                        <listener event="onInputChange" class="com.fti.qm.listeners.QualityCriteriasImportListeners" method="onInputChange"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="2" width="2">
@@ -60,10 +60,10 @@
                     </component>
                 </layoutElement>
             </component>
-<!-- 
-            <listener event="processImportFile" class="com.fti.qm.listeners.MeasuringEquipmentsImportListeners" method="processImportFile"/>
-            <listener event="downloadImportSchema" class="com.fti.qm.listeners.MeasuringEquipmentsImportListeners" method="downloadImportSchema"/>
-            <listener event="redirectToLogs" class="com.fti.qm.listeners.MeasuringEquipmentsImportListeners" method="redirectToLogs"/> -->
+
+            <listener event="processImportFile" class="com.fti.qm.listeners.QualityCriteriasImportListeners" method="processImportFile"/>
+            <listener event="downloadImportSchema" class="com.fti.qm.listeners.QualityCriteriasImportListeners" method="downloadImportSchema"/>
+            <listener event="redirectToLogs" class="com.fti.qm.listeners.QualityCriteriasImportListeners" method="redirectToLogs"/>
 
             <option type="header" value="false"/>
         </component>

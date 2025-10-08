@@ -64,6 +64,7 @@
 		<view:view resource="view/outgoingQualityStandard/outgoingQualityStandardLDetails.xml" />
 
 		<model:model-enum-value plugin="basic" model="log" enum="logType" value="measuringEquipmentImport" />
+		<model:model-enum-value plugin="basic" model="log" enum="logType" value="qualityCriteriaImport" />
 
 		<view:resource uri="public/**/*" />
 
