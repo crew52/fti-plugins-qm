@@ -5,6 +5,9 @@
     <component type="window" name="window">
         <ribbon>
             <template name="standardGridTemplate"/>
+            <group name="import">
+                <bigButton name="openQualityCriteriasImportPage" state="enabled" icon="xlsIcon24.png" action="#{window}.fireEvent(openQualityCriteriasImportPage);"/>
+            </group>
         </ribbon>
         <component type="grid" name="qualityCriteriaList" reference="grid">
             <option type="column" name="number" fields="number" link="true" width="150" />
@@ -22,6 +25,7 @@
             <option type="fullscreen" value="true" />
             <option type="multiselect" value="true" />
         </component>
+        <listener event="openQualityCriteriasImportPage" class="com.fti.qm.listeners.QualityCriteriasListListeners" method="openQualityCriteriasImportPage"/>
         <option type="fixedHeight" value="true" />
         <option type="header" value="false" />
     </component>
