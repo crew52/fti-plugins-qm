@@ -42,7 +42,7 @@
 		<model:model model="outgoingQualityStandardH" resource="model/outgoingQualityStandard/outgoingQualityStandardH.xml" />
 		<model:model model="outgoingQualityStandardL" resource="model/outgoingQualityStandard/outgoingQualityStandardL.xml" />
 		<model:model model="oQSHAttachment" resource="model/outgoingQualityStandard/oQSHAttachment.xml" />
-		
+
 		<model:model model="inProcessQualityStandardH" resource="model/inProcessQualityStandard/inProcessQualityStandardH.xml" />
 		<model:model model="inProcessQualityStandardL" resource="model/inProcessQualityStandard/inProcessQualityStandardL.xml" />
 		<model:model model="iPQSHAttachment" resource="model/inProcessQualityStandard/iPQSHAttachment.xml" />
@@ -67,8 +67,13 @@
 		<view:view resource="view/outgoingQualityStandard/outgoingQualityStandardHDetails.xml" />
 		<view:view resource="view/outgoingQualityStandard/outgoingQualityStandardLDetails.xml" />
 
+		<view:view resource="view/inProcessQualityStandard/inProcessQualityStandardHList.xml" />
+		<view:view resource="view/inProcessQualityStandard/inProcessQualityStandardHDetails.xml" />
+		<view:view resource="view/inProcessQualityStandard/inProcessQualityStandardLDetails.xml" />
+
 		<model:model-enum-value plugin="basic" model="log" enum="logType" value="measuringEquipmentImport" />
 		<model:model-enum-value plugin="basic" model="log" enum="logType" value="qualityCriteriaImport" />
+		<model:model-enum-value plugin="basic" model="product" enum="globalTypeOfMaterial" value="06componentPart" />
 
 		<view:resource uri="public/**/*" />
 

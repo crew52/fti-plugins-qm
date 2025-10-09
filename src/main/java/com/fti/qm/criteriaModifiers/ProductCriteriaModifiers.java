@@ -11,6 +11,7 @@ public class ProductCriteriaModifiers {
     private static final String VALUE_COMPONENT = "01component";
     private static final String VALUE_INTERMEDIATE = "02intermediate";
     private static final String VALUE_FINAL_PRODUCT = "03finalProduct";
+    private static final String VALUE_COMPONENT_PART = "06componentPart";
 
     public void filterForQualityStandard(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
         scb.add(SearchRestrictions.eq(PRODUCT_FIELD_ACTIVE, true));
@@ -27,5 +28,14 @@ public class ProductCriteriaModifiers {
         scb.add(SearchRestrictions.eq(PRODUCT_FIELD_ACTIVE, true));
 
         scb.add(SearchRestrictions.eq(PRODUCT_FIELD_GLOBAL_TYPE_OF_MATERIAL, VALUE_FINAL_PRODUCT));
+    }
+
+    public void filterForInProcessQualityStandard(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
+        scb.add(SearchRestrictions.eq(PRODUCT_FIELD_ACTIVE, true));
+
+        scb.add(SearchRestrictions.or(
+                SearchRestrictions.eq(PRODUCT_FIELD_GLOBAL_TYPE_OF_MATERIAL, VALUE_COMPONENT_PART),
+                SearchRestrictions.eq(PRODUCT_FIELD_GLOBAL_TYPE_OF_MATERIAL, VALUE_INTERMEDIATE)
+        ));
     }
 }
