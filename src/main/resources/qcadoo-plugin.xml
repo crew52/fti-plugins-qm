@@ -42,6 +42,10 @@
 		<model:model model="outgoingQualityStandardH" resource="model/outgoingQualityStandard/outgoingQualityStandardH.xml" />
 		<model:model model="outgoingQualityStandardL" resource="model/outgoingQualityStandard/outgoingQualityStandardL.xml" />
 		<model:model model="oQSHAttachment" resource="model/outgoingQualityStandard/oQSHAttachment.xml" />
+		
+		<model:model model="inProcessQualityStandardH" resource="model/inProcessQualityStandard/inProcessQualityStandardH.xml" />
+		<model:model model="inProcessQualityStandardL" resource="model/inProcessQualityStandard/inProcessQualityStandardL.xml" />
+		<model:model model="iPQSHAttachment" resource="model/inProcessQualityStandard/iPQSHAttachment.xml" />
 
 		<menu:menu-category name="qm" />
 
