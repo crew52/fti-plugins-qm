@@ -39,7 +39,7 @@ public class InProcessQualityStandardHHooks {
 
         if (exists != null) {
             inProcessStandardH.addError(dataDefinition.getField(InProcessQualityStandardHFields.PRODUCT),
-                    "qm.message.error.productAlreadyExistsWithActiveStandard");
+                    "qm.message.error.inProcess.productAlreadyExistsWithActiveStandard");
         }
     }
 
