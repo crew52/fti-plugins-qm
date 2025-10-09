@@ -1,4 +1,4 @@
-package com.fti.qm.hooks.standard;
+package com.fti.qm.hooks.standard.incoming;
 
 import com.fti.qm.hooks.standard.base.BaseQualityStandardHDetailsHooks;
 import com.qcadoo.view.api.ViewDefinitionState;

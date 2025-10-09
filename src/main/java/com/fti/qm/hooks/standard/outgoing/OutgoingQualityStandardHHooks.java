@@ -1,4 +1,4 @@
-package com.fti.qm.hooks.standard;
+package com.fti.qm.hooks.standard.outgoing;
 
 import com.fti.qm.constants.outgoingQualityStandard.OutgoingQualityStandardHFields;
 import com.fti.qm.hooks.standard.base.BaseQualityStandardHooks;

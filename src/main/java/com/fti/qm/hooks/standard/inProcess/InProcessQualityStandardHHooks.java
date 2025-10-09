@@ -1,4 +1,4 @@
-package com.fti.qm.hooks.standard;
+package com.fti.qm.hooks.standard.inProcess;
 
 import com.fti.qm.constants.inProcessQualityStandard.InProcessQualityStandardHFields;
 import com.fti.qm.hooks.standard.base.BaseQualityStandardHooks;

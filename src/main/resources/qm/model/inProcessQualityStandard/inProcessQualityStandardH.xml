@@ -13,6 +13,6 @@
 
     <identifier expression="#product['number'] + ' - ' + #product['name']" />
     <hooks>
-        <onSave class="com.fti.qm.hooks.standard.InProcessQualityStandardHHooks" method="onSave" />
+        <onSave class="com.fti.qm.hooks.standard.inProcess.InProcessQualityStandardHHooks" method="onSave" />
     </hooks>
 </model>
