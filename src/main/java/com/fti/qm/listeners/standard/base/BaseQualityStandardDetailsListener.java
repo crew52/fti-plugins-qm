@@ -12,25 +12,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 
-public abstract class BaseQualityStandardDetailsListener<T extends QualityStandardLineFields> {
+public abstract class BaseQualityStandardDetailsListener {
 
     @Autowired protected DecimalFieldFormatter decimalFieldFormatter;
     @Autowired protected DecimalFieldListenerUtils decimalFieldListenerUtils;
 
-    protected final T fields;
-
-    protected BaseQualityStandardDetailsListener(T fields) {
-        this.fields = fields;
-    }
+    // ✅ Các method abstract để subclass override tên field
+    protected abstract String QUALITY_CRITERIA();
+    protected abstract String UNIT();
+    protected abstract String QUANTITATIVE_VALUE();
+    protected abstract String TOLERANCE();
+    protected abstract String UP_VALUE();
+    protected abstract String DOWN_VALUE();
 
     public final void onQualityCriteriaChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        LookupComponent qcField = (LookupComponent) view.getComponentByReference(fields.QUALITY_CRITERIA());
+        LookupComponent qcField = (LookupComponent) view.getComponentByReference(QUALITY_CRITERIA());
         if (qcField.getFieldValue() == null) return;
 
         Entity qualityCriteria = qcField.getEntity();
         if (qualityCriteria == null) return;
 
-        FieldComponent unitField = (FieldComponent) view.getComponentByReference(fields.UNIT());
+        FieldComponent unitField = (FieldComponent) view.getComponentByReference(UNIT());
         if (unitField.getFieldValue() != null && !"".equals(unitField.getFieldValue().toString())) return;
 
         Object unitValue = qualityCriteria.getField(QualityCriteriaFields.UNIT);
@@ -59,10 +61,10 @@ public abstract class BaseQualityStandardDetailsListener<T extends QualityStanda
     }
 
     private void calculateUpAndDownValue(final ViewDefinitionState view) {
-        FieldComponent quantitative = (FieldComponent) view.getComponentByReference(fields.QUANTITATIVE_VALUE());
-        FieldComponent tolerance = (FieldComponent) view.getComponentByReference(fields.TOLERANCE());
-        FieldComponent upValue = (FieldComponent) view.getComponentByReference(fields.UP_VALUE());
-        FieldComponent downValue = (FieldComponent) view.getComponentByReference(fields.DOWN_VALUE());
+        FieldComponent quantitative = (FieldComponent) view.getComponentByReference(QUANTITATIVE_VALUE());
+        FieldComponent tolerance = (FieldComponent) view.getComponentByReference(TOLERANCE());
+        FieldComponent upValue = (FieldComponent) view.getComponentByReference(UP_VALUE());
+        FieldComponent downValue = (FieldComponent) view.getComponentByReference(DOWN_VALUE());
 
         BigDecimal qVal = decimalFieldFormatter.normalizeDecimalField(quantitative, true);
         BigDecimal tVal = decimalFieldFormatter.normalizeDecimalField(tolerance, true);

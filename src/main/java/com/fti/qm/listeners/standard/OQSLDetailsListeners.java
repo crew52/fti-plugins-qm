@@ -1,14 +1,16 @@
 package com.fti.qm.listeners.standard;
 
+import com.fti.qm.constants.outgoingQualityStandard.OutgoingQualityStandardLFields;
 import com.fti.qm.listeners.standard.base.BaseQualityStandardDetailsListener;
-import com.fti.qm.listeners.standard.base.OutgoingQSLFields;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class OQSLDetailsListeners extends BaseQualityStandardDetailsListener<OutgoingQSLFields> {
-    @Autowired
-    public OQSLDetailsListeners(OutgoingQSLFields fields) {
-        super(fields);
-    }
+public class OQSLDetailsListeners extends BaseQualityStandardDetailsListener {
+
+    @Override public String QUALITY_CRITERIA() { return OutgoingQualityStandardLFields.QUALITY_CRITERIA; }
+    @Override public String UNIT() { return OutgoingQualityStandardLFields.UNIT; }
+    @Override public String QUANTITATIVE_VALUE() { return OutgoingQualityStandardLFields.QUANTITATIVE_VALUE; }
+    @Override public String TOLERANCE() { return OutgoingQualityStandardLFields.TOLERANCE; }
+    @Override public String UP_VALUE() { return OutgoingQualityStandardLFields.UP_VALUE; }
+    @Override public String DOWN_VALUE() { return OutgoingQualityStandardLFields.DOWN_VALUE; }
 }
