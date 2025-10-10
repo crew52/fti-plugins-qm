@@ -34,8 +34,8 @@
     <identifier expression="#qualityCriteria['number'] + ' - ' + #qualityCriteria['name']" />
 
     <hooks>
-        <onSave class="com.fti.qm.hooks.inProcessQualityStandard.InProcessQualityStandardLHooks" method="onSave" />
-        <onView class="com.fti.qm.hooks.inProcessQualityStandard.InProcessQualityStandardLHooks" method="onView" />
+        <onSave class="com.fti.qm.hooks.standard.inProcess.InProcessQualityStandardLHooks" method="onSave" />
+        <onView class="com.fti.qm.hooks.standard.inProcess.InProcessQualityStandardLHooks" method="onView" />
     </hooks>
 
 </model>

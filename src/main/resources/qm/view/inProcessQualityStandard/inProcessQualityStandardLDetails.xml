@@ -19,7 +19,7 @@
 
                             <option type="expression" value="#number + ' - ' + #name + (#unit != null ? ' (' + #unit + ')' : '')" />
                             <option type="fieldCode" value="number" />
-                            <listener event="onSelectedEntityChange" class="com.fti.qm.listeners.IPQSLDetailsListeners" method="onQualityCriteriaChange"/>
+                            <listener event="onSelectedEntityChange" class="com.fti.qm.listeners.standard.IPQSLDetailsListeners" method="onQualityCriteriaChange"/>
                         </component>
                     </layoutElement>
 
@@ -58,28 +58,28 @@
                     <!-- Field: quantitativeValue dinh luong -->
                     <layoutElement column="2" row="2">
                         <component type="input" name="quantitativeValue" field="quantitativeValue" reference="quantitativeValue">
-                            <listener event="onInputChange" class="com.fti.qm.listeners.IPQSLDetailsListeners" method="onQuantitativeValueChange"/>
+                            <listener event="onInputChange" class="com.fti.qm.listeners.standard.IPQSLDetailsListeners" method="onQuantitativeValueChange"/>
                         </component>
                     </layoutElement>
 
                     <!-- Field: tolerance -->
                     <layoutElement column="2" row="3">
                         <component type="input" name="tolerance" field="tolerance" reference="tolerance">
-                            <listener event="onInputChange" class="com.fti.qm.listeners.IPQSLDetailsListeners" method="onToleranceChange"/>
+                            <listener event="onInputChange" class="com.fti.qm.listeners.standard.IPQSLDetailsListeners" method="onToleranceChange"/>
                         </component>
                     </layoutElement>
 
                     <!-- Field: upValue -->
                     <layoutElement column="2" row="4">
                         <component type="input" name="upValue" field="upValue" reference="upValue">
-                            <listener event="onInputChange" class="com.fti.qm.listeners.IPQSLDetailsListeners" method="onUpValueChange"/>
+                            <listener event="onInputChange" class="com.fti.qm.listeners.standard.IPQSLDetailsListeners" method="onUpValueChange"/>
                         </component>
                     </layoutElement>
 
                     <!-- Field: downValue -->
                     <layoutElement column="2" row="5">
                         <component type="input" name="downValue" field="downValue" reference="downValue">
-                            <listener event="onInputChange" class="com.fti.qm.listeners.IPQSLDetailsListeners" method="onDownValueChange"/>
+                            <listener event="onInputChange" class="com.fti.qm.listeners.standard.IPQSLDetailsListeners" method="onDownValueChange"/>
                         </component>
                     </layoutElement>
 

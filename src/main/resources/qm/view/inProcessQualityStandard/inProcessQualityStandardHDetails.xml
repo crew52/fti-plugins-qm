@@ -120,6 +120,6 @@
     </component>
 
     <hooks>
-        <beforeRender class="com.fti.qm.hooks.inProcessQualityStandard.InProcessQualityStandardHDetailsHooks" method="setIPQSHIdForMultiUploadField"/>
+        <beforeRender class="com.fti.qm.hooks.standard.inProcess.InProcessQualityStandardHDetailsHooks" method="setIPQSHIdForMultiUploadField"/>
     </hooks>
 </view>
