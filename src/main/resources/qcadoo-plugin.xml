@@ -56,6 +56,9 @@
 		<menu:menu-item name="measuringEquipment" category="qm" view="measuringEquipmentList" />
 		<menu:menu-item name="qualityCriteria" category="qm" view="qualityCriteriaList" />
 		<menu:menu-item name="incomingQualityStandardH" category="qm" view="incomingQualityStandardHList" />
+		<menu:menu-item name="outgoingQualityStandardH" category="qm" view="outgoingQualityStandardHList" />
+		<menu:menu-item name="inProcessQualityStandardH" category="qm" view="inProcessQualityStandardHList" />
+		<menu:menu-item name="equipmentQualityStandardH" category="qm" view="equipmentQualityStandardHList" />
 
 		<view:view resource="view/measuringEquipmentList.xml" />
 		<view:view resource="view/measuringEquipmentDetails.xml" />
