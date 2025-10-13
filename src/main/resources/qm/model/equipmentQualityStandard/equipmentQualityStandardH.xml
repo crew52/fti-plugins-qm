@@ -5,8 +5,8 @@
     <fields>
         <belongsTo name="tool" plugin="cmmsMachineParts" model="tool" required="true" />
 
-        <!-- <hasMany name="inProcessQualityStandardLs" model="inProcessQualityStandardL" joinField="inProcessQualityStandardH" /> -->
-        <!-- <hasMany name="attachments" model="iPQSHAttachment" joinField="inProcessQualityStandardH" cascade="delete"/> -->
+        <hasMany name="equipmentQualityStandardLs" model="equipmentQualityStandardL" joinField="equipmentQualityStandardH" />
+        <hasMany name="attachments" model="eQSHAttachment" joinField="equipmentQualityStandardH" cascade="delete"/>
         <enum name="inspectionType" values="01equipment,02internalCalibration,03externalCalibration" required="true"/>
         <enum name="statusText" values="01noStandard,02hasStandard" persistent="false"/>
     </fields>

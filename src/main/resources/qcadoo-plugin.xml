@@ -48,6 +48,8 @@
 		<model:model model="iPQSHAttachment" resource="model/inProcessQualityStandard/iPQSHAttachment.xml" />
 
 		<model:model model="equipmentQualityStandardH" resource="model/equipmentQualityStandard/equipmentQualityStandardH.xml" />
+		<model:model model="equipmentQualityStandardL" resource="model/equipmentQualityStandard/equipmentQualityStandardL.xml" />
+		<model:model model="eQSHAttachment" resource="model/equipmentQualityStandard/eQSHAttachment.xml" />
 
 		<menu:menu-category name="qm" />
 
