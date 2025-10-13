@@ -47,6 +47,8 @@
 		<model:model model="inProcessQualityStandardL" resource="model/inProcessQualityStandard/inProcessQualityStandardL.xml" />
 		<model:model model="iPQSHAttachment" resource="model/inProcessQualityStandard/iPQSHAttachment.xml" />
 
+		<model:model model="equipmentQualityStandardH" resource="model/equipmentQualityStandard/equipmentQualityStandardH.xml" />
+
 		<menu:menu-category name="qm" />
 
 		<menu:menu-item name="measuringEquipment" category="qm" view="measuringEquipmentList" />
