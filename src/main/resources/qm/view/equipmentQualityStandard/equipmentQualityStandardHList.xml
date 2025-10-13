@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="equipmentQualityStandardHList" modelName="equipmentQualityStandardH" menuAccessible="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+    <component type="window" name="window">
+        <ribbon>
+            <template name="standardGridTemplate"/>
+        </ribbon>
+        <component type="grid" name="equipmentQualityStandardHList" reference="grid">
+            <option type="column" name="toolNumber" fields="tool" expression="#tool['number']" link="true" />
+            <option type="column" name="toolName" fields="tool" expression="#tool['name']" />
+            <option type="column" name="statusText" fields="statusText" />
+            <option type="order" column="toolName" direction="asc" />
+
+            <option type="correspondingView" value="qm/equipmentQualityStandardHDetails" />
+            <option type="correspondingComponent" value="form" />
+
+            <option type="searchable" value="toolNumber,toolName,statusText" />
+            <option type="orderable" value="toolNumber,toolName" />
+
+            <option type="fullscreen" value="true" />
+            <option type="multiselect" value="true" />
+        </component>
+        <option type="fixedHeight" value="true" />
+        <option type="header" value="false" />
+    </component>
+    <hooks>
+        <beforeRender class="com.fti.qm.hooks.standard.equipment.EquipmentQualityStandardHHooks" method="setStatusText"/>
+    </hooks>
+</view>
