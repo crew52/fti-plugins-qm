@@ -12,7 +12,6 @@ public class MeasuringEquipmentCellBinderRegistry {
 
     @PostConstruct
     private void init() {
-        cellBinderRegistry.setCellBinder(required(MeasuringEquipmentFields.NUMBER));
         cellBinderRegistry.setCellBinder(required(MeasuringEquipmentFields.NAME));
         cellBinderRegistry.setCellBinder(required(MeasuringEquipmentFields.MEASURING_METHOD));
     }

@@ -53,12 +53,6 @@
                         <listener event="onInputChange" class="com.fti.qm.listeners.MeasuringEquipmentsImportListeners" method="onInputChange"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="1" row="2" width="2">
-                    <component type="checkbox" name="shouldUpdate" reference="shouldUpdate">
-                        <option type="labelWidth" value="80"/>
-                        <option type="align" value="right"/>
-                    </component>
-                </layoutElement>
             </component>
 
             <listener event="processImportFile" class="com.fti.qm.listeners.MeasuringEquipmentsImportListeners" method="processImportFile"/>

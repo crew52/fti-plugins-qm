@@ -13,6 +13,8 @@
             <validatesLength max="255" />
         </string>
     </fields>
-    <hooks />
+    <hooks>
+        <onCreate class="com.fti.qm.hooks.MeasuringEquipmentHooks" method="onCreate" />
+    </hooks>
     <identifier expression="#number + ' - ' + #name" />
 </model>
