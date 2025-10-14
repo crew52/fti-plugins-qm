@@ -9,13 +9,14 @@
         <component type="grid" name="equipmentQualityStandardHList" reference="grid">
             <option type="column" name="toolNumber" fields="tool" expression="#tool['number']" link="true" />
             <option type="column" name="toolName" fields="tool" expression="#tool['name']" />
+            <option type="column" name="inspectionType" fields="inspectionType"/>
             <option type="column" name="statusText" fields="statusText" />
             <option type="order" column="toolName" direction="asc" />
 
             <option type="correspondingView" value="qm/equipmentQualityStandardHDetails" />
             <option type="correspondingComponent" value="form" />
 
-            <option type="searchable" value="toolNumber,toolName,statusText" />
+            <option type="searchable" value="toolNumber,toolName,statusText,inspectionType" />
             <option type="orderable" value="toolNumber,toolName" />
 
             <option type="fullscreen" value="true" />

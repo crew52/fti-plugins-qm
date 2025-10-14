@@ -79,6 +79,8 @@
 		<view:view resource="view/inProcessQualityStandard/inProcessQualityStandardLDetails.xml" />
 
 		<view:view resource="view/equipmentQualityStandard/equipmentQualityStandardHList.xml" />
+		<view:view resource="view/equipmentQualityStandard/equipmentQualityStandardHDetails.xml" />
+		<view:view resource="view/equipmentQualityStandard/equipmentQualityStandardLDetails.xml" />
 
 		<model:model-enum-value plugin="basic" model="log" enum="logType" value="measuringEquipmentImport" />
 		<model:model-enum-value plugin="basic" model="log" enum="logType" value="qualityCriteriaImport" />

@@ -11,7 +11,7 @@
         <enum name="statusText" values="01noStandard,02hasStandard" persistent="false"/>
     </fields>
 
-    <identifier expression="#tool['number'] + ' - ' + #tool['name']" />
+    <identifier expression="#tool['number'] + ' - ' + #tool['name'] + ' - ' + #inspectionType" />
     <hooks>
         <!-- <onSave class="com.fti.qm.hooks.standard.inProcess.InProcessQualityStandardHHooks" method="onSave" /> -->
     </hooks>
