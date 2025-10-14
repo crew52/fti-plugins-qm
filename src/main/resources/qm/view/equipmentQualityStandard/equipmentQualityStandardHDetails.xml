@@ -93,7 +93,7 @@
                 <!-- Cột trái: Giao diện upload -->
                 <layoutElement column="1" row="1" height="6">
                     <component type="staticPage" name="multiUpload">
-                        <!-- <option type="page" value="qm/multiUploadForEquipment.jsp"/> -->
+                        <option type="page" value="qm/multiUploadForEquipment.jsp"/>
                     </component>
 
                     <!-- Trường ẩn: ID thực thể -->
@@ -125,6 +125,6 @@
     </component>
 
     <hooks>
-        <!-- <beforeRender class="com.fti.qm.hooks.standard.outgoing.OutgoingQualityStandardHDetailsHooks" method="setOQSHIdForMultiUploadField"/> -->
+        <beforeRender class="com.fti.qm.hooks.standard.equipment.EquipmentQualityStandardHDetailsHooks" method="setEQSHIdForMultiUploadField"/>
     </hooks>
 </view>

@@ -10,14 +10,14 @@ String ctx = request.getContextPath();
 <script src="/basic/public/js/jquery.ui.widget.js"></script>
 <script src="/basic/public/js/jquery.iframe-transport.js"></script>
 <script src="/basic/public/js/jquery.fileupload.js"></script>
-<script src="/qm/public/js/multiuploadfunctions.js"></script>
+<script src="/qm/public/js/multiuploadforequipmentfunctions.js"></script>
 <script src="/basic/public/js/bootstrap.min.js"></script>
 
 <link href="/basic/public/css/dropzone.css" type="text/css" rel="stylesheet" />
 
 
 
-<form id="fileupload" action="../../../rest/qm/multiUploadFiles.html" method="POST" enctype="multipart/form-data">
+<form id="fileupload" action="../../../rest/qm/multiUploadForEquipmentFiles.html" method="POST" enctype="multipart/form-data">
 
     <input type="file" name="files[]" multiple>
 

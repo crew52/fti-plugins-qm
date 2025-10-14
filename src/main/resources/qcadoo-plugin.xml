@@ -66,9 +66,9 @@
 		<view:view resource="view/qualityCriteriaList.xml" />
 		<view:view resource="view/qualityCriteriaDetails.xml" />
 		<view:view resource="view/qualityCriteriasImport.xml" />
-		<view:view resource="view/incomingQualityStandardHList.xml" />
-		<view:view resource="view/incomingQualityStandardHDetails.xml" />
-		<view:view resource="view/incomingQualityStandardLDetails.xml" />
+		<view:view resource="view/incomingQualityStandard/incomingQualityStandardHList.xml" />
+		<view:view resource="view/incomingQualityStandard/incomingQualityStandardHDetails.xml" />
+		<view:view resource="view/incomingQualityStandard/incomingQualityStandardLDetails.xml" />
 
 		<view:view resource="view/outgoingQualityStandard/outgoingQualityStandardHList.xml" />
 		<view:view resource="view/outgoingQualityStandard/outgoingQualityStandardHDetails.xml" />
