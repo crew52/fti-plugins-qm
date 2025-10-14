@@ -17,8 +17,8 @@ public class InProcessQualityStandardHHooks extends BaseQualityStandardHooks {
         super(dataDefinitionService);
     }
 
-    public void onSave(final DataDefinition dd, final Entity entity) {
-        handleOnSave(dd, entity,
+    public void validateUniqueActiveProduct(final DataDefinition dd, final Entity entity) {
+        validateUniqueActiveCombination(dd, entity,
                 InProcessQualityStandardHFields.PRODUCT,
                 InProcessQualityStandardHFields.PRODUCT_ID,
                 InProcessQualityStandardHFields.ACTIVE,

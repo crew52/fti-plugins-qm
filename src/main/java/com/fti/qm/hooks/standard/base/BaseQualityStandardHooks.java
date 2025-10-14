@@ -17,7 +17,7 @@ public abstract class BaseQualityStandardHooks {
         this.dataDefinitionService = dataDefinitionService;
     }
 
-    public void handleOnSave(final DataDefinition dataDefinition, final Entity entity,
+    public void validateUniqueActiveCombination(final DataDefinition dataDefinition, final Entity entity,
                              String productField, String productIdField, String activeField,
                              String errorMessageKey) {
         if (!entity.isValid()) {
