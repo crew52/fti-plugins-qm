@@ -12,6 +12,10 @@
         <string name="measuringMethod" required="true">
             <validatesLength max="255" />
         </string>
+        <hasMany name="incomingQualityStandardLs" model="incomingQualityStandardL" joinField="measuringEquipment" cascade="delete"/>
+        <hasMany name="outgoingQualityStandardLs" model="outgoingQualityStandardL" joinField="measuringEquipment" cascade="delete"/>
+        <hasMany name="inProcessQualityStandardLs" model="inProcessQualityStandardL" joinField="measuringEquipment" cascade="delete"/>
+        <hasMany name="equipmentQualityStandardLs" model="equipmentQualityStandardL" joinField="measuringEquipment" cascade="delete"/>
     </fields>
     <hooks>
         <onCreate class="com.fti.qm.hooks.MeasuringEquipmentHooks" method="onCreate" />

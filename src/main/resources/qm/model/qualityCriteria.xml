@@ -11,6 +11,11 @@
         </string>
         <enum name="type" values="01qualitative,02quantitative" />
         <dictionary name="unit" dictionary="units"/>
+
+        <hasMany name="incomingQualityStandardLs" model="incomingQualityStandardL" joinField="measuringEquipment" cascade="delete"/>
+        <hasMany name="outgoingQualityStandardLs" model="outgoingQualityStandardL" joinField="measuringEquipment" cascade="delete"/>
+        <hasMany name="inProcessQualityStandardLs" model="inProcessQualityStandardL" joinField="measuringEquipment" cascade="delete"/>
+        <hasMany name="equipmentQualityStandardLs" model="equipmentQualityStandardL" joinField="measuringEquipment" cascade="delete"/>
     </fields>
     <hooks />
     <identifier expression="#number + ' - ' + #name" />

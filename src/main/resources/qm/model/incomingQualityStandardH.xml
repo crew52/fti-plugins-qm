@@ -5,7 +5,7 @@
     <fields>
         <belongsTo name="product" plugin="basic" model="product" required="true" />
 
-        <hasMany name="incomingQualityStandardLs" model="incomingQualityStandardL" joinField="incomingQualityStandardH" />
+        <hasMany name="incomingQualityStandardLs" model="incomingQualityStandardL" joinField="incomingQualityStandardH" cascade="delete"/>
         <hasMany name="attachments" model="iQSHAttachment" joinField="incomingQualityStandardH" cascade="delete"/>
 
         <enum name="statusText" values="01noStandard,02hasStandard" persistent="false"/>

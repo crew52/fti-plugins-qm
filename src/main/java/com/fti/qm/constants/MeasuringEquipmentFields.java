@@ -8,4 +8,9 @@ public class MeasuringEquipmentFields {
     public static final String NUMBER = "number";
     public static final String NAME = "name";
     public static final String MEASURING_METHOD = "measuringMethod";
+
+    public static final String INCOMING_QS_LS = "incomingQualityStandardLs";
+    public static final String OUTGOING_QS_LS = "outgoingQualityStandardLs";
+    public static final String INPROCESS_QS_LS = "inProcessQualityStandardLs";
+    public static final String EQUIPMENT_QS_LS = "equipmentQualityStandardLs";
 }
