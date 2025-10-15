@@ -1,7 +1,7 @@
 package com.fti.qm.controllers;
 
 import com.fti.qm.constants.QMConstants;
-import com.fti.qm.constants.inProcessQualityStandard.IPQSHAttachmentFields;
+import com.fti.qm.constants.equipmentQualityStandardH.EQSHAttachmentFields;
 import com.fti.qm.controllers.base.AbstractQualityStandardUploadController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,35 +14,34 @@ import javax.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping("/qm")
-public class IPQSHMultiUploadController extends AbstractQualityStandardUploadController {
-
+public class EQSHMultiUploadController extends AbstractQualityStandardUploadController{
     @Override
     protected String getHeaderModelName() {
-        return QMConstants.MODEL_IN_PROCESS_QUALITY_STANDARD_H;
+        return QMConstants.MODEL_EQUIPMENT_QUALITY_STANDARD_H;
     }
 
     @Override
     protected String getAttachmentModelName() {
-        return QMConstants.MODEL_IPQSH_ATTACHMENT;
+        return QMConstants.MODEL_EQSH_ATTACHMENT;
     }
 
     @Override
     protected String getForeignKeyField() {
-        return IPQSHAttachmentFields.IN_PROCESS_QUALITY_STANDARD_H;
+        return EQSHAttachmentFields.EQUIPMENT_QUALITY_STANDARD_H;
     }
 
     @Override
     protected Class<?> getAttachmentFieldsClass() {
-        return IPQSHAttachmentFields.class;
+        return EQSHAttachmentFields.class;
     }
 
     @ResponseBody
-    @RequestMapping(value = "/multiUploadForInProcessFiles", method = RequestMethod.POST)
+    @RequestMapping(value = "/multiUploadForEquipmentFiles", method = RequestMethod.POST)
     public void upload(final MultipartHttpServletRequest request, final HttpServletResponse response) {
-        handleMultiUpload(request, "iPQSHId");
+        handleMultiUpload(request, "eQSHId");
     }
 
-    @RequestMapping(value = "/getInProcessAttachment.html", method = RequestMethod.GET)
+    @RequestMapping(value = "/getEquipmentAttachment.html", method = RequestMethod.GET)
     public void getAttachment(@RequestParam("id") final Long[] ids, final HttpServletResponse response) {
         handleGetAttachment(ids, response);
     }

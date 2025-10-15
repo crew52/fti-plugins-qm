@@ -47,11 +47,18 @@
 		<model:model model="inProcessQualityStandardL" resource="model/inProcessQualityStandard/inProcessQualityStandardL.xml" />
 		<model:model model="iPQSHAttachment" resource="model/inProcessQualityStandard/iPQSHAttachment.xml" />
 
+		<model:model model="equipmentQualityStandardH" resource="model/equipmentQualityStandard/equipmentQualityStandardH.xml" />
+		<model:model model="equipmentQualityStandardL" resource="model/equipmentQualityStandard/equipmentQualityStandardL.xml" />
+		<model:model model="eQSHAttachment" resource="model/equipmentQualityStandard/eQSHAttachment.xml" />
+
 		<menu:menu-category name="qm" />
 
 		<menu:menu-item name="measuringEquipment" category="qm" view="measuringEquipmentList" />
 		<menu:menu-item name="qualityCriteria" category="qm" view="qualityCriteriaList" />
 		<menu:menu-item name="incomingQualityStandardH" category="qm" view="incomingQualityStandardHList" />
+		<menu:menu-item name="outgoingQualityStandardH" category="qm" view="outgoingQualityStandardHList" />
+		<menu:menu-item name="inProcessQualityStandardH" category="qm" view="inProcessQualityStandardHList" />
+		<menu:menu-item name="equipmentQualityStandardH" category="qm" view="equipmentQualityStandardHList" />
 
 		<view:view resource="view/measuringEquipmentList.xml" />
 		<view:view resource="view/measuringEquipmentDetails.xml" />
@@ -59,9 +66,9 @@
 		<view:view resource="view/qualityCriteriaList.xml" />
 		<view:view resource="view/qualityCriteriaDetails.xml" />
 		<view:view resource="view/qualityCriteriasImport.xml" />
-		<view:view resource="view/incomingQualityStandardHList.xml" />
-		<view:view resource="view/incomingQualityStandardHDetails.xml" />
-		<view:view resource="view/incomingQualityStandardLDetails.xml" />
+		<view:view resource="view/incomingQualityStandard/incomingQualityStandardHList.xml" />
+		<view:view resource="view/incomingQualityStandard/incomingQualityStandardHDetails.xml" />
+		<view:view resource="view/incomingQualityStandard/incomingQualityStandardLDetails.xml" />
 
 		<view:view resource="view/outgoingQualityStandard/outgoingQualityStandardHList.xml" />
 		<view:view resource="view/outgoingQualityStandard/outgoingQualityStandardHDetails.xml" />
@@ -70,6 +77,10 @@
 		<view:view resource="view/inProcessQualityStandard/inProcessQualityStandardHList.xml" />
 		<view:view resource="view/inProcessQualityStandard/inProcessQualityStandardHDetails.xml" />
 		<view:view resource="view/inProcessQualityStandard/inProcessQualityStandardLDetails.xml" />
+
+		<view:view resource="view/equipmentQualityStandard/equipmentQualityStandardHList.xml" />
+		<view:view resource="view/equipmentQualityStandard/equipmentQualityStandardHDetails.xml" />
+		<view:view resource="view/equipmentQualityStandard/equipmentQualityStandardLDetails.xml" />
 
 		<model:model-enum-value plugin="basic" model="log" enum="logType" value="measuringEquipmentImport" />
 		<model:model-enum-value plugin="basic" model="log" enum="logType" value="qualityCriteriaImport" />

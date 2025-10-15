@@ -89,7 +89,7 @@
                 <!-- Cột trái: Giao diện upload -->
                 <layoutElement column="1" row="1" height="6">
                     <component type="staticPage" name="multiUpload">
-                        <option type="page" value="qm/multiUpload.jsp"/>
+                        <option type="page" value="qm/multiUploadForIncoming.jsp"/>
                     </component>
 
                     <!-- Trường ẩn: ID thực thể -->

@@ -5,7 +5,7 @@
     <fields>
         <belongsTo name="product" plugin="basic" model="product" required="true" />
 
-        <hasMany name="inProcessQualityStandardLs" model="inProcessQualityStandardL" joinField="inProcessQualityStandardH" />
+        <hasMany name="inProcessQualityStandardLs" model="inProcessQualityStandardL" joinField="inProcessQualityStandardH" cascade="delete"/>
         <hasMany name="attachments" model="iPQSHAttachment" joinField="inProcessQualityStandardH" cascade="delete"/>
 
         <enum name="statusText" values="01noStandard,02hasStandard" persistent="false"/>
@@ -13,6 +13,6 @@
 
     <identifier expression="#product['number'] + ' - ' + #product['name']" />
     <hooks>
-        <onSave class="com.fti.qm.hooks.standard.inProcess.InProcessQualityStandardHHooks" method="onSave" />
+        <onSave class="com.fti.qm.hooks.standard.inProcess.InProcessQualityStandardHHooks" method="validateUniqueActiveProduct" />
     </hooks>
 </model>
