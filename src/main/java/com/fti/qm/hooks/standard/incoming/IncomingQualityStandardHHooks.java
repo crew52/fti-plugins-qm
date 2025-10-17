@@ -18,7 +18,7 @@ public class IncomingQualityStandardHHooks extends BaseQualityStandardHooks {
     }
 
     public void validateUniqueActiveProduct(final DataDefinition dd, final Entity entity) {
-        validateUniqueActiveCombination(dd, entity,
+            validateUniqueActiveCombination(dd, entity,
                 IncomingQualityStandardHFields.PRODUCT,
                 IncomingQualityStandardHFields.PRODUCT_ID,
                 IncomingQualityStandardHFields.ACTIVE,

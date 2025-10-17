@@ -9,11 +9,12 @@
         <hasMany name="attachments" model="iQSHAttachment" joinField="incomingQualityStandardH"/>
 
         <enum name="statusText" values="01noStandard,02hasStandard" persistent="false"/>
-        <boolean name="deleted" default="false"/>
+        <boolean name="deleted" default="false" />
     </fields>
 
     <identifier expression="#product['number'] + ' - ' + #product['name']" />
     <hooks>
         <onSave class="com.fti.qm.hooks.standard.incoming.IncomingQualityStandardHHooks" method="validateUniqueActiveProduct" />
+        <onSave class="com.fti.qm.hooks.common.SetDefaultDeletedHook" method="onSave" />
     </hooks>
 </model>
