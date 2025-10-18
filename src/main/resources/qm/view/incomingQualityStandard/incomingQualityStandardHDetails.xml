@@ -73,6 +73,8 @@
                             <option type="deletable" value="true"/>
                             <option type="creatable" value="true"/>
                             <option type="fixedHeight" value="true"/>
+
+                            <criteriaModifier class="com.fti.qm.criteriaModifiers.common.CommonCriteriaModifier" method="filterOnlyNonDeletedRelations"/>
                         </component>
                     </layoutElement>
                 </component>
