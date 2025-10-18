@@ -21,7 +21,7 @@
 
             <option type="fullscreen" value="true" />
             <option type="multiselect" value="true" />
-            <criteriaModifier class="com.fti.qm.criteriaModifiers.EquipmentQualityStandardHCriteriaModifier" method="addDeletedFalseCondition"/>
+            <criteriaModifier class="com.fti.qm.criteriaModifiers.common.CommonCriteriaModifier" method="addDeletedFalseCondition"/>
         </component>
         <option type="fixedHeight" value="true" />
         <option type="header" value="false" />

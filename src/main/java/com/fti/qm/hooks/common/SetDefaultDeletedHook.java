@@ -18,7 +18,7 @@ public class SetDefaultDeletedHook {
      * @param dataDefinition DataDefinition của model
      * @param entity Entity đang được lưu
      */
-    public void onSave(final DataDefinition dataDefinition, final Entity entity) {
+    public void onCreate(final DataDefinition dataDefinition, final Entity entity) {
         if (entity.getField(GlobalFields.DELETED) == null) {
             entity.setField(GlobalFields.DELETED, false);
         }

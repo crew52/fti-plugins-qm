@@ -16,7 +16,12 @@
         <hasMany name="outgoingQualityStandardLs" model="outgoingQualityStandardL" joinField="qualityCriteria" cascade="delete"/>
         <hasMany name="inProcessQualityStandardLs" model="inProcessQualityStandardL" joinField="qualityCriteria" cascade="delete"/>
         <hasMany name="equipmentQualityStandardLs" model="equipmentQualityStandardL" joinField="qualityCriteria" cascade="delete"/>
+
+        <boolean name="deleted" default="false" />
+        <datetime name="deletedDate" />
     </fields>
-    <hooks />
+    <hooks>
+        <onCreate class="com.fti.qm.hooks.common.SetDefaultDeletedHook" method="onCreate" />
+    </hooks>
     <identifier expression="#number + ' - ' + #name" />
 </model>
