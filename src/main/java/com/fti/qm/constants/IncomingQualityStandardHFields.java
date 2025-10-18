@@ -14,4 +14,5 @@ public class IncomingQualityStandardHFields {
     public static final String STATUS_HAS_STANDARD = "02hasStandard";
     public static final String DELETED = "deleted";
     public static final String INCOMING_QUALITY_STANDARD_LS = "incomingQualityStandardLs";
+    public static final String ATTACHMENTS = "attachments";
 }

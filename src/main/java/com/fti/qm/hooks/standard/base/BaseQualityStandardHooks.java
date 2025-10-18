@@ -51,13 +51,13 @@ public abstract class BaseQualityStandardHooks {
             return;
         }
 
-        // Lấy giá trị các field
-        final Entity product = entity.getBelongsToField(productField);
-        if (product == null) {
-            return;
-        }
+//        // Lấy giá trị các field
+//        final Entity product = entity.getBelongsToField(productField);
+//        if (product == null) {
+//            return;
+//        }
 
-        final Long productId = product.getId();
+        final Long productId = entity.getBelongsToField(productField).getId();
         final Long currentId = entity.getId();
         final Boolean deleted = entity.getBooleanField(GlobalFields.DELETED);
         final Boolean active = entity.getBooleanField(activeField);

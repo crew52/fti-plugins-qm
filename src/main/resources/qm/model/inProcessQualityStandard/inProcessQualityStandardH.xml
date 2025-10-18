@@ -9,10 +9,14 @@
         <hasMany name="attachments" model="iPQSHAttachment" joinField="inProcessQualityStandardH" cascade="delete"/>
 
         <enum name="statusText" values="01noStandard,02hasStandard" persistent="false"/>
+
+        <boolean name="deleted" default="false" />
+        <datetime name="deletedDate" />
     </fields>
 
     <identifier expression="#product['number'] + ' - ' + #product['name']" />
     <hooks>
         <onSave class="com.fti.qm.hooks.standard.inProcess.InProcessQualityStandardHHooks" method="validateUniqueActiveProduct" />
+        <onSave class="com.fti.qm.hooks.common.SetDefaultDeletedHook" method="onSave" />
     </hooks>
 </model>

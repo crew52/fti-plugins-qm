@@ -10,6 +10,7 @@
 
         <enum name="statusText" values="01noStandard,02hasStandard" persistent="false"/>
         <boolean name="deleted" default="false" />
+        <datetime name="deletedDate" />
     </fields>
 
     <identifier expression="#product['number'] + ' - ' + #product['name']" />

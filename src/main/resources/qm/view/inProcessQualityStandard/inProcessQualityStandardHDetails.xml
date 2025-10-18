@@ -3,7 +3,7 @@
     xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
     <component type="window" name="window">
         <ribbon>
-            <template name="standardFormTemplate"/>
+            <template name="standardFormSoftDeleteTemplate"/>
             <group name="atachments">
                 <bigButton name="downloadAtachment" icon="generateIcon24.png" state="enabled">
                     <script>
