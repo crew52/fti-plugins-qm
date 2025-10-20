@@ -4,7 +4,7 @@
     xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
     <component type="window" name="window">
         <ribbon>
-            <template name="standardGridTemplate"/>
+            <template name="standardGridSoftDeleteTemplate"/>
             <group name="import">
                 <bigButton name="openQualityCriteriasImportPage" state="enabled" icon="xlsIcon24.png" action="#{window}.fireEvent(openQualityCriteriasImportPage);"/>
             </group>
@@ -24,6 +24,7 @@
             <option type="orderable" value="name,number,type" />
             <option type="fullscreen" value="true" />
             <option type="multiselect" value="true" />
+            <criteriaModifier class="com.fti.qm.criteriaModifiers.common.CommonCriteriaModifier" method="addDeletedFalseCondition"/>
         </component>
         <listener event="openQualityCriteriasImportPage" class="com.fti.qm.listeners.QualityCriteriasListListeners" method="openQualityCriteriasImportPage"/>
         <option type="fixedHeight" value="true" />

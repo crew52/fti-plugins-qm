@@ -3,7 +3,7 @@
     xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
     <component type="window" name="window">
         <ribbon>
-            <template name="standardFormTemplate"/>
+            <template name="standardFormSoftDeleteTemplate"/>
         </ribbon>
         <windowTab name="mainTab">
             <component type="form" name="measuringEquipmentDetails" reference="form">

@@ -5,14 +5,17 @@
     <fields>
         <belongsTo name="product" plugin="basic" model="product" required="true" />
 
-        <hasMany name="incomingQualityStandardLs" model="incomingQualityStandardL" joinField="incomingQualityStandardH" cascade="delete"/>
-        <hasMany name="attachments" model="iQSHAttachment" joinField="incomingQualityStandardH" cascade="delete"/>
+        <hasMany name="incomingQualityStandardLs" model="incomingQualityStandardL" joinField="incomingQualityStandardH"/>
+        <hasMany name="attachments" model="iQSHAttachment" joinField="incomingQualityStandardH"/>
 
         <enum name="statusText" values="01noStandard,02hasStandard" persistent="false"/>
+        <boolean name="deleted" default="false" />
+        <datetime name="deletedDate" />
     </fields>
 
     <identifier expression="#product['number'] + ' - ' + #product['name']" />
     <hooks>
         <onSave class="com.fti.qm.hooks.standard.incoming.IncomingQualityStandardHHooks" method="validateUniqueActiveProduct" />
+        <onCreate class="com.fti.qm.hooks.common.SetDefaultDeletedHook" method="onCreate" />
     </hooks>
 </model>

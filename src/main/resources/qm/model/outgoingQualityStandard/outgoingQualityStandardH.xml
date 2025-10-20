@@ -9,10 +9,13 @@
         <hasMany name="attachments" model="oQSHAttachment" joinField="outgoingQualityStandardH" cascade="delete"/>
 
         <enum name="statusText" values="01noStandard,02hasStandard" persistent="false"/>
+        <boolean name="deleted" default="false" />
+        <datetime name="deletedDate" />
     </fields>
 
     <identifier expression="#product['number'] + ' - ' + #product['name']" />
     <hooks>
         <onSave class="com.fti.qm.hooks.standard.outgoing.OutgoingQualityStandardHHooks" method="validateUniqueActiveProduct" />
+        <onCreate class="com.fti.qm.hooks.common.SetDefaultDeletedHook" method="onCreate" />
     </hooks>
 </model>

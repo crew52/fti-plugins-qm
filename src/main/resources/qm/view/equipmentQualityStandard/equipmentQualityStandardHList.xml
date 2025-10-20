@@ -4,7 +4,7 @@
     xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
     <component type="window" name="window">
         <ribbon>
-            <template name="standardGridTemplate"/>
+            <template name="standardGridSoftDeleteTemplate"/>
         </ribbon>
         <component type="grid" name="equipmentQualityStandardHList" reference="grid">
             <option type="column" name="toolNumber" fields="tool" expression="#tool['number']" link="true" />
@@ -21,6 +21,7 @@
 
             <option type="fullscreen" value="true" />
             <option type="multiselect" value="true" />
+            <criteriaModifier class="com.fti.qm.criteriaModifiers.common.CommonCriteriaModifier" method="addDeletedFalseCondition"/>
         </component>
         <option type="fixedHeight" value="true" />
         <option type="header" value="false" />

@@ -9,10 +9,13 @@
         <hasMany name="attachments" model="eQSHAttachment" joinField="equipmentQualityStandardH" cascade="delete"/>
         <enum name="inspectionType" values="01equipment,02internalCalibration,03externalCalibration" required="true"/>
         <enum name="statusText" values="01noStandard,02hasStandard" persistent="false"/>
+        <boolean name="deleted" default="false" />
+        <datetime name="deletedDate" />
     </fields>
 
     <identifier expression="#tool['number'] + ' - ' + #tool['name'] + ' - ' + #inspectionType" />
     <hooks>
         <onSave class="com.fti.qm.hooks.standard.equipment.EquipmentQualityStandardHHooks" method="validateUniqueActiveToolInspectionType" />
+        <onCreate class="com.fti.qm.hooks.common.SetDefaultDeletedHook" method="onCreate" />
     </hooks>
 </model>

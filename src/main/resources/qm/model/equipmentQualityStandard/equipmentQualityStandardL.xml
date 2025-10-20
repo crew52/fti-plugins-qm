@@ -28,7 +28,9 @@
         <belongsTo name="measuringEquipment" model="measuringEquipment" required="true" />
 
         <belongsTo name="equipmentQualityStandardH" model="equipmentQualityStandardH" required="true" />
-
+        
+        <boolean name="deleted" default="false" />
+        <datetime name="deletedDate" />
     </fields>
 
     <identifier expression="#qualityCriteria['number'] + ' - ' + #qualityCriteria['name']" />
@@ -36,6 +38,7 @@
     <hooks>
         <onSave class="com.fti.qm.hooks.standard.equipment.EquipmentQualityStandardLHooks" method="onSave" />
         <onView class="com.fti.qm.hooks.standard.equipment.EquipmentQualityStandardLHooks" method="onView" />
+        <onCreate class="com.fti.qm.hooks.common.SetDefaultDeletedHook" method="onCreate" />
     </hooks>
 
 </model>

@@ -3,7 +3,7 @@
     xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
     <component type="window" name="window">
         <ribbon>
-            <template name="standardFormTemplate"/>
+            <template name="standardFormSoftDeleteTemplate"/>
             <group name="atachments">
                 <bigButton name="downloadAtachment" icon="generateIcon24.png" state="enabled">
                     <script>
@@ -32,7 +32,7 @@
 
                             <option type="expression" value="#number + ' - ' + #name" />
                             <option type="fieldCode" value="number" />
-                            <criteriaModifier class="com.fti.qm.criteriaModifiers.ProductCriteriaModifiers" method="filterForInProcessQualityStandard"/>
+                             <criteriaModifier class="com.fti.qm.criteriaModifiers.ProductCriteriaModifiers" method="filterForInProcessQualityStandard"/> 
                         </component>
                     </layoutElement>
 
@@ -72,6 +72,7 @@
                             <option type="deletable" value="true"/>
                             <option type="creatable" value="true"/>
                             <option type="fixedHeight" value="true"/>
+                            <criteriaModifier class="com.fti.qm.criteriaModifiers.common.CommonCriteriaModifier" method="addDeletedFalseCondition"/>
                         </component>
                     </layoutElement>
                 </component>

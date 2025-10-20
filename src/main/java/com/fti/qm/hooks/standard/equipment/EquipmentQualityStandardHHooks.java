@@ -1,5 +1,6 @@
 package com.fti.qm.hooks.standard.equipment;
 
+import com.fti.qm.constants.GlobalFields;
 import com.fti.qm.constants.equipmentQualityStandardH.EquipmentQualityStandardHFields;
 import com.fti.qm.hooks.standard.base.BaseQualityStandardHooks;
 import com.qcadoo.model.api.DataDefinition;
@@ -27,8 +28,14 @@ public class EquipmentQualityStandardHHooks extends BaseQualityStandardHooks {
         Long toolId = entity.getBelongsToField(EquipmentQualityStandardHFields.TOOL).getId();
         String inspectionType = entity.getStringField(EquipmentQualityStandardHFields.INSPECTION_TYPE);
         Long currentId = entity.getId();
+        final Boolean deleted = entity.getBooleanField(GlobalFields.DELETED);
+
+        if (Boolean.TRUE.equals(deleted)) {
+            return;
+        }
 
         SearchCriteriaBuilder scb = dataDefinition.find()
+                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
                 .add(SearchRestrictions.eq(EquipmentQualityStandardHFields.TOOL_ID, toolId))
                 .add(SearchRestrictions.eq(EquipmentQualityStandardHFields.INSPECTION_TYPE, inspectionType))
                 .add(SearchRestrictions.eq(EquipmentQualityStandardHFields.ACTIVE, true));
