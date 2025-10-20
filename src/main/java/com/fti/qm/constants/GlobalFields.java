@@ -6,5 +6,6 @@ public final class GlobalFields {
     }
 
     public static final String DELETED = "deleted";
+    public static final String DELETED_DATE = "deletedDate";
     public static final String ACTIVE = "active";
 }

@@ -8,6 +8,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseQualityStandardHooks {
@@ -101,8 +102,19 @@ public abstract class BaseQualityStandardHooks {
         for (Entity entity : entities) {
             List<Entity> lines = entity.getHasManyField(linesField);
 
-            String status = (lines == null || lines.isEmpty()) ? statusNoStandard : statusHasStandard;
-            entity.setField(statusTextField, status);
+            boolean hasActiveLine = false;
+
+            if (lines != null) {
+                for (Entity line : lines) {
+                    Boolean deleted = line.getBooleanField(GlobalFields.DELETED);
+                    if (deleted == null || !deleted) {
+                        hasActiveLine = true;
+                        break;
+                    }
+                }
+            }
+
+            entity.setField(statusTextField, hasActiveLine ? statusHasStandard : statusNoStandard);
         }
 
         grid.setEntities(entities);

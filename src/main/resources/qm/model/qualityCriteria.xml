@@ -22,6 +22,7 @@
     </fields>
     <hooks>
         <onCreate class="com.fti.qm.hooks.common.SetDefaultDeletedHook" method="onCreate" />
+        <onUpdate class="com.fti.qm.hooks.QualityCriteriaHooks" method="onUpdate" />
     </hooks>
     <identifier expression="#number + ' - ' + #name" />
 </model>
