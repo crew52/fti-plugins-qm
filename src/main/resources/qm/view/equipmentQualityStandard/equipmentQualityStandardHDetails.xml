@@ -74,7 +74,7 @@
 
                             <option type="fullscreen" value="true"/>
                             <option type="multiselect" value="true"/>
-                            <option type="deletable" value="true"/>
+                            <option type="softDeletable" value="true"/>
                             <option type="creatable" value="true"/>
                             <option type="fixedHeight" value="true"/>
                             <criteriaModifier class="com.fti.qm.criteriaModifiers.common.CommonCriteriaModifier" method="addDeletedFalseCondition"/>
@@ -114,7 +114,7 @@
                         <option type="column" name="size" fields="size"/>
                         <option type="order" column="attachment" direction="desc"/>
 
-                        <option type="deletable" value="true"/>
+                        <option type="softDeletable" value="true"/>
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="true"/>
                     </component>
