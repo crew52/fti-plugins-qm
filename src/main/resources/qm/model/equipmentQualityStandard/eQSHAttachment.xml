@@ -9,6 +9,10 @@
         <decimal name="size" required="true">
         </decimal>
         <string name="ext" required="true"/>
+        <boolean name="deleted" default="false" />
+        <datetime name="deletedDate" />
     </fields>
-    <hooks/>
+    <hooks>
+        <onCreate class="com.fti.qm.hooks.common.SetDefaultDeletedHook" method="onCreate" />
+    </hooks>
 </model>
