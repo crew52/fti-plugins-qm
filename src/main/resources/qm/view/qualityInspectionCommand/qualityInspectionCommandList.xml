@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="qualityInspectionCommandList" modelName="qualityInspectionCommand"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+    <component type="window" name="window">
+        <ribbon>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="qualityInspectionCommandFilter" reference="form">
+
+                <!-- ========== PHẦN HEADER (Filter Form) ========== -->
+                <component type="gridLayout" name="gridLayout" columns="4" rows="6" hasBorders="false">
+
+                    <!-- Loại kiểm tra -->
+                    <layoutElement column="1" row="1">
+                        <component type="select" name="inspectionType" field="inspectionType" reference="inspectionType"/>
+                    </layoutElement>
+
+                    <!-- Từ ngày -->
+                    <layoutElement column="1" row="2">
+                        <component type="calendar" name="fromDate" field="fromDate" reference="fromDate"/>
+                    </layoutElement>
+
+                    <!-- Đến ngày -->
+                    <layoutElement column="1" row="3">
+                        <component type="calendar" name="toDate" field="toDate" reference="toDate"/>
+                    </layoutElement>
+
+                    <!-- Trạng thái -->
+                    <layoutElement column="1" row="4">
+                        <component type="select" name="status" field="status" reference="status"/>
+                    </layoutElement>
+
+                    <!-- Mã lệnh sản xuất -->
+                    <layoutElement column="1" row="5">
+                        <component type="input" name="productionOrderNumber" field="productionOrderNumber" reference="productionOrderNumber" />
+                    </layoutElement>
+
+                    <!-- Mã công đoạn -->
+                    <layoutElement column="1" row="6">
+                        <component type="input" name="operationNumber" field="operationNumber" reference="operationNumber"/>
+                    </layoutElement>
+
+                    <!-- Mã nhà cung cấp -->
+                    <layoutElement column="2" row="1">
+                        <component type="lookup" name="company" field="company" reference="company" hasDescription="true">
+                            <option type="column" name="name" fields="name"/>
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number" />
+                        </component>
+                    </layoutElement>
+
+                    <!-- Tên nhà cung cấp -->
+                    <layoutElement column="2" row="2">
+                        <component type="input" name="companyName" reference="companyName"/>
+                    </layoutElement>
+
+                    <!-- Mã sản phẩm -->
+                    <layoutElement column="2" row="3">
+                        <component type="lookup" name="product" field="product" reference="product" hasDescription="true">
+                            <option type="column" name="name" fields="name"/>
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number" />
+                        </component>
+                    </layoutElement>
+
+                    <!-- Tên sản phẩm -->
+                    <layoutElement column="2" row="4">
+                        <component type="input" name="productName" reference="productName"/>
+                    </layoutElement>
+
+                    <!-- Mã thiết bị -->
+                    <layoutElement column="2" row="5">
+                        <component type="lookup" name="tool" field="tool" reference="tool" hasDescription="true">
+                            <option type="column" name="name" fields="name"/>
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number" />
+                        </component>
+                    </layoutElement>
+
+                    <!-- Tên sản phẩm -->
+                    <layoutElement column="2" row="6">
+                        <component type="input" name="toolName" reference="toolName"/>
+                    </layoutElement>
+
+                </component>
+            </component>
+            
+            <component type="grid" name="qualityInspectionCommandList" reference="grid">
+                    <option type="column" name="inspectionOrderNumber" fields="inspectionOrderNumber"/>
+                    <option type="column" name="status" fields="status"/>
+                    <option type="column" name="poNumber" fields="poNumber"/>
+                    <option type="column" name="executionDate" fields="executionDate"/>
+                    <option type="column" name="productNumber" fields="product" expression="#product['number']"/>
+                    <option type="column" name="productName" fields="product" expression="#product['name']"/>
+                    <option type="column" name="companyNumber" fields="company" expression="#company['number']"/>
+                    <option type="column" name="companyName" fields="company" expression="#company['name']"/>
+                    <option type="column" name="productionOrderNumber" fields="productionOrderNumber"/>
+                    <option type="column" name="transactionQuantity" fields="transactionQuantity"/>
+                    <option type="column" name="warehouse" fields="warehouse"/>
+                    <option type="order" column="executionDate" direction="asc" />
+
+                    <option type="fullscreen" value="true"/>
+                </component>
+        </windowTab>
+    </component>
+    <hooks>
+    </hooks>
+</view>
