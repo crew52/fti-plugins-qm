@@ -10,7 +10,7 @@
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									#{form}.performEvent('confirmContext', ['plannedEvent']);
+									#{form}.performEvent('confirmContext', ['qualityInspectionCommand']);
 								}
 							});
 						]]>
@@ -21,7 +21,33 @@
 
         <windowTab name="contextTab" reference="contextTab">
             <component type="form" name="eventContextForm" reference="form">
-                <!-- script -->
+                <script>
+                    <![CDATA[
+						this.addOnChangeListener({
+							onSetValue: function(value) {
+								if (! value || ! value.content) {
+									return;
+								}
+								updateRibbon();
+							}
+						});
+
+						function updateRibbon() {
+							var confirmed = #{confirmed}.getValue().content.value,
+							    confirmContextButton = #{window}.getRibbonItem("contextActions.confirmContext"),
+							    confirmContextButtonLabel;
+
+							if (confirmed == 'true' || confirmed == '1') {
+								confirmContextButtonLabel = "#{translate(qm.qualityInspectionCommandList.window.ribbon.contextActions.changeContext)}";
+							} else {
+
+							    confirmContextButtonLabel = "#{translate(qm.qualityInspectionCommandList.window.ribbon.contextActions.confirmContext)}";
+							}
+
+							confirmContextButton.setLabel(confirmContextButtonLabel);
+						}
+					]]>
+                </script>
                 <component type="gridLayout" name="gridLayout" columns="4" rows="6" hasBorders="false">
                     <!-- Loại kiểm tra -->
                     <layoutElement column="1" row="1">
@@ -94,8 +120,13 @@
                     <layoutElement column="2" row="6">
                         <component type="input" name="toolName" field="toolName" reference="toolName"/>
                     </layoutElement>
+
+                    <layoutElement column="3" row="1">
+                        <component type="hidden" name="confirmed" field="confirmed"
+                                   reference="confirmed"/>
+                    </layoutElement>
                 </component>
-                <!-- <listener event="confirmContext" method="confirmContext" class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/> -->
+                <listener event="confirmContext" method="confirmContext" class="com.fti.qm.listeners.QualityInspectionCommandListListeners"/>
             </component>
         </windowTab>
 

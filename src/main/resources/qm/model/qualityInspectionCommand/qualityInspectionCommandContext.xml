@@ -48,6 +48,8 @@
 
         <hasMany name="qualityInspectionCommandListDtos" model="qualityInspectionCommandListDto"
                  joinField="qualityInspectionCommandContext" plugin="qm"/>
+                 
+        <boolean name="confirmed" default="false"/>
     </fields>
 
     <hooks>
