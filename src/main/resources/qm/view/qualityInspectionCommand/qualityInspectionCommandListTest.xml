@@ -1,28 +1,18 @@
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd" name="qualityInspectionCommandList" modelName="qualityInspectionCommandContext" modelPlugin="qm" menuAccessible="true">
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="qualityInspectionCommandList" modelName="qualityInspectionCommand"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
-    <component type="window" name="window" reference="window">
-
+    <component type="window" name="window">
         <ribbon>
-            <group name="contextActions">
-                <bigButton name="confirmContext" icon="startIcon24.png" state="enabled">
-                    <script>
-                        <![CDATA[
-							this.addOnChangeListener({
-								onClick: function() {
-									#{form}.performEvent('confirmContext', ['plannedEvent']);
-								}
-							});
-						]]>
-                    </script>
-                </bigButton>
-            </group>
         </ribbon>
 
-        <windowTab name="contextTab" reference="contextTab">
-            <component type="form" name="eventContextForm" reference="form">
-                <!-- script -->
+        <windowTab name="mainTab">
+            <component type="form" name="qualityInspectionCommandFilter" reference="form">
+
+                <!-- ========== PHẦN HEADER (Filter Form) ========== -->
                 <component type="gridLayout" name="gridLayout" columns="4" rows="6" hasBorders="false">
+
                     <!-- Loại kiểm tra -->
                     <layoutElement column="1" row="1">
                         <component type="select" name="inspectionType" field="inspectionType" reference="inspectionType"/>
@@ -64,7 +54,7 @@
 
                     <!-- Tên nhà cung cấp -->
                     <layoutElement column="2" row="2">
-                        <component type="input" name="companyName" field="companyName" reference="companyName"/>
+                        <component type="input" name="companyName" reference="companyName"/>
                     </layoutElement>
 
                     <!-- Mã sản phẩm -->
@@ -78,7 +68,7 @@
 
                     <!-- Tên sản phẩm -->
                     <layoutElement column="2" row="4">
-                        <component type="input" name="productName" field="productName" reference="productName"/>
+                        <component type="input" name="productName" reference="productName"/>
                     </layoutElement>
 
                     <!-- Mã thiết bị -->
@@ -92,59 +82,31 @@
 
                     <!-- Tên sản phẩm -->
                     <layoutElement column="2" row="6">
-                        <component type="input" name="toolName" field="toolName" reference="toolName"/>
+                        <component type="input" name="toolName" reference="toolName"/>
                     </layoutElement>
+                    
                 </component>
-                <!-- <listener event="confirmContext" method="confirmContext" class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/> -->
             </component>
-        </windowTab>
 
-        <windowTab name="mainTab" reference="mainTab">
-            <component type="grid" name="qualityInspectionCommandListDtos" reference="grid" field="#{form}.qualityInspectionCommandListDtos">
-                <!-- SCRIP -->
+            <component type="grid" name="qualityInspectionCommandList" reference="grid">
                 <option type="column" name="inspectionOrderNumber" fields="inspectionOrderNumber"/>
                 <option type="column" name="status" fields="status"/>
                 <option type="column" name="poNumber" fields="poNumber"/>
                 <option type="column" name="executionDate" fields="executionDate"/>
-                <option type="column" name="productNumber" fields="productNumber"/>
-                <option type="column" name="productName" fields="productName"/>
-                <option type="column" name="companyNumber" fields="companyNumber"/>
-                <option type="column" name="companyName" fields="companyName"/>
+                <option type="column" name="productNumber" fields="product" expression="#product['number']"/>
+                <option type="column" name="productName" fields="product" expression="#product['name']"/>
+                <option type="column" name="companyNumber" fields="company" expression="#company['number']"/>
+                <option type="column" name="companyName" fields="company" expression="#company['name']"/>
                 <option type="column" name="productionOrderNumber" fields="productionOrderNumber"/>
                 <option type="column" name="transactionQuantity" fields="transactionQuantity"/>
                 <option type="column" name="warehouse" fields="warehouse"/>
+                <option type="order" column="executionDate" direction="asc" />
 
-                <option type="searchable" value="inspectionOrderNumber,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,warehouse,executionDate"/>
-                <option type="orderable" value="inspectionOrderNumber,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,warehouse,executionDate"/>
-                <option type="multiselect" value="true"/>
                 <option type="fullscreen" value="true"/>
-
-                <option type="order" column="number" direction="desc"/>
-                <option type="fullscreen" value="true"/>
-
-                <!-- <listener event="changeState" class="com.qcadoo.mes.cmmsMachineParts.states.PlannedEventStateChangeViewClient" method="changeState"/>
-
-                <listener event="onSelectedEntityChange" class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners" method="onSelectedEventChange"/>
-
-                <listener event="showMaintenanceEvent" method="showMaintenanceEvent" class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/> -->
-
-                <!-- <criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP" method="showPlannedEventsFromContext"/> -->
+                <option type="filterValue" component="status" field="status"/>
             </component>
         </windowTab>
-
-        <option type="fixedHeight" value="true"/>
-        <option type="header" value="false"/>
-
-        <!-- <listener event="addPlannedEvent" method="addPlannedEvent" class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/>
-
-        <listener event="printXlsReport" method="printXlsReport" class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/>
-
-        <listener event="showWorkTime" method="showWorkTime" class="com.qcadoo.mes.cmmsMachineParts.listeners.WorkTimeForUserListeners"/> -->
-
     </component>
-
     <hooks>
-        <!-- <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.EventHooks" method="onBeforeRenderPlannedListView"/>
-        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventDetailsHooks" method="processRoles"/> -->
     </hooks>
 </view>
