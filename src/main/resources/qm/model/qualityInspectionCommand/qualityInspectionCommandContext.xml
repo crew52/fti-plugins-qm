@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model name="qualityInspectionCommand"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns="http://schema.qcadoo.org/model" xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+<model name="qualityInspectionCommandContext"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
         <!-- Loại kiểm tra: 01: đầu vào, 02: công đoạn, 03: đầu ra, 04: thiết bị đo lường -->
@@ -26,40 +27,31 @@
 
         <!-- Mã nhà cung cấp -->
         <belongsTo name="company" plugin="basic" model="company"/>
+        <string name="companyName">
+            <validatesLength max="255"/>
+        </string>
 
         <!-- Mã sản phẩm -->
         <belongsTo name="product" plugin="basic" model="product"/>
+        <string name="productName">
+            <validatesLength max="255"/>
+        </string>
 
         <!-- Mã thiết bị -->
         <belongsTo name="tool" plugin="cmmsMachineParts" model="tool"/>
-
-        <!-- Lệnh kiểm tra (Inspection Order) -->
-        <string name="inspectionOrderNumber">
+        <string name="toolName">
             <validatesLength max="255"/>
         </string>
 
-        <!-- Số PO -->
-        <string name="poNumber">
-            <validatesLength max="255"/>
-        </string>
+        <hasMany name="qualityInspectionCommands" model="qualityInspectionCommand"
+                 joinField="qualityInspectionCommandContext" plugin="qm"/>
 
-        <!-- Ngày thực hiện -->
-        <date name="executionDate"/>
-
-        <!-- Số lượng giao dịch -->
-        <decimal name="transactionQuantity"/>
-
-        <!-- Kho nhập -->
-        <string name="warehouse">
-            <validatesLength max="255"/>
-        </string>
-
-        <belongsTo name="qualityInspectionCommandContext" plugin="qm" model="qualityInspectionCommandContext"/>
-
+        <hasMany name="qualityInspectionCommandListDtos" model="qualityInspectionCommandListDto"
+                 joinField="qualityInspectionCommandContext" plugin="qm"/>
     </fields>
 
-    <!-- Định danh của dòng -->
-    <identifier expression="#inspectionOrderNumber"/>
     <hooks>
+        <!-- Có thể thêm hook onSave, onDelete nếu cần -->
     </hooks>
+
 </model>

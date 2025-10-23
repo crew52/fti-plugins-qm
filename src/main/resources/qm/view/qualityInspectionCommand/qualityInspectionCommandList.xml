@@ -84,26 +84,27 @@
                     <layoutElement column="2" row="6">
                         <component type="input" name="toolName" reference="toolName"/>
                     </layoutElement>
-
+                    
                 </component>
             </component>
-            
-            <component type="grid" name="qualityInspectionCommandList" reference="grid">
-                    <option type="column" name="inspectionOrderNumber" fields="inspectionOrderNumber"/>
-                    <option type="column" name="status" fields="status"/>
-                    <option type="column" name="poNumber" fields="poNumber"/>
-                    <option type="column" name="executionDate" fields="executionDate"/>
-                    <option type="column" name="productNumber" fields="product" expression="#product['number']"/>
-                    <option type="column" name="productName" fields="product" expression="#product['name']"/>
-                    <option type="column" name="companyNumber" fields="company" expression="#company['number']"/>
-                    <option type="column" name="companyName" fields="company" expression="#company['name']"/>
-                    <option type="column" name="productionOrderNumber" fields="productionOrderNumber"/>
-                    <option type="column" name="transactionQuantity" fields="transactionQuantity"/>
-                    <option type="column" name="warehouse" fields="warehouse"/>
-                    <option type="order" column="executionDate" direction="asc" />
 
-                    <option type="fullscreen" value="true"/>
-                </component>
+            <component type="grid" name="qualityInspectionCommandList" reference="grid">
+                <option type="column" name="inspectionOrderNumber" fields="inspectionOrderNumber"/>
+                <option type="column" name="status" fields="status"/>
+                <option type="column" name="poNumber" fields="poNumber"/>
+                <option type="column" name="executionDate" fields="executionDate"/>
+                <option type="column" name="productNumber" fields="product" expression="#product['number']"/>
+                <option type="column" name="productName" fields="product" expression="#product['name']"/>
+                <option type="column" name="companyNumber" fields="company" expression="#company['number']"/>
+                <option type="column" name="companyName" fields="company" expression="#company['name']"/>
+                <option type="column" name="productionOrderNumber" fields="productionOrderNumber"/>
+                <option type="column" name="transactionQuantity" fields="transactionQuantity"/>
+                <option type="column" name="warehouse" fields="warehouse"/>
+                <option type="order" column="executionDate" direction="asc" />
+
+                <option type="fullscreen" value="true"/>
+                <option type="filterValue" component="status" field="status"/>
+            </component>
         </windowTab>
     </component>
     <hooks>
