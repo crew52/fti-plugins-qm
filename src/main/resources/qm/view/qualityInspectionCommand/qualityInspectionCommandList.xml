@@ -142,40 +142,28 @@
                 <option type="column" name="companyNumber" fields="companyNumber"/>
                 <option type="column" name="companyName" fields="companyName"/>
                 <option type="column" name="productionOrderNumber" fields="productionOrderNumber"/>
+                <option type="column" name="operationNumber" fields="operationNumber"/>
                 <option type="column" name="transactionQuantity" fields="transactionQuantity"/>
                 <option type="column" name="warehouse" fields="warehouse"/>
 
-                <option type="searchable" value="inspectionOrderNumber,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,warehouse,executionDate"/>
-                <option type="orderable" value="inspectionOrderNumber,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,warehouse,executionDate"/>
+                <option type="searchable" value="inspectionOrderNumber,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,warehouse,executionDate,operationNumber"/>
+                <option type="orderable" value="inspectionOrderNumber,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,warehouse,executionDate,operationNumber"/>
                 <option type="multiselect" value="true"/>
                 <option type="fullscreen" value="true"/>
 
                 <option type="order" column="number" direction="desc"/>
                 <option type="fullscreen" value="true"/>
 
-                <!-- <listener event="changeState" class="com.qcadoo.mes.cmmsMachineParts.states.PlannedEventStateChangeViewClient" method="changeState"/>
-
-                <listener event="onSelectedEntityChange" class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners" method="onSelectedEventChange"/>
-
-                <listener event="showMaintenanceEvent" method="showMaintenanceEvent" class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/> -->
-
-                <!-- <criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP" method="showPlannedEventsFromContext"/> -->
+                <criteriaModifier class="com.fti.qm.criteriaModifiers.QICCriteriaModifiersCMP" method="showQICFromContext"/>
             </component>
         </windowTab>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
 
-        <!-- <listener event="addPlannedEvent" method="addPlannedEvent" class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/>
-
-        <listener event="printXlsReport" method="printXlsReport" class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/>
-
-        <listener event="showWorkTime" method="showWorkTime" class="com.qcadoo.mes.cmmsMachineParts.listeners.WorkTimeForUserListeners"/> -->
-
     </component>
 
     <hooks>
-        <!-- <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.EventHooks" method="onBeforeRenderPlannedListView"/>
-        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.PlannedEventDetailsHooks" method="processRoles"/> -->
+        <beforeRender class="com.fti.qm.hooks.QICHooks" method="onBeforeRenderQICListView"/>
     </hooks>
 </view>
