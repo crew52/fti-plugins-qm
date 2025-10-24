@@ -7,10 +7,6 @@
         <!-- Loại kiểm tra: 01: đầu vào, 02: công đoạn, 03: đầu ra, 04: thiết bị đo lường -->
         <enum name="inspectionType" values="01incoming,02inprocess,03outgoing,04equipment"/>
 
-        <!-- Thời gian -->
-        <date name="fromDate"/>
-        <date name="toDate"/>
-
         <!-- Trạng thái: 01 Khởi tạo, 02 Đang thực hiện, 03 Hoàn thành -->
         <enum name="status" values="01new,02inProgress,03completed"/>
 

@@ -6,8 +6,6 @@ public final class QICFields {
 
     // Fields
     public static final String INSPECTION_TYPE = "inspectionType";
-    public static final String FROM_DATE = "fromDate";
-    public static final String TO_DATE = "toDate";
     public static final String STATUS = "status";
     public static final String PRODUCTION_ORDER_NUMBER = "productionOrderNumber";
     public static final String OPERATION_NUMBER = "operationNumber";

@@ -56,12 +56,12 @@
 
                     <!-- Từ ngày -->
                     <layoutElement column="1" row="2">
-                        <component type="calendar" name="fromDate" field="fromDate" reference="fromDate"/>
+                        <component type="calendar" name="dateFrom" field="dateFrom" reference="dateFrom"/>
                     </layoutElement>
 
                     <!-- Đến ngày -->
                     <layoutElement column="1" row="3">
-                        <component type="calendar" name="toDate" field="toDate" reference="toDate"/>
+                        <component type="calendar" name="dateTo" field="dateTo" reference="dateTo"/>
                     </layoutElement>
 
                     <!-- Trạng thái -->

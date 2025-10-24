@@ -8,8 +8,6 @@
 
     <fields>
         <enum name="inspectionType" values="01incoming,02inprocess,03outgoing,04equipment"/>
-        <date name="fromDate"/>
-        <date name="toDate"/>
         <enum name="status" values="01new,02inProgress,03completed"/>
         <string name="productionOrderNumber"/>
         <string name="operationNumber"/>

@@ -5,8 +5,8 @@ public final class QICContextFields {
     // --- Basic references ---
     public static final String INSPECTION_TYPE = "inspectionType";
 
-    public static final String DATE_FROM = "fromDate";
-    public static final String DATE_TO = "toDate";
+    public static final String DATE_FROM = "dateFrom";
+    public static final String DATE_TO = "dateTo";
 
     public static final String STATUS = "status";
 
