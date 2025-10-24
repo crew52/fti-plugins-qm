@@ -26,8 +26,6 @@ public final class QICContextFields {
     public static final String TOOL_NAME = "toolName";
 
     // --- Boolean flags ---
-    public static final String GENERATED = "generated";
     public static final String CONFIRMED = "confirmed";
-    public static final String EVENTS = "events";
 
 }

@@ -4,8 +4,13 @@ import java.util.*;
 
 import com.fti.qm.constants.qualityInspectionCommand.QICContextFields;
 import com.fti.qm.criteriaModifiers.QICCriteriaModifiersCMP;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.api.ribbon.Ribbon;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -179,12 +184,18 @@ public class QICContextService {
     }
 
     private void prepareViewWithContext(ViewDefinitionState view, Entity qICContextEntity) {
+        setEnableOfContextTab(view, false);
+        setEnableOfMainTab(view, true);
+
         setGridFilterParameters(view, qICContextEntity);
     }
 
     private void prepareViewWithEmptyContext(ViewDefinitionState view, Entity maintenanceEventContext) {
         GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         grid.setEntities(Arrays.asList());
+
+        setEnableOfContextTab(view, true);
+        setEnableOfMainTab(view, false);
     }
 
     public void beforeRenderListView(final ViewDefinitionState view) {
@@ -197,4 +208,28 @@ public class QICContextService {
             prepareViewWithEmptyContext(view, qICContextEntity);
         }
     }
+
+    private void setEnableOfContextTab(final ViewDefinitionState view, final boolean enabled) {
+        view.<FieldComponent>tryFindComponentByReference(QICContextFields.COMPANY).orNull().setEnabled(enabled);
+        view.<FieldComponent>tryFindComponentByReference(QICContextFields.COMPANY_NAME).orNull().setEnabled(enabled);
+
+        view.<FieldComponent>tryFindComponentByReference(QICContextFields.PRODUCT).orNull().setEnabled(enabled);
+        view.<FieldComponent>tryFindComponentByReference(QICContextFields.PRODUCT_NAME).orNull().setEnabled(enabled);
+
+        view.<FieldComponent>tryFindComponentByReference(QICContextFields.TOOL).orNull().setEnabled(enabled);
+        view.<FieldComponent>tryFindComponentByReference(QICContextFields.TOOL_NAME).orNull().setEnabled(enabled);
+
+        view.<FieldComponent>tryFindComponentByReference(QICContextFields.INSPECTION_TYPE).orNull().setEnabled(enabled);
+        view.<FieldComponent>tryFindComponentByReference(QICContextFields.STATUS).orNull().setEnabled(enabled);
+        view.<FieldComponent>tryFindComponentByReference(QICContextFields.PRODUCTION_ORDER_NUMBER).orNull().setEnabled(enabled);
+        view.<FieldComponent>tryFindComponentByReference(QICContextFields.OPERATION_NUMBER).orNull().setEnabled(enabled);
+
+        view.<FieldComponent>tryFindComponentByReference(QICContextFields.DATE_FROM).orNull().setEnabled(enabled);
+        view.<FieldComponent>tryFindComponentByReference(QICContextFields.DATE_TO).orNull().setEnabled(enabled);
+    }
+
+    private void setEnableOfMainTab(ViewDefinitionState view, boolean enabled) {
+        view.getComponentByReference(QcadooViewConstants.L_GRID).setEnabled(enabled);
+    }
+
 }
