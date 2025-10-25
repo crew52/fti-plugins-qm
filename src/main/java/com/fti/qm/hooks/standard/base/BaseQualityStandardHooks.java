@@ -19,44 +19,12 @@ public abstract class BaseQualityStandardHooks {
         this.dataDefinitionService = dataDefinitionService;
     }
 
-//    public void validateUniqueActiveCombination(final DataDefinition dataDefinition, final Entity entity,
-//                             String productField, String productIdField, String activeField,
-//                             String errorMessageKey) {
-//        if (!entity.isValid()) {
-//            return;
-//        }
-//
-//        Long productId = entity.getBelongsToField(productField).getId();
-//        Long currentId = entity.getId();
-//
-//        SearchCriteriaBuilder scb = dataDefinition.find()
-//                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
-//                .add(SearchRestrictions.eq(productIdField, productId))
-//                .add(SearchRestrictions.eq(activeField, true));
-//
-//        if (currentId != null) {
-//            scb.add(SearchRestrictions.ne("id", currentId));
-//        }
-//
-//        Entity exists = scb.setMaxResults(1).uniqueResult();
-//
-//        if (exists != null) {
-//            entity.addError(dataDefinition.getField(productField), errorMessageKey);
-//        }
-//    }
-
     public void validateUniqueActiveCombination(final DataDefinition dataDefinition, final Entity entity,
                                                 final String productField, final String productIdField,
                                                 final String activeField, final String errorMessageKey) {
         if (!entity.isValid()) {
             return;
         }
-
-//        // Lấy giá trị các field
-//        final Entity product = entity.getBelongsToField(productField);
-//        if (product == null) {
-//            return;
-//        }
 
         final Long productId = entity.getBelongsToField(productField).getId();
         final Long currentId = entity.getId();

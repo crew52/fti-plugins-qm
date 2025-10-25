@@ -6,11 +6,7 @@ import com.fti.qm.constants.qualityInspectionCommand.QICContextFields;
 import com.fti.qm.criteriaModifiers.QICCriteriaModifiersCMP;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
-import com.qcadoo.view.api.ribbon.Ribbon;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.api.ribbon.RibbonGroup;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -184,7 +180,6 @@ public class QICContextService {
         if (entity != null && entity.getId() != null) {
             int id = Math.toIntExact(entity.getId());
             filter.put(filterKey, id);
-            System.out.println("Filter " + filterKey + " added: " + id);
         }
     }
 
@@ -192,7 +187,6 @@ public class QICContextService {
         String value = context.getStringField(contextField);
         if (value != null && !value.trim().isEmpty()) {
             filter.put(filterKey, value);
-            System.out.println("Filter " + filterKey + " added: " + value);
         }
     }
 
@@ -200,7 +194,6 @@ public class QICContextService {
         Date date = context.getDateField(contextField);
         if (Objects.nonNull(date)) {
             filter.put(filterKey, date.getTime());
-            System.out.println("Filter " + filterKey + " added: " + date);
         }
     }
 
