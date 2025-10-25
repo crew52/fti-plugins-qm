@@ -11,6 +11,7 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -53,46 +54,47 @@ public class QICContextService {
 
     public Entity prepareContextEntity(Entity qICContextEntity) {
         SearchCriteriaBuilder searchCriteriaBuilder = qICContextEntity.getDataDefinition().find();
-//         Belong to
-        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(QICContextFields.COMPANY, qICContextEntity.getBelongsToField(QICContextFields.COMPANY)));
-        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(QICContextFields.PRODUCT, qICContextEntity.getBelongsToField(QICContextFields.PRODUCT)));
-        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(QICContextFields.TOOL, qICContextEntity.getBelongsToField(QICContextFields.TOOL)));
-//        Name
-        searchCriteriaBuilder.add(SearchRestrictions.eq(QICContextFields.COMPANY_NAME, qICContextEntity.getStringField(QICContextFields.COMPANY_NAME)));
-        searchCriteriaBuilder.add(SearchRestrictions.eq(QICContextFields.PRODUCT_NAME, qICContextEntity.getStringField(QICContextFields.PRODUCT_NAME)));
-        searchCriteriaBuilder.add(SearchRestrictions.eq(QICContextFields.TOOL_NAME, qICContextEntity.getStringField(QICContextFields.TOOL_NAME)));
-//        Enum
-        searchCriteriaBuilder.add(SearchRestrictions.eq(QICContextFields.INSPECTION_TYPE, qICContextEntity.getStringField(QICContextFields.INSPECTION_TYPE)));
-        searchCriteriaBuilder.add(SearchRestrictions.eq(QICContextFields.STATUS, qICContextEntity.getStringField(QICContextFields.STATUS)));
-//        else
-        searchCriteriaBuilder.add(SearchRestrictions.eq(QICContextFields.PRODUCTION_ORDER_NUMBER, qICContextEntity.getStringField(QICContextFields.PRODUCTION_ORDER_NUMBER)));
-        searchCriteriaBuilder.add(SearchRestrictions.eq(QICContextFields.OPERATION_NUMBER, qICContextEntity.getStringField(QICContextFields.OPERATION_NUMBER)));
 
+        // --- belongsTo ---
+        addBelongsTo(searchCriteriaBuilder, qICContextEntity, QICContextFields.COMPANY);
+        addBelongsTo(searchCriteriaBuilder, qICContextEntity, QICContextFields.PRODUCT);
+        addBelongsTo(searchCriteriaBuilder, qICContextEntity, QICContextFields.TOOL);
+
+        // --- string ---
+        addStringEq(searchCriteriaBuilder, qICContextEntity, QICContextFields.COMPANY_NAME);
+        addStringEq(searchCriteriaBuilder, qICContextEntity, QICContextFields.PRODUCT_NAME);
+        addStringEq(searchCriteriaBuilder, qICContextEntity, QICContextFields.TOOL_NAME);
+        addStringEq(searchCriteriaBuilder, qICContextEntity, QICContextFields.PRODUCTION_ORDER_NUMBER);
+        addStringEq(searchCriteriaBuilder, qICContextEntity, QICContextFields.OPERATION_NUMBER);
+
+        // --- enum (string field type) ---
+        addStringEq(searchCriteriaBuilder, qICContextEntity, QICContextFields.INSPECTION_TYPE);
+        addStringEq(searchCriteriaBuilder, qICContextEntity, QICContextFields.STATUS);
+
+        // --- date ---
         Date dateFrom = qICContextEntity.getDateField(QICContextFields.DATE_FROM);
         Date dateTo = qICContextEntity.getDateField(QICContextFields.DATE_TO);
 
-        if(Objects.nonNull(dateFrom)) {
+        if (Objects.nonNull(dateFrom)) {
             searchCriteriaBuilder.add(SearchRestrictions.eq(QICContextFields.DATE_FROM, dateFrom));
         } else {
             searchCriteriaBuilder.add(SearchRestrictions.isNull(QICContextFields.DATE_FROM));
         }
-        if(Objects.nonNull(dateTo)) {
+        if (Objects.nonNull(dateTo)) {
             searchCriteriaBuilder.add(SearchRestrictions.eq(QICContextFields.DATE_TO, dateTo));
         } else {
             searchCriteriaBuilder.add(SearchRestrictions.isNull(QICContextFields.DATE_TO));
         }
 
+        // --- find existing ---
         Entity qICContextEntityFromDb = searchCriteriaBuilder.uniqueResult();
 
         if (qICContextEntityFromDb == null) {
             qICContextEntity.setField(QICContextFields.CONFIRMED, false);
-            qICContextEntity.setField(QICContextFields.DATE_FROM, dateFrom);
-            qICContextEntity.setField(QICContextFields.DATE_TO, dateTo);
             qICContextEntity = qICContextEntity.getDataDefinition().save(qICContextEntity);
         } else {
             Long id = qICContextEntity.getId();
             qICContextEntity = qICContextEntityFromDb;
-
             if (id == null) {
                 qICContextEntity.setField(QICContextFields.CONFIRMED, false);
             }
@@ -100,6 +102,25 @@ public class QICContextService {
 
         return qICContextEntity;
     }
+
+    private void addBelongsTo(SearchCriteriaBuilder scb, Entity e, String field) {
+        Entity belongs = e.getBelongsToField(field);
+        if (Objects.nonNull(belongs)) {
+            scb.add(SearchRestrictions.belongsTo(field, belongs));
+        } else {
+            scb.add(SearchRestrictions.isNull(field));
+        }
+    }
+
+    private void addStringEq(SearchCriteriaBuilder scb, Entity e, String field) {
+        String value = e.getStringField(field);
+        if (StringUtils.isNotBlank(value)) {
+            scb.add(SearchRestrictions.eq(field, value));
+        } else {
+            scb.add(SearchRestrictions.isNull(field));
+        }
+    }
+
     private Entity changeContext(ViewDefinitionState view, Entity qICContextEntity) {
         FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
