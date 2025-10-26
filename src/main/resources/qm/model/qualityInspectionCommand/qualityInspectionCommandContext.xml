@@ -52,8 +52,6 @@
         <boolean name="confirmed" default="false"/>
     </fields>
 
-    <hooks>
-        <!-- Có thể thêm hook onSave, onDelete nếu cần -->
-    </hooks>
+    <hooks/>
 
 </model>
