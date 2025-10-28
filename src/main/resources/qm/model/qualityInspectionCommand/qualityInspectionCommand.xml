@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="qualityInspectionCommand"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/model" xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
+    <fields>
+        <!-- Loại kiểm tra: 01: đầu vào, 02: công đoạn, 03: đầu ra, 04: thiết bị đo lường -->
+        <enum name="inspectionType" values="01incoming,02inprocess,03outgoing,04equipment"/>
+
+        <!-- Trạng thái: 01 Khởi tạo, 02 Đang thực hiện, 03 Hoàn thành -->
+        <enum name="status" values="01new,02inProgress,03completed"/>
+
+        <!-- Mã lệnh sản xuất -->
+        <string name="productionOrderNumber">
+            <validatesLength max="255"/>
+        </string>
+
+        <!-- Mã công đoạn -->
+        <string name="operationNumber">
+            <validatesLength max="255"/>
+        </string>
+
+        <!-- Mã nhà cung cấp -->
+        <belongsTo name="company" plugin="basic" model="company"/>
+
+        <!-- Mã sản phẩm -->
+        <belongsTo name="product" plugin="basic" model="product"/>
+
+        <!-- Mã thiết bị -->
+        <belongsTo name="tool" plugin="cmmsMachineParts" model="tool"/>
+
+        <!-- Lệnh kiểm tra (Inspection Order) -->
+        <string name="inspectionOrderNumber">
+            <validatesLength max="255"/>
+        </string>
+
+        <!-- Số PO -->
+        <string name="poNumber">
+            <validatesLength max="255"/>
+        </string>
+
+        <!-- Ngày thực hiện -->
+        <date name="executionDate"/>
+
+        <!-- Số lượng giao dịch -->
+        <decimal name="transactionQuantity"/>
+
+        <!-- Kho nhập -->
+        <string name="warehouse">
+            <validatesLength max="255"/>
+        </string>
+
+        <belongsTo name="qualityInspectionCommandContext" plugin="qm" model="qualityInspectionCommandContext"/>
+
+    </fields>
+
+    <!-- Định danh của dòng -->
+    <identifier expression="#inspectionOrderNumber"/>
+    <hooks>
+    </hooks>
+</model>

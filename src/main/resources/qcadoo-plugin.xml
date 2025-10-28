@@ -51,6 +51,10 @@
 		<model:model model="equipmentQualityStandardL" resource="model/equipmentQualityStandard/equipmentQualityStandardL.xml" />
 		<model:model model="eQSHAttachment" resource="model/equipmentQualityStandard/eQSHAttachment.xml" />
 
+		<model:model model="qualityInspectionCommand" resource="model/qualityInspectionCommand/qualityInspectionCommand.xml" />
+		<model:model model="qualityInspectionCommandContext" resource="model/qualityInspectionCommand/qualityInspectionCommandContext.xml" />
+		<model:model model="qualityInspectionCommandListDto" resource="model/qualityInspectionCommand/qualityInspectionCommandListDto.xml" />
+
 		<menu:menu-category name="qm" />
 
 		<menu:menu-item name="measuringEquipment" category="qm" view="measuringEquipmentList" />
@@ -81,6 +85,8 @@
 		<view:view resource="view/equipmentQualityStandard/equipmentQualityStandardHList.xml" />
 		<view:view resource="view/equipmentQualityStandard/equipmentQualityStandardHDetails.xml" />
 		<view:view resource="view/equipmentQualityStandard/equipmentQualityStandardLDetails.xml" />
+
+		<view:view resource="view/qualityInspectionCommand/qualityInspectionCommandList.xml" />
 
 		<model:model-enum-value plugin="basic" model="log" enum="logType" value="measuringEquipmentImport" />
 		<model:model-enum-value plugin="basic" model="log" enum="logType" value="qualityCriteriaImport" />
