@@ -17,6 +17,10 @@
                     </script>
                 </bigButton>
             </group>
+
+            <group name="customActions">
+                <bigButton name="resetContext" icon="updateIcon24.png" action="#{window}.fireEvent(resetContext);" state="enabled"/>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab" reference="mainTab">
@@ -154,13 +158,15 @@
                             <criteriaModifier class="com.fti.qm.criteriaModifiers.QICCriteriaModifiersCMP" method="showQICFromContext"/>
                         </component>
                     </layoutElement>
-                    
+
                 </component>
                 <listener event="confirmContext" method="confirmContext" class="com.fti.qm.listeners.QualityInspectionCommandListListeners"/>
             </component>
         </windowTab>
         <option type="fixedHeight" value="fasle"/>
         <option type="header" value="false"/>
+
+        <listener event="resetContext" method="resetContextDirect" class="com.fti.qm.listeners.QualityInspectionCommandListListeners"/>
     </component>
 
     <hooks>

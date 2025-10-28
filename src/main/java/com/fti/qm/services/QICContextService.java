@@ -6,7 +6,11 @@ import com.fti.qm.constants.qualityInspectionCommand.QICContextFields;
 import com.fti.qm.criteriaModifiers.QICCriteriaModifiersCMP;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.api.ribbon.Ribbon;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -198,6 +202,7 @@ public class QICContextService {
     }
 
     private void prepareViewWithContext(ViewDefinitionState view, Entity qICContextEntity) {
+        setEnableOfRibbonActions(view, false);
         setEnableOfContextTab(view, false);
         setEnableOfMainTab(view, true);
 
@@ -208,6 +213,7 @@ public class QICContextService {
         GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         grid.setEntities(Arrays.asList());
 
+        setEnableOfRibbonActions(view, true);
         setEnableOfContextTab(view, true);
         setEnableOfMainTab(view, false);
     }
@@ -244,6 +250,49 @@ public class QICContextService {
 
     private void setEnableOfMainTab(ViewDefinitionState view, boolean enabled) {
         view.getComponentByReference(QcadooViewConstants.L_GRID).setEnabled(enabled);
+    }
+
+    private void setEnableOfRibbonActions(ViewDefinitionState viewDefinitionState, boolean enabled) {
+        WindowComponent window = (WindowComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        Ribbon ribbon = window.getRibbon();
+
+        RibbonGroup customActions = ribbon.getGroupByName("customActions");
+
+        if (customActions == null) {
+            return;
+        }
+
+        for (RibbonActionItem ribbonActionItem : customActions.getItems()) {
+            ribbonActionItem.setEnabled(enabled);
+            ribbonActionItem.requestUpdate(true);
+        }
+    }
+
+    public void resetContext(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
+        String[] fieldRefs = {
+                QICContextFields.INSPECTION_TYPE,
+                QICContextFields.DATE_FROM,
+                QICContextFields.DATE_TO,
+                QICContextFields.STATUS,
+                QICContextFields.PRODUCTION_ORDER_NUMBER,
+                QICContextFields.OPERATION_NUMBER,
+                QICContextFields.COMPANY,
+                QICContextFields.COMPANY_NAME,
+                QICContextFields.PRODUCT,
+                QICContextFields.PRODUCT_NAME,
+                QICContextFields.TOOL,
+                QICContextFields.TOOL_NAME
+        };
+
+        for (String ref : fieldRefs) {
+            FieldComponent field = (FieldComponent) view.getComponentByReference(ref);
+            if (field != null) {
+                field.setFieldValue(null);
+                field.requestComponentUpdateState();
+            }
+        }
+
+        view.addMessage("qm.qualityInspectionCommandList.reset.success", ComponentState.MessageType.SUCCESS);
     }
 
 }

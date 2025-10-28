@@ -20,6 +20,10 @@ public class QualityInspectionCommandListListeners {
         qICContextService.confirmOrChangeContext(viewDefinitionState, triggerState, args);
     }
 
+    public void resetContextDirect(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState, final String[] args) {
+        qICContextService.resetContext(viewDefinitionState, triggerState, args);
+    }
+
     public void onCompanySelected(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         copyLookupNameToField(view, QICContextFields.COMPANY, QICContextFields.COMPANY_NAME);
     }
@@ -45,5 +49,4 @@ public class QualityInspectionCommandListListeners {
 
         textField.requestComponentUpdateState();
     }
-
 }
