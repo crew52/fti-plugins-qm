@@ -267,7 +267,7 @@ public class QICContextService {
             ribbonActionItem.requestUpdate(true);
         }
     }
-
+    
     public void resetContext(final ViewDefinitionState view, final ComponentState triggerState, final String[] args) {
         String[] fieldRefs = {
                 QICContextFields.INSPECTION_TYPE,
