@@ -144,10 +144,10 @@
                             <option type="column" name="productionOrderNumber" fields="productionOrderNumber"/>
                             <option type="column" name="operationNumber" fields="operationNumber"/>
                             <option type="column" name="transactionQuantity" fields="transactionQuantity"/>
-                            <option type="column" name="warehouse" fields="warehouse"/>
+                            <option type="column" name="locationNumber" fields="locationNumber"/>
 
-                            <option type="searchable" value="inspectionOrderNumber,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,warehouse,executionDate,operationNumber"/>
-                            <option type="orderable" value="inspectionOrderNumber,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,warehouse,executionDate,operationNumber"/>
+                            <option type="searchable" value="inspectionOrderNumber,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,locationNumber,executionDate,operationNumber"/>
+                            <option type="orderable" value="inspectionOrderNumber,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,locationNumber,executionDate,operationNumber"/>
                             <option type="multiselect" value="true"/>
                             <option type="fullscreen" value="true"/>
 

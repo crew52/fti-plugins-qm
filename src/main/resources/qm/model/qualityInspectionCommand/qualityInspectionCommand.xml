@@ -28,11 +28,12 @@
 
         <!-- Mã thiết bị -->
         <belongsTo name="tool" plugin="cmmsMachineParts" model="tool"/>
-
-        <!-- Lệnh kiểm tra (Inspection Order) -->
+        
         <string name="inspectionOrderNumber">
             <validatesLength max="255"/>
         </string>
+
+        <integer name="inspectionOrderNumberInt" />
 
         <!-- Số PO -->
         <string name="poNumber">
@@ -45,10 +46,7 @@
         <!-- Số lượng giao dịch -->
         <decimal name="transactionQuantity"/>
 
-        <!-- Kho nhập -->
-        <string name="warehouse">
-            <validatesLength max="255"/>
-        </string>
+        <belongsTo name="location" model="location" plugin="materialFlow" />
 
         <belongsTo name="qualityInspectionCommandContext" plugin="qm" model="qualityInspectionCommandContext"/>
 
