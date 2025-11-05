@@ -24,7 +24,8 @@
         <string name="poNumber"/>
         <date name="executionDate"/>
         <decimal name="transactionQuantity"/>
-        <string name="warehouse"/>
+        <integer name="location_id"/>
+        <string name="locationNumber"/>
         
         <belongsTo name="qualityInspectionCommandContext" plugin="qm" model="qualityInspectionCommandContext"/>
     </fields>
