@@ -148,7 +148,6 @@
 
                             <option type="searchable" value="inspectionOrderNumber,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,locationNumber,executionDate,operationNumber"/>
                             <option type="orderable" value="inspectionOrderNumber,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,locationNumber,executionDate,operationNumber"/>
-                            <option type="multiselect" value="true"/>
                             <option type="fullscreen" value="true"/>
 
                             <option type="order" column="number" direction="desc"/>
