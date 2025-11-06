@@ -133,8 +133,8 @@
 
                     <layoutElement column="1" row="4" width="5" height="12">
                         <component type="grid" name="qualityInspectionCommandListDtos" reference="grid" field="#{form}.qualityInspectionCommandListDtos">
-                            <option type="column" name="inspectionOrderNumber" fields="inspectionOrderNumber"/>
-                            <option type="column" name="status" fields="status"/>
+                            <option type="column" name="inspectionOrderNumber" fields="inspectionOrderNumber" link="true"/>
+                            <option type="column" name="status" fields="status" link="true"/>
                             <option type="column" name="poNumber" fields="poNumber"/>
                             <option type="column" name="executionDate" fields="executionDate"/>
                             <option type="column" name="productNumber" fields="productNumber"/>
@@ -145,6 +145,9 @@
                             <option type="column" name="operationNumber" fields="operationNumber"/>
                             <option type="column" name="transactionQuantity" fields="transactionQuantity"/>
                             <option type="column" name="locationNumber" fields="locationNumber"/>
+
+                            <option type="correspondingView" value="qm/qualityInspectionCommandDetails" />
+                            <option type="correspondingComponent" value="form" />
 
                             <option type="searchable" value="inspectionOrderNumber,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,locationNumber,executionDate,operationNumber"/>
                             <option type="orderable" value="inspectionOrderNumber,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,locationNumber,executionDate,operationNumber"/>

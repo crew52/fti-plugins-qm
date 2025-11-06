@@ -1,0 +1,91 @@
+<view name="qualityInspectionCommandDetails" modelName="qualityInspectionCommand"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+    <component type="window" name="window">
+        <ribbon>
+            <template name="standardFormTemplate"/>
+        </ribbon>
+        <windowTab name="mainTab">
+            <component type="form" name="qualityInspectionCommandDetail" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="3" rows="6">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="inspectionOrderNumber" field="inspectionOrderNumber" reference="inspectionOrderNumber" defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="input" name="inspectionOrderNumberInt" field="inspectionOrderNumberInt" reference="inspectionOrderNumberInt" defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="select" name="inspectionType" field="inspectionType" reference="inspectionType" defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="select" name="status" field="status" reference="status"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="5">
+                        <component type="input" name="productionOrderNumber" field="productionOrderNumber" reference="productionOrderNumber" defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="6">
+                        <component type="input" name="operationNumber" field="operationNumber" reference="operationNumber" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="1">
+                        <component type="lookup" name="company" field="company" reference="company" hasDescription="true" defaultEnabled="never">
+                            <option type="column" name="name" fields="name"/>
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="2">
+                        <component type="input" name="companyName" reference="companyName" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="3">
+                        <component type="lookup" name="product" field="product" reference="product" hasDescription="true" defaultEnabled="never">
+                            <option type="column" name="name" fields="name"/>
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="4">
+                        <component type="input" name="productName" reference="productName" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="5">
+                        <component type="lookup" name="tool" field="tool" reference="tool" hasDescription="true" defaultEnabled="never">
+                            <option type="column" name="name" fields="name"/>
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="6">
+                        <component type="input" name="toolName" reference="toolName" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="3" row="1">
+                        <component type="lookup" name="user" field="user" reference="user" hasDescription="true">
+                            <option type="column" name="email" fields="email"/>
+                            <option type="expression" value="#userName"/>
+                            <option type="searchable" value="email"/>
+                            <option type="orderable" value="email"/>
+                            <option type="fieldCode" value="userName"/>
+                        </component>
+                    </layoutElement>
+                </component>
+                <option type="header" value="true"/>
+                <option type="expression" value="#product['number'] + ' - ' + #product['name']" />
+            </component>
+        </windowTab>
+    </component>
+
+    <hooks>
+        <beforeRender class="com.fti.qm.hooks.QICDetailsHooks" method="beforeRender" />
+    </hooks>
+</view>

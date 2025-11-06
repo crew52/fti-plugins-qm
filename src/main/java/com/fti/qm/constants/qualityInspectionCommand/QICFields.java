@@ -27,4 +27,5 @@ public final class QICFields {
     public static final String TRANSACTION_QUANTITY = "transactionQuantity";
     public static final String LOCATION = "location";
     public static final String QUALITY_INSPECTION_COMMAND_CONTEXT = "qualityInspectionCommandContext";
+    public static final String USER = "user";
 }
