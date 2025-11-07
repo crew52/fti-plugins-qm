@@ -4,6 +4,8 @@ import com.fti.qm.constants.qualityInspectionCommand.QICFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.constants.QcadooSecurityConstants;
 import com.qcadoo.view.api.ComponentState;
@@ -11,9 +13,16 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.Ribbon;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class QICDetailsHooks {
@@ -23,6 +32,94 @@ public class QICDetailsHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    public void beforeRenderCheckProduct(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        if (form == null || form.getEntity() == null) {
+            return;
+        }
+
+        Entity qic = form.getEntity();
+        String inspectionType = qic.getStringField("inspectionType");
+
+        // --- Nếu inspectionType chưa được chọn, bỏ qua
+        if (inspectionType == null) {
+            return;
+        }
+
+        // --- Lấy product liên kết
+        Entity product = qic.getBelongsToField("product");
+        if (product == null) {
+            return;
+        }
+
+        // --- Xác định model tiêu chuẩn tương ứng theo loại inspection
+        String modelName = getStandardModelName(inspectionType);
+        if (modelName == null) {
+            return;
+        }
+
+        // --- Kiểm tra tồn tại bản ghi tiêu chuẩn
+        boolean hasStandard = checkIfStandardExists(modelName, product);
+
+        if (!hasStandard) {
+            String productNumber = product.getStringField("number");
+
+            view.addMessage("qm.qualityInspectionCommand.error.noStandardForProduct",
+                    ComponentState.MessageType.INFO, false, productNumber);
+
+            form.setVisible(false);
+            disableRibbonActionsExceptNavigation(view);
+        }
+    }
+
+    /**
+     * Xác định model tiêu chuẩn tương ứng với loại kiểm tra
+     */
+    private String getStandardModelName(final String inspectionType) {
+        Map<String, String> typeToModel = new HashMap<>();
+        typeToModel.put("01incoming", "incomingQualityStandardH");
+        typeToModel.put("02inprocess", "inProcessQualityStandardH");
+        typeToModel.put("03outgoing", "outgoingQualityStandardH");
+        typeToModel.put("04equipment", "equipmentQualityStandardH");
+        return typeToModel.get(inspectionType);
+    }
+
+    /**
+     * Kiểm tra xem có bản ghi tiêu chuẩn tồn tại cho product không
+     */
+    private boolean checkIfStandardExists(final String modelName, final Entity product) {
+        DataDefinition standardDD = dataDefinitionService.get("qm", modelName);
+        SearchCriteriaBuilder scb = standardDD.find()
+                .add(SearchRestrictions.eq("product.id", product.getId()))
+                .add(SearchRestrictions.eq("deleted", false))
+                .add(SearchRestrictions.eq("active", true));
+
+        return scb.list().getTotalNumberOfEntities() > 0;
+    }
+
+    private void disableRibbonActionsExceptNavigation(final ViewDefinitionState view) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        if (window == null) {
+            return;
+        }
+
+        Ribbon ribbon = window.getRibbon();
+        if (ribbon == null) {
+            return;
+        }
+
+        for (RibbonGroup group : ribbon.getGroups()) {
+            if ("navigation".equals(group.getName())) {
+                continue;
+            }
+
+            for (RibbonActionItem item : group.getItems()) {
+                item.setEnabled(false);
+                item.requestUpdate(true);
+            }
+        }
+    }
 
     public void beforeRender(final ViewDefinitionState view) {
         fillNameFromBelongsTo(view, QICFields.COMPANY, "companyName");
