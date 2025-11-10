@@ -1,6 +1,9 @@
 package com.fti.qm.hooks;
 
+import com.fti.qm.constants.GlobalFields;
+import com.fti.qm.constants.QMConstants;
 import com.fti.qm.constants.qualityInspectionCommand.QICFields;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -21,11 +24,24 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class QICDetailsHooks {
+
+    private static final Map<String, String> INSPECTION_TYPE_MODEL_MAP;
+
+    static {
+        Map<String, String> map = new HashMap<>();
+        map.put(QICFields.INSPECTION_TYPE_INCOMING, QMConstants.MODEL_INCOMING_QUALITY_STANDARD_H);
+        map.put(QICFields.INSPECTION_TYPE_IN_PROCESS, QMConstants.MODEL_IN_PROCESS_QUALITY_STANDARD_H);
+        map.put(QICFields.INSPECTION_TYPE_OUTGOING, QMConstants.MODEL_OUTGOING_QUALITY_STANDARD_H);
+        map.put(QICFields.INSPECTION_TYPE_EQUIPMENT, QMConstants.MODEL_EQUIPMENT_QUALITY_STANDARD_H);
+        INSPECTION_TYPE_MODEL_MAP = Collections.unmodifiableMap(map);
+    }
 
     @Autowired
     private SecurityService securityService;
@@ -34,68 +50,46 @@ public class QICDetailsHooks {
     private DataDefinitionService dataDefinitionService;
 
     public void beforeRenderCheckProduct(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        if (form == null || form.getEntity() == null) {
-            return;
-        }
+        Entity qic = getFormEntity(view);
+        if (qic == null) return;
 
-        Entity qic = form.getEntity();
-        String inspectionType = qic.getStringField("inspectionType");
+        String inspectionType = qic.getStringField(QICFields.INSPECTION_TYPE);
+        Entity product = qic.getBelongsToField(QICFields.PRODUCT);
+        if (inspectionType == null || product == null) return;
 
-        // --- Nếu inspectionType chưa được chọn, bỏ qua
-        if (inspectionType == null) {
-            return;
-        }
+        String modelName = INSPECTION_TYPE_MODEL_MAP.get(inspectionType);
+        if (modelName == null) return;
 
-        // --- Lấy product liên kết
-        Entity product = qic.getBelongsToField("product");
-        if (product == null) {
-            return;
-        }
-
-        // --- Xác định model tiêu chuẩn tương ứng theo loại inspection
-        String modelName = getStandardModelName(inspectionType);
-        if (modelName == null) {
-            return;
-        }
-
-        // --- Kiểm tra tồn tại bản ghi tiêu chuẩn
-        boolean hasStandard = checkIfStandardExists(modelName, product);
-
-        if (!hasStandard) {
-            String productNumber = product.getStringField("number");
-
+        if (!checkIfStandardExists(modelName, product)) {
+            String productNumber = product.getStringField(ProductFields.NUMBER);
             view.addMessage("qm.qualityInspectionCommand.error.noStandardForProduct",
                     ComponentState.MessageType.INFO, false, productNumber);
-
-            form.setVisible(false);
             disableRibbonActionsExceptNavigation(view);
         }
+
+        fillNameFromBelongsTo(view, QICFields.COMPANY, "companyName");
+        fillNameFromBelongsTo(view, QICFields.PRODUCT, "productName");
+        fillNameFromBelongsTo(view, QICFields.TOOL, "toolName");
+        fillCurrentUser(view);
+        updateStatusDisplay(view);
     }
 
-    /**
-     * Xác định model tiêu chuẩn tương ứng với loại kiểm tra
-     */
-    private String getStandardModelName(final String inspectionType) {
-        Map<String, String> typeToModel = new HashMap<>();
-        typeToModel.put("01incoming", "incomingQualityStandardH");
-        typeToModel.put("02inprocess", "inProcessQualityStandardH");
-        typeToModel.put("03outgoing", "outgoingQualityStandardH");
-        typeToModel.put("04equipment", "equipmentQualityStandardH");
-        return typeToModel.get(inspectionType);
+    private Entity getFormEntity(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        return (form != null) ? form.getEntity() : null;
     }
 
     /**
      * Kiểm tra xem có bản ghi tiêu chuẩn tồn tại cho product không
      */
     private boolean checkIfStandardExists(final String modelName, final Entity product) {
-        DataDefinition standardDD = dataDefinitionService.get("qm", modelName);
-        SearchCriteriaBuilder scb = standardDD.find()
+        DataDefinition dd = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, modelName);
+        return dd.find()
                 .add(SearchRestrictions.eq("product.id", product.getId()))
-                .add(SearchRestrictions.eq("deleted", false))
-                .add(SearchRestrictions.eq("active", true));
-
-        return scb.list().getTotalNumberOfEntities() > 0;
+                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
+                .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
+                .setMaxResults(1)
+                .uniqueResult() != null;
     }
 
     private void disableRibbonActionsExceptNavigation(final ViewDefinitionState view) {
@@ -121,14 +115,6 @@ public class QICDetailsHooks {
         }
     }
 
-    public void beforeRender(final ViewDefinitionState view) {
-        fillNameFromBelongsTo(view, QICFields.COMPANY, "companyName");
-        fillNameFromBelongsTo(view, QICFields.PRODUCT, "productName");
-        fillNameFromBelongsTo(view, QICFields.TOOL, "toolName");
-        fillCurrentUser(view);
-        updateStatusDisplay(view);
-    }
-
     /**
      * Hàm dùng chung: Lấy entity từ field belongsTo và gán giá trị name vào component tương ứng
      *
@@ -137,38 +123,22 @@ public class QICDetailsHooks {
      * @param targetRef    Tên component input trong view (vd: "companyName", "productName", "toolName")
      */
     private void fillNameFromBelongsTo(final ViewDefinitionState view, final String belongsToRef, final String targetRef) {
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        if (form == null || form.getEntity() == null) {
-            return;
-        }
+        Entity entity = getFormEntity(view);
+        if (entity == null) return;
 
-        Entity entity = form.getEntity();
-        Entity relatedEntity = entity.getBelongsToField(belongsToRef);
-        if (relatedEntity == null) {
-            return;
-        }
+        Entity related = entity.getBelongsToField(belongsToRef);
+        if (related == null) return;
 
-        String nameValue = relatedEntity.getStringField("name");
-        if (nameValue == null) {
-            return;
-        }
-
-        ComponentState targetInput = view.getComponentByReference(targetRef);
-        if (targetInput != null) {
-            targetInput.setFieldValue(nameValue);
-        }
+        Optional.ofNullable((FieldComponent) view.getComponentByReference(targetRef))
+                .ifPresent(field -> field.setFieldValue(related.getStringField("name")));
     }
 
     private void fillCurrentUser(final ViewDefinitionState view) {
         LookupComponent userLookup = (LookupComponent) view.getComponentByReference(QICFields.USER);
-        if (userLookup == null) {
-            return;
-        }
+        if (userLookup == null) return;
 
         Long currentUserId = securityService.getCurrentUserId();
-        if (currentUserId == null) {
-            return;
-        }
+        if (currentUserId == null) return;
 
         // Lấy DataDefinition cho model "user"
         DataDefinition userDD = dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER);
@@ -177,15 +147,13 @@ public class QICDetailsHooks {
         Entity currentUserEntity = userDD.get(currentUserId);
         if (currentUserEntity != null) {
             userLookup.setFieldValue(currentUserEntity.getId());
+            userLookup.requestComponentUpdateState();
         }
     }
 
     private void updateStatusDisplay(final ViewDefinitionState view) {
         FieldComponent statusField = (FieldComponent) view.getComponentByReference(QICFields.STATUS);
-
-        if (statusField == null) {
-            return;
-        }
+        if (statusField == null) return;
 
         String currentStatus = (String) statusField.getFieldValue();
 

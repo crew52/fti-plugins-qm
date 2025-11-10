@@ -94,7 +94,6 @@
     </component>
 
     <hooks>
-        <!-- <beforeRender class="com.fti.qm.hooks.QICDetailsHooks" method="beforeRender" /> -->
         <beforeRender class="com.fti.qm.hooks.QICDetailsHooks" method="beforeRenderCheckProduct"/>
     </hooks>
 </view>
