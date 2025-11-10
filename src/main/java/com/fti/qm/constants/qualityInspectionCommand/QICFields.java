@@ -28,4 +28,7 @@ public final class QICFields {
     public static final String LOCATION = "location";
     public static final String QUALITY_INSPECTION_COMMAND_CONTEXT = "qualityInspectionCommandContext";
     public static final String USER = "user";
+
+    public static final String INSPECTION_DATE = "inspectionDate";
+    public static final String NOTE = "note";
 }

@@ -7,7 +7,6 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.constants.QcadooSecurityConstants;
@@ -24,10 +23,11 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 public class QICDetailsHooks {
@@ -49,7 +49,23 @@ public class QICDetailsHooks {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void beforeRenderCheckProduct(final ViewDefinitionState view) {
+    public void beforeRender(final ViewDefinitionState view) {
+        // Kiểm tra product & chuẩn
+        checkProduct(view);
+        // Gán tên company, product, tool
+        fillNameFromBelongsTo(view, QICFields.COMPANY, "companyName");
+        fillNameFromBelongsTo(view, QICFields.PRODUCT, "productName");
+        fillNameFromBelongsTo(view, QICFields.TOOL, "toolName");
+        // Điền user hiện tại
+        fillCurrentUser(view);
+        // Cập nhật trạng thái
+        updateStatusDisplay(view);
+
+        // Điền ngày kiểm tra hiện tại
+        fillCurrentInspectionDate(view);
+    }
+
+    private void checkProduct(final ViewDefinitionState view) {
         Entity qic = getFormEntity(view);
         if (qic == null) return;
 
@@ -61,17 +77,10 @@ public class QICDetailsHooks {
         if (modelName == null) return;
 
         if (!checkIfStandardExists(modelName, product)) {
-            String productNumber = product.getStringField(ProductFields.NUMBER);
             view.addMessage("qm.qualityInspectionCommand.error.noStandardForProduct",
-                    ComponentState.MessageType.INFO, false, productNumber);
+                    ComponentState.MessageType.INFO, false, product.getStringField(ProductFields.NUMBER));
             disableRibbonActionsExceptNavigation(view);
         }
-
-        fillNameFromBelongsTo(view, QICFields.COMPANY, "companyName");
-        fillNameFromBelongsTo(view, QICFields.PRODUCT, "productName");
-        fillNameFromBelongsTo(view, QICFields.TOOL, "toolName");
-        fillCurrentUser(view);
-        updateStatusDisplay(view);
     }
 
     private Entity getFormEntity(final ViewDefinitionState view) {
@@ -160,6 +169,22 @@ public class QICDetailsHooks {
         if (QICFields.STATUS_NEW.equals(currentStatus)) {
             statusField.setFieldValue(QICFields.STATUS_IN_PROGRESS);
             statusField.requestComponentUpdateState();
+        }
+    }
+
+    private void fillCurrentInspectionDate(final ViewDefinitionState view) {
+        FieldComponent inspectionDateField = (FieldComponent) view.getComponentByReference(QICFields.INSPECTION_DATE);
+        if (inspectionDateField == null) return;
+
+        // Kiểm tra giá trị hiện tại
+        Object currentValue = inspectionDateField.getFieldValue();
+
+        // Nếu chưa có giá trị thì set ngày hiện tại
+        if (currentValue == null || currentValue.toString().isEmpty()) {
+            LocalDate today = LocalDate.now(ZoneId.systemDefault());
+            String todayStr = today.format(DateTimeFormatter.ISO_LOCAL_DATE); // "yyyy-MM-dd"
+            inspectionDateField.setFieldValue(todayStr);
+            inspectionDateField.requestComponentUpdateState();
         }
     }
 }

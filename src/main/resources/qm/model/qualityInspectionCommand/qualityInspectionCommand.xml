@@ -46,6 +46,13 @@
         <!-- Số lượng giao dịch -->
         <decimal name="transactionQuantity"/>
 
+        <!-- Ngày kiểm tra -->
+        <date name="inspectionDate"/>
+
+        <string name="note">
+            <validatesLength max="1000"/>
+        </string>
+
         <belongsTo name="location" model="location" plugin="materialFlow" />
 
         <belongsTo name="qualityInspectionCommandContext" plugin="qm" model="qualityInspectionCommandContext"/>
