@@ -8,6 +8,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.constants.QcadooSecurityConstants;
 import com.qcadoo.view.api.ComponentState;
@@ -28,6 +29,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class QICDetailsHooks {
@@ -81,7 +83,108 @@ public class QICDetailsHooks {
                     ComponentState.MessageType.INFO, false, product.getStringField(ProductFields.NUMBER));
             disableRibbonActionsExceptNavigation(view);
         }
+
+        createSamplesIfNotExist(qic, modelName);
     }
+    private void createSamplesIfNotExist(Entity qic, String modelNameH) {
+        DataDefinition sampleDD = dataDefinitionService.get("qm", "incomingQualityStandardSample");
+        Entity product = qic.getBelongsToField(QICFields.PRODUCT);
+
+        if (product == null) return;
+
+        // 1️⃣ Kiểm tra xem đã có sample chưa
+        List<Entity> existingSamples = sampleDD.find()
+                .add(SearchRestrictions.eq("qualityInspectionCommand.id", qic.getId()))
+                .list().getEntities();
+        if (!existingSamples.isEmpty()) return;
+
+        // 2️⃣ Lấy tất cả H theo product
+        DataDefinition hDD = dataDefinitionService.get("qm", modelNameH);
+        List<Entity> hList = hDD.find()
+                .add(SearchRestrictions.eq("product.id", product.getId()))
+                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
+                .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
+                .list().getEntities();
+        if (hList.isEmpty()) return;
+
+        List<Long> hIds = hList.stream()
+                .map(Entity::getId)
+                .collect(Collectors.toList());
+
+        // 3️⃣ Lấy tất cả L dựa trên H list
+        String modelNameL = modelNameH.replace("H", "L");
+        DataDefinition lDD = dataDefinitionService.get("qm", modelNameL);
+        List<Entity> lList = lDD.find()
+                .add(SearchRestrictions.in("incomingQualityStandardH.id", hIds))
+                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
+//                .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
+                .list().getEntities();
+
+        // 4️⃣ Tạo sample dựa trên L
+        for (Entity l : lList) {
+            Integer sampleSize = l.getIntegerField("sampleSize");
+            if (sampleSize == null || sampleSize <= 0) sampleSize = 1;
+
+            for (int i = 1; i <= sampleSize; i++) {
+                Entity sample = sampleDD.create();
+                sample.setField("qualityInspectionCommand", qic);
+                sample.setField("incomingQualityStandardL", l);
+                sample.setField("sampleNumber", i);
+                sampleDD.save(sample);
+            }
+        }
+    }
+
+//    private void createSamplesIfNotExist(Entity qic, String modelNameH) {
+//        DataDefinition sampleDD = dataDefinitionService.get("qm", "incomingQualityStandardSample");
+//        Entity product = qic.getBelongsToField(QICFields.PRODUCT);
+//
+//        if (product == null) return;
+//
+//        // 1️⃣ Lấy tất cả H theo product
+//        DataDefinition hDD = dataDefinitionService.get("qm", modelNameH);
+//        List<Entity> hList = hDD.find()
+//                .add(SearchRestrictions.eq("product.id", product.getId()))
+//                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
+//                .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
+//                .list().getEntities();
+//        if (hList.isEmpty()) return;
+//
+//        List<Long> hIds = hList.stream()
+//                .map(Entity::getId)
+//                .collect(Collectors.toList());
+//
+//        // 2️⃣ Lấy tất cả L dựa trên H list
+//        String modelNameL = modelNameH.replace("H", "L");
+//        DataDefinition lDD = dataDefinitionService.get("qm", modelNameL);
+//        List<Entity> lList = lDD.find()
+//                .add(SearchRestrictions.in("incomingQualityStandardH.id", hIds))
+//                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
+//                .list().getEntities();
+//
+//        // 3️⃣ Tạo sample cho từng L nếu chưa tồn tại
+//        for (Entity l : lList) {
+//            List<Entity> existingSamplesForL = sampleDD.find()
+//                    .add(SearchRestrictions.eq("qualityInspectionCommand.id", qic.getId()))
+//                    .add(SearchRestrictions.eq("incomingQualityStandardL.id", l.getId()))
+//                    .list().getEntities();
+//
+//            if (!existingSamplesForL.isEmpty()) continue; // đã có sample cho L này → skip
+//
+//            Integer sampleSize = l.getIntegerField("sampleSize");
+//            if (sampleSize == null || sampleSize <= 0) sampleSize = 1;
+//
+//            for (int i = 1; i <= sampleSize; i++) {
+//                Entity sample = sampleDD.create();
+//                sample.setField("qualityInspectionCommand", qic);
+//                sample.setField("incomingQualityStandardL", l);
+//                sample.setField("sampleNumber", i);
+//                sampleDD.save(sample);
+//            }
+//        }
+//    }
+
+
 
     private Entity getFormEntity(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);

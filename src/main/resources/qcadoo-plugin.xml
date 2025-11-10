@@ -55,6 +55,8 @@
 		<model:model model="qualityInspectionCommandContext" resource="model/qualityInspectionCommand/qualityInspectionCommandContext.xml" />
 		<model:model model="qualityInspectionCommandListDto" resource="model/qualityInspectionCommand/qualityInspectionCommandListDto.xml" />
 
+		<model:model model="incomingQualityStandardSample" resource="model/sample/incomingQualityStandardSample.xml" />
+
 		<menu:menu-category name="qm" />
 
 		<menu:menu-item name="measuringEquipment" category="qm" view="measuringEquipmentList" />

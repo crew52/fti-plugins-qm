@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="incomingQualityStandardSample"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/model" xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
+    <fields>
+        <!-- Liên kết đến lệnh QC -->
+        <belongsTo name="qualityInspectionCommand" plugin="qm" model="qualityInspectionCommand" required="true"/>
+
+        <!-- Liên kết đến bản ghi L -->
+        <belongsTo name="incomingQualityStandardL" plugin="qm" model="incomingQualityStandardL" required="true"/>
+
+        <!-- Số thứ tự mẫu thử -->
+        <integer name="sampleNumber" required="true"/>
+
+        <!-- Kết quả đo định tính -->
+        <string name="qualitativeResult">
+            <validatesLength max="255"/>
+        </string>
+
+        <!-- Kết quả đo định lượng -->
+        <decimal name="quantitativeResult"/>
+
+        <!-- Kết quả PASS/FAIL định lượng -->
+        <string name="quantitativeEvaluation">
+            <validatesLength max="50"/>
+        </string>
+
+    </fields>
+    <identifier expression="#qualityInspectionCommand['inspectionOrderNumber'] + #qualityInspectionCommand['inspectionOrderNumberInt'] + ' - Sample ' + #sampleNumber"/>
+    <hooks>
+    </hooks>
+</model>

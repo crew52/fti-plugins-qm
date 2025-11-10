@@ -58,6 +58,8 @@
         <belongsTo name="qualityInspectionCommandContext" plugin="qm" model="qualityInspectionCommandContext"/>
         
         <belongsTo name="user" model="user" plugin="qcadooSecurity" />
+
+        <hasMany name="incomingQualityStandardSamples" model="incomingQualityStandardSample" joinField="qualityInspectionCommand"/>
     </fields>
 
     <!-- Định danh của dòng -->
