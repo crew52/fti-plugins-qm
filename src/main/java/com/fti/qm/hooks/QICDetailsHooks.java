@@ -1,6 +1,7 @@
 package com.fti.qm.hooks;
 
 import com.fti.qm.constants.GlobalFields;
+import com.fti.qm.constants.IncomingQualityStandardSampleFields;
 import com.fti.qm.constants.QMConstants;
 import com.fti.qm.constants.qualityInspectionCommand.QICFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -8,7 +9,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.constants.QcadooSecurityConstants;
 import com.qcadoo.view.api.ComponentState;
@@ -26,16 +26,37 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Hook class xử lý logic hiển thị và chuẩn bị dữ liệu cho màn hình chi tiết
+ * của phiếu kiểm tra chất lượng (Quality Inspection Command - QIC).
+ *
+ * <p>Class này được gọi qua hook "beforeRender" trong XML view, chịu trách nhiệm:
+ * <ul>
+ *   <li>Kiểm tra loại kiểm tra và sản phẩm để đảm bảo tồn tại tiêu chuẩn kiểm tra tương ứng</li>
+ *   <li>Tự động tạo mẫu thử (sample) nếu chưa có</li>
+ *   <li>Tự động điền các thông tin phụ trợ như tên công ty, tên sản phẩm, tên dụng cụ, người dùng hiện tại, ngày kiểm tra</li>
+ *   <li>Cập nhật trạng thái ban đầu của phiếu từ "NEW" sang "IN_PROGRESS"</li>
+ *   <li>Vô hiệu hóa các hành động trong ribbon nếu thiếu tiêu chuẩn kiểm tra</li>
+ * </ul>
+ */
 @Service
 public class QICDetailsHooks {
 
+    /**
+     * Bản đồ ánh xạ giữa loại kiểm tra (inspectionType)
+     * và tên model tiêu chuẩn tương ứng trong module QM.
+     *
+     * Ví dụ:
+     * 01 (incoming) → incomingQualityStandardH
+     * 02 (in-process) → inProcessQualityStandardH
+     * 03 (outgoing) → outgoingQualityStandardH
+     * 04 (equipment) → equipmentQualityStandardH
+     */
     private static final Map<String, String> INSPECTION_TYPE_MODEL_MAP;
-
     static {
         Map<String, String> map = new HashMap<>();
         map.put(QICFields.INSPECTION_TYPE_INCOMING, QMConstants.MODEL_INCOMING_QUALITY_STANDARD_H);
@@ -51,22 +72,34 @@ public class QICDetailsHooks {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    /**
+     * Hook chính, được gọi khi view QIC details được render.
+     * <p>Thực hiện:
+     * <ol>
+     *   <li>Kiểm tra tiêu chuẩn theo loại kiểm tra và sản phẩm</li>
+     *   <li>Tự động gán tên các trường thuộc (company, product, tool)</li>
+     *   <li>Điền người dùng hiện tại vào field `user`</li>
+     *   <li>Cập nhật trạng thái phiếu</li>
+     *   <li>Tự động điền ngày kiểm tra nếu trống</li>
+     * </ol>
+     */
     public void beforeRender(final ViewDefinitionState view) {
-        // Kiểm tra product & chuẩn
         checkProduct(view);
-        // Gán tên company, product, tool
         fillNameFromBelongsTo(view, QICFields.COMPANY, "companyName");
         fillNameFromBelongsTo(view, QICFields.PRODUCT, "productName");
         fillNameFromBelongsTo(view, QICFields.TOOL, "toolName");
-        // Điền user hiện tại
         fillCurrentUser(view);
-        // Cập nhật trạng thái
         updateStatusDisplay(view);
-
-        // Điền ngày kiểm tra hiện tại
         fillCurrentInspectionDate(view);
     }
 
+    /**
+     * Kiểm tra sản phẩm có tiêu chuẩn kiểm tra tương ứng hay không.
+     * <ul>
+     *   <li>Nếu không có tiêu chuẩn: hiển thị cảnh báo và khóa các nút trong ribbon</li>
+     *   <li>Nếu có: tạo mẫu thử (samples) nếu chưa tồn tại</li>
+     * </ul>
+     */
     private void checkProduct(final ViewDefinitionState view) {
         Entity qic = getFormEntity(view);
         if (qic == null) return;
@@ -86,22 +119,24 @@ public class QICDetailsHooks {
 
         createSamplesIfNotExist(qic, modelName);
     }
+
+    /**
+     * Tự động tạo các mẫu thử (sample) cho từng dòng tiêu chuẩn L tương ứng,
+     * nếu chưa có bản ghi trong bảng mẫu thử.
+     *
+     * @param qic        Entity phiếu kiểm tra chất lượng hiện tại
+     * @param modelNameH Tên model của bảng tiêu chuẩn Header (ví dụ: incomingQualityStandardH)
+     */
     private void createSamplesIfNotExist(Entity qic, String modelNameH) {
-        DataDefinition sampleDD = dataDefinitionService.get("qm", "incomingQualityStandardSample");
+        DataDefinition sampleDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_INCOMING_QUALITY_STANDARD_SAMPLE);
         Entity product = qic.getBelongsToField(QICFields.PRODUCT);
 
         if (product == null) return;
 
-        // 1️⃣ Kiểm tra xem đã có sample chưa
-        List<Entity> existingSamples = sampleDD.find()
-                .add(SearchRestrictions.eq("qualityInspectionCommand.id", qic.getId()))
-                .list().getEntities();
-        if (!existingSamples.isEmpty()) return;
-
-        // 2️⃣ Lấy tất cả H theo product
-        DataDefinition hDD = dataDefinitionService.get("qm", modelNameH);
+        // 1️⃣ Lấy tất cả H theo product
+        DataDefinition hDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, modelNameH);
         List<Entity> hList = hDD.find()
-                .add(SearchRestrictions.eq("product.id", product.getId()))
+                .add(SearchRestrictions.eq(GlobalFields.PRODUCT_ID, product.getId()))
                 .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
                 .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
                 .list().getEntities();
@@ -111,88 +146,49 @@ public class QICDetailsHooks {
                 .map(Entity::getId)
                 .collect(Collectors.toList());
 
-        // 3️⃣ Lấy tất cả L dựa trên H list
+        // 2️⃣ Lấy tất cả L dựa trên H list
         String modelNameL = modelNameH.replace("H", "L");
-        DataDefinition lDD = dataDefinitionService.get("qm", modelNameL);
+        DataDefinition lDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, modelNameL);
         List<Entity> lList = lDD.find()
-                .add(SearchRestrictions.in("incomingQualityStandardH.id", hIds))
+                .add(SearchRestrictions.in(QMConstants.MODEL_INCOMING_QUALITY_STANDARD_H + GlobalFields.DOT_ID, hIds))
                 .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
-//                .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
                 .list().getEntities();
 
-        // 4️⃣ Tạo sample dựa trên L
+        // 3️⃣ Tạo sample cho từng L nếu chưa tồn tại
         for (Entity l : lList) {
+            List<Entity> existingSamplesForL = sampleDD.find()
+                    .add(SearchRestrictions.eq(QMConstants.MODEL_QUALITY_INSPECTION_COMMAND + GlobalFields.DOT_ID, qic.getId()))
+                    .add(SearchRestrictions.eq(QMConstants.MODEL_INCOMING_QUALITY_STANDARD_L + GlobalFields.DOT_ID, l.getId()))
+                    .list().getEntities();
+
+            if (!existingSamplesForL.isEmpty()) continue; // đã có sample cho L này → skip
+
             Integer sampleSize = l.getIntegerField("sampleSize");
             if (sampleSize == null || sampleSize <= 0) sampleSize = 1;
 
             for (int i = 1; i <= sampleSize; i++) {
                 Entity sample = sampleDD.create();
-                sample.setField("qualityInspectionCommand", qic);
-                sample.setField("incomingQualityStandardL", l);
-                sample.setField("sampleNumber", i);
+                sample.setField(IncomingQualityStandardSampleFields.QUALITY_INSPECTION_COMMAND, qic);
+                sample.setField(IncomingQualityStandardSampleFields.INCOMING_QUALITY_STANDARD_L, l);
+                sample.setField(IncomingQualityStandardSampleFields.SAMPLE_NUMBER, i);
                 sampleDD.save(sample);
             }
         }
     }
 
-//    private void createSamplesIfNotExist(Entity qic, String modelNameH) {
-//        DataDefinition sampleDD = dataDefinitionService.get("qm", "incomingQualityStandardSample");
-//        Entity product = qic.getBelongsToField(QICFields.PRODUCT);
-//
-//        if (product == null) return;
-//
-//        // 1️⃣ Lấy tất cả H theo product
-//        DataDefinition hDD = dataDefinitionService.get("qm", modelNameH);
-//        List<Entity> hList = hDD.find()
-//                .add(SearchRestrictions.eq("product.id", product.getId()))
-//                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
-//                .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
-//                .list().getEntities();
-//        if (hList.isEmpty()) return;
-//
-//        List<Long> hIds = hList.stream()
-//                .map(Entity::getId)
-//                .collect(Collectors.toList());
-//
-//        // 2️⃣ Lấy tất cả L dựa trên H list
-//        String modelNameL = modelNameH.replace("H", "L");
-//        DataDefinition lDD = dataDefinitionService.get("qm", modelNameL);
-//        List<Entity> lList = lDD.find()
-//                .add(SearchRestrictions.in("incomingQualityStandardH.id", hIds))
-//                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
-//                .list().getEntities();
-//
-//        // 3️⃣ Tạo sample cho từng L nếu chưa tồn tại
-//        for (Entity l : lList) {
-//            List<Entity> existingSamplesForL = sampleDD.find()
-//                    .add(SearchRestrictions.eq("qualityInspectionCommand.id", qic.getId()))
-//                    .add(SearchRestrictions.eq("incomingQualityStandardL.id", l.getId()))
-//                    .list().getEntities();
-//
-//            if (!existingSamplesForL.isEmpty()) continue; // đã có sample cho L này → skip
-//
-//            Integer sampleSize = l.getIntegerField("sampleSize");
-//            if (sampleSize == null || sampleSize <= 0) sampleSize = 1;
-//
-//            for (int i = 1; i <= sampleSize; i++) {
-//                Entity sample = sampleDD.create();
-//                sample.setField("qualityInspectionCommand", qic);
-//                sample.setField("incomingQualityStandardL", l);
-//                sample.setField("sampleNumber", i);
-//                sampleDD.save(sample);
-//            }
-//        }
-//    }
-
-
-
+    /**
+     * Lấy entity chính (form entity) từ view hiện tại.
+     *
+     * @param view ViewDefinitionState hiện tại
+     * @return Entity hoặc null nếu không có form
+     */
     private Entity getFormEntity(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         return (form != null) ? form.getEntity() : null;
     }
 
     /**
-     * Kiểm tra xem có bản ghi tiêu chuẩn tồn tại cho product không
+     * Kiểm tra xem tiêu chuẩn kiểm tra có tồn tại cho sản phẩm hiện tại hay không.
      */
     private boolean checkIfStandardExists(final String modelName, final Entity product) {
         DataDefinition dd = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, modelName);
@@ -204,6 +200,10 @@ public class QICDetailsHooks {
                 .uniqueResult() != null;
     }
 
+    /**
+     * Vô hiệu hóa tất cả các nút trong ribbon trừ nhóm "navigation"
+     * → Dùng khi sản phẩm chưa có tiêu chuẩn kiểm tra.
+     */
     private void disableRibbonActionsExceptNavigation(final ViewDefinitionState view) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         if (window == null) {
@@ -228,7 +228,7 @@ public class QICDetailsHooks {
     }
 
     /**
-     * Hàm dùng chung: Lấy entity từ field belongsTo và gán giá trị name vào component tương ứng
+     * Gán giá trị "name" của entity thuộc (BelongsTo) vào component input tương ứng.
      *
      * @param view         ViewDefinitionState hiện tại
      * @param belongsToRef Tên field belongsTo trong entity (vd: "company", "product", "tool")
@@ -245,6 +245,9 @@ public class QICDetailsHooks {
                 .ifPresent(field -> field.setFieldValue(related.getStringField("name")));
     }
 
+    /**
+     * Tự động điền người dùng hiện tại vào field "user" trong phiếu kiểm tra.
+     */
     private void fillCurrentUser(final ViewDefinitionState view) {
         LookupComponent userLookup = (LookupComponent) view.getComponentByReference(QICFields.USER);
         if (userLookup == null) return;
@@ -263,6 +266,10 @@ public class QICDetailsHooks {
         }
     }
 
+    /**
+     * Nếu phiếu đang ở trạng thái "NEW" thì tự động cập nhật thành "IN_PROGRESS"
+     * khi người dùng mở form.
+     */
     private void updateStatusDisplay(final ViewDefinitionState view) {
         FieldComponent statusField = (FieldComponent) view.getComponentByReference(QICFields.STATUS);
         if (statusField == null) return;
@@ -275,6 +282,9 @@ public class QICDetailsHooks {
         }
     }
 
+    /**
+     * Nếu chưa có ngày kiểm tra thì tự động set ngày hiện tại (yyyy-MM-dd).
+     */
     private void fillCurrentInspectionDate(final ViewDefinitionState view) {
         FieldComponent inspectionDateField = (FieldComponent) view.getComponentByReference(QICFields.INSPECTION_DATE);
         if (inspectionDateField == null) return;
