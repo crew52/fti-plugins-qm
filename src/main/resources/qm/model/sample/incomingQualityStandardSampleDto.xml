@@ -13,14 +13,17 @@
         <integer name="sampleSize"/>
         <integer name="sampleNumber"/>
         <enum name="qualitativeValue" values="01pass"/>
-        <enum name="qualitativeResult" values="PASS,FAIL"/>
+        <enum name="qualitativeResult" values="01pass,02fail"/>
         <decimal name="quantitativeValue" />
         <decimal name="upValue" />
         <decimal name="downValue" />
         <decimal name="quantitativeResult"/>
-        <enum name="quantitativeEvaluation" values="PASS,FAIL"/>
+        <enum name="quantitativeEvaluation" values="01pass,02fail"/>
         <string name="meName"/>
         <string name="meMeasuringMethod"/>
+
+        <belongsTo name="qualityInspectionCommand" plugin="qm" model="qualityInspectionCommand"/>
+        <belongsTo name="incomingQualityStandardL" plugin="qm" model="incomingQualityStandardL"/>
     </fields>
 
     <identifier expression="#position"/>

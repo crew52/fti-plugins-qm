@@ -1,0 +1,87 @@
+package com.fti.qm.hooks;
+
+import com.fti.qm.constants.IncomingQualityStandardLFields;
+import com.fti.qm.constants.MeasuringEquipmentFields;
+import com.fti.qm.constants.QMConstants;
+import com.fti.qm.constants.QualityCriteriaFields;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.Locale;
+
+@Service
+public class QualityStandardSampleDetailsHooks {
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private TranslationService translationService;
+
+    public void beforeRender(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        if (form == null || form.getEntityId() == null)  return;
+
+        // 🔁 Load lại entity từ DB để đảm bảo đầy đủ các belongsTo
+        Entity sample = dataDefinitionService
+                .get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_INCOMING_QUALITY_STANDARD_SAMPLE)
+                .get(form.getEntityId());
+        if (sample == null) return;
+
+        // 🔁 Lấy entity cha từ DB
+        Entity standardLine = sample.getBelongsToField(QMConstants.MODEL_INCOMING_QUALITY_STANDARD_L);
+        if (standardLine == null)  return;
+
+        Locale locale = LocaleContextHolder.getLocale();
+
+        // ✅ Gán giá trị từ standardLine vào form
+        setFieldValue(view, "position", standardLine.getStringField(IncomingQualityStandardLFields.POSITION));
+        setFieldValue(view, "description", standardLine.getStringField(IncomingQualityStandardLFields.DESCRIPTION));
+        setFieldValue(view, "quantitativeValue", standardLine.getDecimalField(IncomingQualityStandardLFields.QUANTITATIVE_VALUE));
+        setFieldValue(view, "upValue", standardLine.getDecimalField(IncomingQualityStandardLFields.UP_VALUE));
+        setFieldValue(view, "downValue", standardLine.getDecimalField(IncomingQualityStandardLFields.DOWN_VALUE));
+        setFieldValue(view, "sampleSize", standardLine.getIntegerField(IncomingQualityStandardLFields.SAMPLE_SIZE));
+        setFieldValue(view, "unit", standardLine.getStringField(IncomingQualityStandardLFields.UNIT));
+
+        // ✅ Dịch qualitativeValue
+        translateEnumField(view, "qualitativeValue", "qm.incomingQualityStandardL.qualitativeValue.value.", standardLine.getStringField(IncomingQualityStandardLFields.QUALITATIVE_VALUE), locale);
+
+         // 5️⃣ Lấy thông tin tiêu chí (qualityCriteria)
+        Entity criteria = standardLine.getBelongsToField(QMConstants.MODEL_QUALITY_CRITERIA);
+        if (criteria != null) {
+            setFieldValue(view, "qcNumber", criteria.getStringField(QualityCriteriaFields.NUMBER));
+            setFieldValue(view, "qcName", criteria.getStringField(QualityCriteriaFields.NAME));
+            translateEnumField(view, "qcType", "qm.qualityCriteria.type.value.", criteria.getStringField(QualityCriteriaFields.TYPE), locale);
+        }
+
+        // 6️⃣ Lấy thông tin thiết bị đo (measuringEquipment)
+        Entity equipment = standardLine.getBelongsToField(QMConstants.MODEL_MEASURING_EQUIPMENT);
+        if (equipment != null) {
+            setFieldValue(view, "meName", equipment.getStringField(MeasuringEquipmentFields.NAME));
+            setFieldValue(view, "meMeasuringMethod", equipment.getStringField(MeasuringEquipmentFields.MEASURING_METHOD));
+        }
+    }
+
+    // 🧰 Hàm hỗ trợ gán giá trị an toàn cho field
+    private void setFieldValue(final ViewDefinitionState view, final String reference, final Object value) {
+        FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+        if (field != null && value != null) {
+            field.setFieldValue(value.toString());
+            field.requestComponentUpdateState();
+        }
+    }
+
+    private void translateEnumField(final ViewDefinitionState view, final String reference,
+                                    final String translationPrefix, final String enumValue, final Locale locale) {
+        if (enumValue == null) return;
+        String translatedValue = translationService.translate(translationPrefix + enumValue, locale);
+        setFieldValue(view, reference, translatedValue);
+    }
+}

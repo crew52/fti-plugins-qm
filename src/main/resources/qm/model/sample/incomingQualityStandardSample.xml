@@ -14,13 +14,13 @@
         <integer name="sampleNumber" required="true"/>
 
         <!-- Kết quả đo định tính -->
-        <enum name="qualitativeResult" values="PASS,FAIL"/>
+        <enum name="qualitativeResult" values="01pass,02fail"/>
 
         <!-- Kết quả đo định lượng -->
         <decimal name="quantitativeResult"/>
 
         <!-- Kết quả PASS/FAIL định lượng -->
-        <enum name="quantitativeEvaluation" values="PASS,FAIL"/>
+        <enum name="quantitativeEvaluation" values="01pass,02fail"/>
 
     </fields>
     <identifier expression="#qualityInspectionCommand['inspectionOrderNumber'] + #qualityInspectionCommand['inspectionOrderNumberInt'] + ' - Sample ' + #sampleNumber"/>
