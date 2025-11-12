@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<view name="incomingQualityStandardHListRe" modelName="qualityStandardH" menuAccessible="true"
+<view name="outgoingQualityStandardHListRe" modelName="qualityStandardH" menuAccessible="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
     <component type="window" name="window">
         <ribbon>
             <template name="standardGridSoftDeleteTemplate"/>
         </ribbon>
-        <component type="grid" name="incomingQualityStandardHList" reference="grid">
+        <component type="grid" name="outgoingQualityStandardHList" reference="grid">
             <option type="column" name="productNumber" fields="product" expression="#product['number']" link="true" />
             <option type="column" name="productName" fields="product" expression="#product['name']" />
             <option type="column" name="statusText" fields="statusText" />
             <option type="order" column="productName" direction="asc" />
 
-            <option type="correspondingView" value="qm/incomingQualityStandardHDetailsRe" />
+            <option type="correspondingView" value="qm/outgoingQualityStandardHDetailsRe" />
             <option type="correspondingComponent" value="form" />
 
             <option type="searchable" value="productNumber,productName,statusText" />
@@ -21,7 +21,7 @@
             <option type="fullscreen" value="true" />
             <option type="multiselect" value="true" />
             <criteriaModifier class="com.fti.qm.criteriaModifiers.common.CommonCriteriaModifier" method="addDeletedFalseCondition"/>
-            <criteriaModifier class="com.fti.qm.criteriaModifiers.common.QSTypeCriteriaModifier" method="addIncomingTypeCondition"/>
+            <criteriaModifier class="com.fti.qm.criteriaModifiers.common.QSTypeCriteriaModifier" method="addOutgoingTypeCondition"/>
         </component>
         <option type="fixedHeight" value="true" />
         <option type="header" value="false" />

@@ -19,12 +19,30 @@ public class QualityStandardHHooks extends BaseQualityStandardHooksRe {
         String typeValue = entity.getStringField("type");
         if (typeValue == null) return;
 
+        String messageKey;
+        switch (typeValue) {
+            case "01incoming":
+                messageKey = "qm.message.error.productAlreadyExistsWithActiveStandardType01";
+                break;
+            case "02inprocess":
+                messageKey = "qm.message.error.productAlreadyExistsWithActiveStandardType02";
+                break;
+            case "03outgoing":
+                messageKey = "qm.message.error.productAlreadyExistsWithActiveStandardType03";
+                break;
+            case "04equipment":
+                messageKey = "qm.message.error.productAlreadyExistsWithActiveStandardType04";
+                break;
+            default:
+                messageKey = "qm.message.error.productAlreadyExistsWithActiveStandard";
+        }
+
         validateUniqueActiveCombination(dd, entity,
                 "product",
                 "product.id",
                 "active",
                 typeValue,
-                "qm.message.error.productAlreadyExistsWithActiveStandard");
+                messageKey);
     }
 
     public void setStatusText(final ViewDefinitionState view) {
