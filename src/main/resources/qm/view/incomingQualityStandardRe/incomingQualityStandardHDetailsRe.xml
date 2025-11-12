@@ -94,16 +94,16 @@
                 <!-- Cột trái: Giao diện upload -->
                 <layoutElement column="1" row="1" height="6">
                     <component type="staticPage" name="multiUpload">
-                        <option type="page" value="qm/multiUploadForIncoming.jsp"/>
+                        <option type="page" value="qm/multiUploadForQualityStandardH.jsp"/>
                     </component>
 
                     <!-- Trường ẩn: ID thực thể -->
-                    <component type="input" name="iQSHIdForMultiUpload" reference="iQSHIdForMultiUpload" defaultVisible="false">
+                    <component type="input" name="qSHIdForMultiUpload" reference="qSHIdForMultiUpload" defaultVisible="false">
                         <option type="alignment" value="right"/>
                     </component>
 
                     <!-- Trường ẩn: Locale -->
-                    <component type="input" name="iQSHMultiUploadLocale" reference="iQSHMultiUploadLocale" defaultVisible="false" />
+                    <component type="input" name="qSHMultiUploadLocale" reference="qSHMultiUploadLocale" defaultVisible="false" />
                 </layoutElement>
 
                 <!-- Cột phải: Grid danh sách file đã đính kèm -->
@@ -126,7 +126,6 @@
 
     <hooks>
         <beforeRender class="com.fti.qm.hooks.standard.incoming.IQSHDetailsHooks" method="setDefaultTypeValue"/>
-
-        <!-- <beforeRender class="com.fti.qm.hooks.standard.incoming.IncomingQualityStandardHDetailsHooks" method="setIQSHIdForMultiUploadField"/> -->
+        <beforeRender class="com.fti.qm.hooks.standard.QualityStandardHDetailsHooks" method="setQSHIdForMultiUploadField"/>
     </hooks>
 </view>
