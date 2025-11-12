@@ -1,7 +1,7 @@
 package com.fti.qm.hooks;
 
 import com.fti.qm.constants.GlobalFields;
-import com.fti.qm.constants.IncomingQualityStandardSampleFields;
+import com.fti.qm.constants.QualityStandardSampleFields;
 import com.fti.qm.constants.QMConstants;
 import com.fti.qm.constants.qualityInspectionCommand.QICFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -168,9 +168,9 @@ public class QICDetailsHooks {
 
             for (int i = 1; i <= sampleSize; i++) {
                 Entity sample = sampleDD.create();
-                sample.setField(IncomingQualityStandardSampleFields.QUALITY_INSPECTION_COMMAND, qic);
-                sample.setField(IncomingQualityStandardSampleFields.INCOMING_QUALITY_STANDARD_L, l);
-                sample.setField(IncomingQualityStandardSampleFields.SAMPLE_NUMBER, i);
+                sample.setField(QualityStandardSampleFields.QUALITY_INSPECTION_COMMAND, qic);
+                sample.setField(QualityStandardSampleFields.INCOMING_QUALITY_STANDARD_L, l);
+                sample.setField(QualityStandardSampleFields.SAMPLE_NUMBER, i);
                 sampleDD.save(sample);
             }
         }

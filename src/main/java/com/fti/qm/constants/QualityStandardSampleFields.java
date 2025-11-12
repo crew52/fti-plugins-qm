@@ -1,7 +1,7 @@
 package com.fti.qm.constants;
 
-public final class IncomingQualityStandardSampleFields {
-    private IncomingQualityStandardSampleFields() {
+public final class QualityStandardSampleFields {
+    private QualityStandardSampleFields() {
 
     }
     public static final String QUALITY_INSPECTION_COMMAND = "qualityInspectionCommand";
@@ -10,4 +10,7 @@ public final class IncomingQualityStandardSampleFields {
     public static final String QUALITATIVE_RESULT = "qualitativeResult";
     public static final String QUANTITATIVE_RESULT = "quantitativeResult";
     public static final String QUANTITATIVE_EVALUATION = "quantitativeEvaluation";
+
+    public static final String RESULT_VALUE_PASS = "01pass";
+    public static final String RESULT_VALUE_FAIL = "02fail";
 }

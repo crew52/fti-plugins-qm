@@ -62,7 +62,9 @@
                     </layoutElement>
 
                     <layoutElement column="3" row="1">
-                        <component type="input" name="quantitativeResult" field="quantitativeResult" reference="quantitativeResult"/>
+                        <component type="input" name="quantitativeResult" field="quantitativeResult" reference="quantitativeResult">
+                            <listener event="onInputChange" class="com.fti.qm.listeners.QualityStandardSampleListeners" method="onQuantitativeResultChange" />
+                        </component>
                     </layoutElement>
 
                     <layoutElement column="3" row="2">
@@ -78,7 +80,7 @@
                     </layoutElement>
                 </component>
                 <option type="header" value="true"/>
-                <option type="expression" value="#sampleNumber" />
+                <option type="expression" value="'Mẫu số ' + #sampleNumber" />
             </component>
         </windowTab>
     </component>
