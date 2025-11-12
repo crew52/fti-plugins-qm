@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="qualityStandardH" activable="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/model" xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <enum name="type" values="01incoming,02inprocess,03outgoing,04equipment"/>
+        <belongsTo name="product" plugin="basic" model="product" />
+        <belongsTo name="tool" plugin="cmmsMachineParts" model="tool" />
+        <enum name="inspectionType" values="01equipment,02internalCalibration,03externalCalibration"/>
+
+        <hasMany name="qualityStandardLs" model="qualityStandardL" joinField="qualityStandardH"/>
+        <hasMany name="attachments" model="qSHAttachment" joinField="qualityStandardH"/>
+
+        <enum name="statusText" values="01noStandard,02hasStandard" persistent="false"/>
+        <boolean name="deleted" default="false" />
+        <datetime name="deletedDate" />
+    </fields>
+
+    <identifier expression="#product['number'] + ' - ' + #product['name']" />
+    <hooks>
+        <onSave class="com.fti.qm.hooks.standard.QualityStandardHHooks" method="validateUniqueActiveProduct" />
+        <onCreate class="com.fti.qm.hooks.common.SetDefaultDeletedHook" method="onCreate" />
+    </hooks>
+</model>

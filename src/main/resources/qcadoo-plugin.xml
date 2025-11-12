@@ -58,6 +58,11 @@
 		<model:model model="incomingQualityStandardSample" resource="model/sample/incomingQualityStandardSample.xml" />
 		<model:model model="incomingQualityStandardSampleDto" resource="model/sample/incomingQualityStandardSampleDto.xml" />
 
+		<!-- Tái cấu trúc -->
+		<model:model model="qualityStandardH" resource="model/qualityStandardH.xml" />
+		<model:model model="qualityStandardL" resource="model/qualityStandardL.xml" />
+		<model:model model="qSHAttachment" resource="model/qSHAttachment.xml" />
+
 		<menu:menu-category name="qm" />
 
 		<menu:menu-item name="measuringEquipment" category="qm" view="measuringEquipmentList" />
@@ -92,6 +97,11 @@
 		<view:view resource="view/qualityInspectionCommand/qualityInspectionCommandList.xml" />
 		<view:view resource="view/qualityInspectionCommand/qualityInspectionCommandDetails.xml" />
 		<view:view resource="view/qualityInspectionCommand/incomingQualityStandardSampleDetails.xml" />
+
+		<!-- Tái cấu trúc -->
+		<view:view resource="view/incomingQualityStandardRe/incomingQualityStandardHListRe.xml" />
+		<view:view resource="view/incomingQualityStandardRe/incomingQualityStandardHDetailsRe.xml" />
+		<view:view resource="view/incomingQualityStandardRe/incomingQualityStandardLDetailsRe.xml" />
 
 		<model:model-enum-value plugin="basic" model="log" enum="logType" value="measuringEquipmentImport" />
 		<model:model-enum-value plugin="basic" model="log" enum="logType" value="qualityCriteriaImport" />
