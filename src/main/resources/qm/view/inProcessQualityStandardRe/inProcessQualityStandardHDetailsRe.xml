@@ -1,4 +1,4 @@
-<view name="inProcessQualityStandardHDetailsRe" modelName="qualityStandardH" 
+<view name="inProcessQualityStandardHDetailsRe" modelName="qualityStandardH"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
     <component type="window" name="window">
@@ -32,12 +32,12 @@
 
                             <option type="expression" value="#number + ' - ' + #name" />
                             <option type="fieldCode" value="number" />
-                             <criteriaModifier class="com.fti.qm.criteriaModifiers.ProductCriteriaModifiers" method="filterForInProcessQualityStandard"/>
+                            <criteriaModifier class="com.fti.qm.criteriaModifiers.ProductCriteriaModifiers" method="filterForInProcessQualityStandard"/>
                         </component>
                     </layoutElement>
 
                     <layoutElement column="1" row="2">
-                        <component type="select" name="type" field="type" reference="type"/>
+                        <component type="hidden" name="type" field="type" reference="type"/>
                     </layoutElement>
 
                     <layoutElement column="2" row="1" width="4" height="2">

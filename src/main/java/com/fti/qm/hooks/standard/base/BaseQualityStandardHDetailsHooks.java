@@ -33,18 +33,9 @@ public class BaseQualityStandardHDetailsHooks {
 
         Entity entity = form.getEntity();
         if (entity == null || entity.getId() != null) {
-            // Chỉ set giá trị mặc định nếu là bản ghi mới
             return;
         }
-
         entity.setField(QSHFields.TYPE, typeValue);
-
-        FieldComponent typeField = (FieldComponent) view.getComponentByReference(QSHFields.TYPE);
-        if (typeField != null) {
-            typeField.setFieldValue(typeValue);
-            typeField.requestComponentUpdateState();
-        }
-
         form.setEntity(entity);
     }
 }
