@@ -15,7 +15,15 @@ public class QualityStandardHDetailsHooks extends BaseQualityStandardHDetailsHoo
         setDefaultTypeValue(view, QSHFields.Type.INCOMING);
     }
 
+    public void setDefaultTypeValueInprocess(final ViewDefinitionState view) {
+        setDefaultTypeValue(view, QSHFields.Type.INPROCESS);
+    }
+
     public void setDefaultTypeValueOutgoing(final ViewDefinitionState view) {
         setDefaultTypeValue(view, QSHFields.Type.OUTGOING);
+    }
+
+    public void setDefaultTypeValueEquipment(final ViewDefinitionState view) {
+        setDefaultTypeValue(view, QSHFields.Type.EQUIPMENT);
     }
 }
