@@ -1,6 +1,7 @@
 package com.fti.qm.hooks.standard.base;
 
 import com.fti.qm.constants.GlobalFields;
+import com.fti.qm.constants.QSHFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -40,7 +41,7 @@ public class BaseQualityStandardHooksRe {
 
         // 🔍 Tìm xem có bản ghi khác cùng product + type đang active
         SearchCriteriaBuilder scb = dataDefinition.find()
-                .add(SearchRestrictions.eq("type", typeValue))
+                .add(SearchRestrictions.eq(QSHFields.TYPE, typeValue))
                 .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
                 .add(SearchRestrictions.eq(productIdField, productId))
                 .add(SearchRestrictions.eq(activeField, true));

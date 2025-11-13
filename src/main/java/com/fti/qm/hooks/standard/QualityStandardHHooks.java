@@ -1,5 +1,6 @@
 package com.fti.qm.hooks.standard;
 
+import com.fti.qm.constants.QSHFields;
 import com.fti.qm.hooks.standard.base.BaseQualityStandardHooksRe;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -16,21 +17,21 @@ public class QualityStandardHHooks extends BaseQualityStandardHooksRe {
     }
 
     public void validateUniqueActiveProduct(final DataDefinition dd, final Entity entity) {
-        String typeValue = entity.getStringField("type");
+        String typeValue = entity.getStringField(QSHFields.TYPE);
         if (typeValue == null) return;
 
         String messageKey;
         switch (typeValue) {
-            case "01incoming":
+            case QSHFields.Type.INCOMING:
                 messageKey = "qm.message.error.productAlreadyExistsWithActiveStandardType01";
                 break;
-            case "02inprocess":
+            case QSHFields.Type.INPROCESS:
                 messageKey = "qm.message.error.productAlreadyExistsWithActiveStandardType02";
                 break;
-            case "03outgoing":
+            case QSHFields.Type.OUTGOING:
                 messageKey = "qm.message.error.productAlreadyExistsWithActiveStandardType03";
                 break;
-            case "04equipment":
+            case QSHFields.Type.EQUIPMENT:
                 messageKey = "qm.message.error.productAlreadyExistsWithActiveStandardType04";
                 break;
             default:
@@ -38,18 +39,18 @@ public class QualityStandardHHooks extends BaseQualityStandardHooksRe {
         }
 
         validateUniqueActiveCombination(dd, entity,
-                "product",
-                "product.id",
-                "active",
+                QSHFields.PRODUCT,
+                QSHFields.PRODUCT_ID,
+                QSHFields.ACTIVE,
                 typeValue,
                 messageKey);
     }
 
     public void setStatusText(final ViewDefinitionState view) {
         handleSetStatusText(view,
-                "qualityStandardLs",
-                "statusText",
-                "01noStandard",
-                "02hasStandard");
+                QSHFields.QUALITY_STANDARD_LS,
+                QSHFields.STATUS_TEXT,
+                QSHFields.StatusText.NO_STANDARD,
+                QSHFields.StatusText.HAS_STANDARD);
     }
 }

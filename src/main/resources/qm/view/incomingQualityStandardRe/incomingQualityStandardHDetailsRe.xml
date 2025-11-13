@@ -125,7 +125,7 @@
     </component>
 
     <hooks>
-        <beforeRender class="com.fti.qm.hooks.standard.incoming.IQSHDetailsHooks" method="setDefaultTypeValue"/>
+        <beforeRender class="com.fti.qm.hooks.standard.QualityStandardHDetailsHooks" method="setDefaultTypeValueIncoming"/>
         <beforeRender class="com.fti.qm.hooks.standard.QualityStandardHDetailsHooks" method="setQSHIdForMultiUploadField"/>
     </hooks>
 </view>

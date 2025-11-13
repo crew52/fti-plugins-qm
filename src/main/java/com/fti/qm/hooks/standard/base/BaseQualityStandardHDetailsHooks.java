@@ -1,5 +1,7 @@
 package com.fti.qm.hooks.standard.base;
 
+import com.fti.qm.constants.QSHFields;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -21,5 +23,28 @@ public class BaseQualityStandardHDetailsHooks {
 
         localeField.setFieldValue(LocaleContextHolder.getLocale());
         localeField.requestComponentUpdateState();
+    }
+
+    protected void setDefaultTypeValue(final ViewDefinitionState view, final String typeValue) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        if (form == null) {
+            return;
+        }
+
+        Entity entity = form.getEntity();
+        if (entity == null || entity.getId() != null) {
+            // Chỉ set giá trị mặc định nếu là bản ghi mới
+            return;
+        }
+
+        entity.setField(QSHFields.TYPE, typeValue);
+
+        FieldComponent typeField = (FieldComponent) view.getComponentByReference(QSHFields.TYPE);
+        if (typeField != null) {
+            typeField.setFieldValue(typeValue);
+            typeField.requestComponentUpdateState();
+        }
+
+        form.setEntity(entity);
     }
 }
