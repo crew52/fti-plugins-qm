@@ -20,6 +20,8 @@ public final class QSHFields {
 
     public static final String TOOL = "tool";
 
+    public static final String TOOL_ID = TOOL + ".id";
+
     public static final String QUALITY_STANDARD_LS = "qualityStandardLs";
 
     public static final String ATTACHMENTS = "attachments";

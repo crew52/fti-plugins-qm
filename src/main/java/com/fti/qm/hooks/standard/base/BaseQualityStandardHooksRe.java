@@ -2,6 +2,7 @@ package com.fti.qm.hooks.standard.base;
 
 import com.fti.qm.constants.GlobalFields;
 import com.fti.qm.constants.QSHFields;
+import com.fti.qm.constants.equipmentQualityStandardH.EquipmentQualityStandardHFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -54,6 +55,41 @@ public class BaseQualityStandardHooksRe {
 
         if (exists != null) {
             entity.addError(dataDefinition.getField(productField), errorMessageKey);
+        }
+    }
+
+    public void validateUniqueActiveToolInspectionType(final DataDefinition dataDefinition, final Entity entity,
+                                                       final String toolField, final String toolIdField,
+                                                       final String inspectionTypeField, final String activeField,
+                                                       final String messageKey) {
+        if (!entity.isValid()) {
+            return;
+        }
+
+        Long toolId = entity.getBelongsToField(toolField).getId();
+        String inspectionType = entity.getStringField(inspectionTypeField);
+        Long currentId = entity.getId();
+        final Boolean deleted = entity.getBooleanField(GlobalFields.DELETED);
+
+        if (Boolean.TRUE.equals(deleted)) {
+            return;
+        }
+
+        // 🔍 Kiểm tra tồn tại bản ghi khác cùng tool + inspectionType đang active
+        SearchCriteriaBuilder scb = dataDefinition.find()
+                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
+                .add(SearchRestrictions.eq(toolIdField, toolId))
+                .add(SearchRestrictions.eq(inspectionTypeField, inspectionType))
+                .add(SearchRestrictions.eq(activeField, true));
+
+        if (currentId != null) {
+            scb.add(SearchRestrictions.ne("id", currentId));
+        }
+
+        Entity exists = scb.setMaxResults(1).uniqueResult();
+
+        if (exists != null) {
+            entity.addError(dataDefinition.getField(toolField), messageKey);
         }
     }
 

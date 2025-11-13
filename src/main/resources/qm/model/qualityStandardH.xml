@@ -20,7 +20,7 @@
 
     <identifier expression="#product['number'] + ' - ' + #product['name']" />
     <hooks>
-        <onSave class="com.fti.qm.hooks.standard.QualityStandardHHooks" method="validateUniqueActiveProduct" />
+        <onSave class="com.fti.qm.hooks.standard.QualityStandardHHooks" method="onSave" />
         <onCreate class="com.fti.qm.hooks.common.SetDefaultDeletedHook" method="onCreate" />
     </hooks>
 </model>
