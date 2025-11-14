@@ -3,8 +3,6 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="http://schema.qcadoo.org/model" xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-<!--        <enum name="type" values="01incoming,02inprocess,03outgoing,04equipment"/>-->
-
         <dictionary name="type" dictionary="typeOfQualityStandard" />
         <belongsTo name="product" plugin="basic" model="product" />
         <belongsTo name="tool" plugin="cmmsMachineParts" model="tool" />

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="qualityStandardSampleDtoRe" activable="false" auditable="false" deletable="false" insertable="false" updatable="false"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/model" xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
+    <fields>
+        <string name="position"/>
+        <string name="qcNumber"/>
+        <string name="qcName"/>
+        <enum name="qcType" values="01qualitative,02quantitative" />
+        <dictionary name="unit" dictionary="units"/>
+        <string name="description"/>
+        <integer name="sampleSize"/>
+        <integer name="sampleNumber"/>
+        <enum name="qualitativeValue" values="01pass"/>
+        <enum name="qualitativeResult" values="01pass,02fail"/>
+        <decimal name="quantitativeValue" />
+        <decimal name="upValue" />
+        <decimal name="downValue" />
+        <decimal name="quantitativeResult"/>
+        <enum name="quantitativeEvaluation" values="01pass,02fail"/>
+        <string name="meName"/>
+        <string name="meMeasuringMethod"/>
+
+        <belongsTo name="qualityInspectionCommandRe" plugin="qm" model="qualityInspectionCommandRe"/>
+        <belongsTo name="qualityStandardL" plugin="qm" model="qualityStandardL"/>
+    </fields>
+
+    <identifier expression="#position"/>
+    <masterModel plugin="qm" model="qualityStandardSampleRe"/>
+</model>

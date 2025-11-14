@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="qualityStandardSampleRe"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/model" xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
+    <fields>
+        <!-- Liên kết đến lệnh QC -->
+        <belongsTo name="qualityInspectionCommandRe" plugin="qm" model="qualityInspectionCommandRe" required="true"/>
+
+        <!-- Liên kết đến bản ghi L -->
+        <belongsTo name="qualityStandardL" plugin="qm" model="qualityStandardL" required="true"/>
+
+        <!-- Số thứ tự mẫu thử -->
+        <integer name="sampleNumber" required="true"/>
+
+        <!-- Kết quả đo định tính -->
+        <enum name="qualitativeResult" values="01pass,02fail"/>
+
+        <!-- Kết quả đo định lượng -->
+        <decimal name="quantitativeResult"/>
+
+        <!-- Kết quả PASS/FAIL định lượng -->
+        <enum name="quantitativeEvaluation" values="01pass,02fail"/>
+
+    </fields>
+    <identifier expression="#qualityInspectionCommandRe['inspectionOrderNumber'] + #qualityInspectionCommandRe['inspectionOrderNumberInt'] + ' - Sample ' + #sampleNumber"/>
+    <hooks>
+    </hooks>
+</model>

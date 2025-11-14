@@ -1,0 +1,90 @@
+<view name="incomingQualityStandardSampleDetailsRe" modelName="incomingQualityStandardSample"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+    <component type="window" name="window">
+        <ribbon>
+            <template name="standardFormTemplate" includeItems="navigation.back, actions.save"/>
+        </ribbon>
+        <windowTab name="mainTab">
+            <component type="form" name="incomingQualityStandardSampleDetail" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="3" rows="7">
+
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="position" reference="position" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="1" row="2">
+                        <component type="input" name="qcNumber" reference="qcNumber" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="1" row="3">
+                        <component type="input" name="qcName" reference="qcName" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="1" row="4">
+                        <component type="input" name="qcType" reference="qcType" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="1" row="5">
+                        <component type="input" name="unit" reference="unit" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="1" row="6" height="2">
+                        <component type="textarea" name="description" reference="description" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="1">
+                        <component type="input" name="sampleSize" reference="sampleSize" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="2">
+                        <component type="input" name="sampleNumber" field="sampleNumber" reference="sampleNumber" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="3">
+                        <component type="input" name="qualitativeValue" reference="qualitativeValue" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="4">
+                        <component type="select" name="qualitativeResult" field="qualitativeResult" reference="qualitativeResult" />
+                    </layoutElement>
+
+                    <layoutElement column="2" row="5">
+                        <component type="input" name="quantitativeValue" reference="quantitativeValue" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="6">
+                        <component type="input" name="upValue" reference="upValue" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="7">
+                        <component type="input" name="downValue" reference="downValue" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="3" row="1">
+                        <component type="input" name="quantitativeResult" field="quantitativeResult" reference="quantitativeResult">
+                            <listener event="onInputChange" class="com.fti.qm.listeners.QualityStandardSampleListeners" method="onQuantitativeResultChange" />
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="3" row="2">
+                        <component type="select" name="quantitativeEvaluation" field="quantitativeEvaluation" reference="quantitativeEvaluation" />
+                    </layoutElement>
+
+                    <layoutElement column="3" row="3">
+                        <component type="input" name="meName" reference="meName" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="3" row="4">
+                        <component type="input" name="meMeasuringMethod" reference="meMeasuringMethod" defaultEnabled="never"/>
+                    </layoutElement>
+                </component>
+                <option type="header" value="true"/>
+                <option type="expression" value="'Mẫu số ' + #sampleNumber" />
+            </component>
+        </windowTab>
+    </component>
+    <hooks>
+        <beforeRender class="com.fti.qm.hooks.QualityStandardSampleDetailsHooks" method="beforeRender"/>
+    </hooks>
+</view>

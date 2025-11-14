@@ -1,0 +1,165 @@
+<view name="qualityInspectionCommandDetailsRe" modelName="qualityInspectionCommand"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+    <component type="window" name="window">
+        <ribbon>
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack" id="qicBackButton" />
+            </group>
+            <group name="actions">
+                <bigButton name="save" icon="saveIcon24.png" state="enabled" action="#{form}.performSave;" accesskey="s" />
+                <smallButton name="saveBack" icon="saveBackIcon16.png" state="enabled" action="#{form}.performSave; #{window}.performBack;" />
+                <smallButton name="cancel" icon="cancelIcon16.png" state="enabled" action="#{form}.performCancel;" accesskey="x" />
+                <smallButton name="refresh" icon="updateIcon16.png" state="enabled" action="#{form}.performRefresh;" accesskey="r" />
+            </group>
+        </ribbon>
+        <windowTab name="mainTab" reference="mainTab">
+            <component type="form" name="qualityInspectionCommandDetail" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="3" rows="6">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="inspectionOrderNumber" field="inspectionOrderNumber" reference="inspectionOrderNumber" defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="input" name="inspectionOrderNumberInt" field="inspectionOrderNumberInt" reference="inspectionOrderNumberInt" defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="select" name="inspectionType" field="inspectionType" reference="inspectionType" defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="select" name="status" field="status" reference="status"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="5">
+                        <component type="input" name="productionOrderNumber" field="productionOrderNumber" reference="productionOrderNumber" defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="6">
+                        <component type="input" name="operationNumber" field="operationNumber" reference="operationNumber" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="1">
+                        <component type="lookup" name="company" field="company" reference="company" hasDescription="true" defaultEnabled="never">
+                            <option type="column" name="name" fields="name"/>
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="2">
+                        <component type="input" name="companyName" reference="companyName" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="3">
+                        <component type="lookup" name="product" field="product" reference="product" hasDescription="true" defaultEnabled="never">
+                            <option type="column" name="name" fields="name"/>
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="4">
+                        <component type="input" name="productName" reference="productName" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="5">
+                        <component type="lookup" name="tool" field="tool" reference="tool" hasDescription="true" defaultEnabled="never">
+                            <option type="column" name="name" fields="name"/>
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="6">
+                        <component type="input" name="toolName" reference="toolName" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="3" row="1">
+                        <component type="lookup" name="user" field="user" reference="user" hasDescription="true">
+                            <option type="column" name="email" fields="email"/>
+                            <option type="expression" value="#userName"/>
+                            <option type="searchable" value="email"/>
+                            <option type="orderable" value="email"/>
+                            <option type="fieldCode" value="userName"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="3" row="2">
+                        <component type="calendar" name="inspectionDate" field="inspectionDate" reference="inspectionDate"/>
+                    </layoutElement>
+                    <layoutElement column="3" row="3">
+                        <component type="input" name="transactionQuantity" field="transactionQuantity" reference="transactionQuantity" defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="3" row="4" height="2">
+                        <component type="textarea" name="note" field="note" reference="note"/>
+                    </layoutElement>
+                </component>
+                <option type="header" value="true"/>
+                <option type="expression" value="#product['number'] + ' - ' + #product['name']" />
+            </component>
+        </windowTab>
+        <!-- <windowTab name="generalInformationTab" reference="generalInformationTab">
+            <component type="gridLayout" name="generalInformationGridLayout" columns="2" rows="5">
+                <layoutElement column="1" row="1">
+                    <component type="select" name="inspectionTypeInfo" reference="inspectionTypeInfo" defaultEnabled="never"/>
+                </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="calendar" name="inspectionDate" field="#{form}.inspectionDate" reference="inspectionDate" defaultEnabled="never"/>
+                </layoutElement>
+                <layoutElement column="1" row="3">
+                    <component type="input" name="transactionQuantityInfo" field="#{form}.transactionQuantity" reference="transactionQuantityInfo" defaultEnabled="never"/>
+                </layoutElement>
+                <layoutElement column="1" row="4" height="2">
+                    <component type="textarea" name="note" field="#{form}.note" reference="note"/>
+                </layoutElement>
+            </component>
+            <option type="header" value="true"/>
+        </windowTab> -->
+
+        <windowTab name="samplesTab" reference="samplesTab">
+            <component type="gridLayout" name="samplesGridLayout" columns="1" rows="12">
+                <layoutElement column="1" row="1" height="12">
+                    <component type="grid" name="samples" reference="samples" source="#{form}.incomingQualityStandardSampleDtos">
+                        <option type="column" name="position" fields="position" link="true"/>
+                        <option type="column" name="qcNumber" fields="qcNumber" link="true"/>
+                        <option type="column" name="qcName" fields="qcName"/>
+                        <option type="column" name="qcType" fields="qcType"/>
+                        <option type="column" name="unit" fields="unit"/>
+                        <option type="column" name="description" fields="description"/>
+                        <option type="column" name="sampleSize" fields="sampleSize"/>
+                        <option type="column" name="sampleNumber" fields="sampleNumber"/>
+                        <option type="column" name="qualitativeValue" fields="qualitativeValue"/>
+                        <option type="column" name="qualitativeResult" fields="qualitativeResult"/>
+                        <option type="column" name="quantitativeValue" fields="quantitativeValue"/>
+                        <option type="column" name="upValue" fields="upValue"/>
+                        <option type="column" name="downValue" fields="downValue"/>
+                        <option type="column" name="quantitativeResult" fields="quantitativeResult"/>
+                        <option type="column" name="quantitativeEvaluation" fields="quantitativeEvaluation"/>
+                        <option type="column" name="meName" fields="meName"/>
+                        <option type="column" name="meMeasuringMethod" fields="meMeasuringMethod"/>
+
+                        <option type="searchable" value="position,qcNumber,qcName,qcType,unit,description,sampleSize,sampleNumber,qualitativeValue,qualitativeResult,quantitativeValue,upValue,downValue,quantitativeResult,quantitativeEvaluation,meName,meMeasuringMethod"/>
+                        <option type="orderable" value="position,qcNumber,qcName,qcType,unit,description,sampleSize,sampleNumber,qualitativeValue,qualitativeResult,quantitativeValue,upValue,downValue,quantitativeResult,quantitativeEvaluation,meName,meMeasuringMethod"/>
+
+                        <option type="order" column="qcNumber" direction="asc"/>
+
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="false"/>
+
+<!--                        <option type="correspondingView" value="qm/incomingQualityStandardSampleDetails"/>-->
+<!--                        <option type="correspondingComponent" value="form"/>-->
+<!--                        <option type="correspondingViewInModal" value="true"/>-->
+
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+    </component>
+
+    <hooks>
+        <beforeRender class="com.fti.qm.hooks.QICDetailsHooksRe" method="beforeRender"/>
+    </hooks>
+</view>

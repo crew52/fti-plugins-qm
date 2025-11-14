@@ -63,6 +63,13 @@
 		<model:model model="qualityStandardL" resource="model/qualityStandardL.xml" />
 		<model:model model="qSHAttachment" resource="model/qSHAttachment.xml" />
 
+		<model:model model="qualityInspectionCommandRe" resource="model/qualityInspectionCommandRe/qualityInspectionCommandRe.xml" />
+		<model:model model="qualityInspectionCommandContextRe" resource="model/qualityInspectionCommandRe/qualityInspectionCommandContextRe.xml" />
+		<model:model model="qualityInspectionCommandListDtoRe" resource="model/qualityInspectionCommandRe/qualityInspectionCommandListDtoRe.xml" />
+
+		<model:model model="qualityStandardSampleRe" resource="model/sampleRe/qualityStandardSampleRe.xml" />
+		<model:model model="qualityStandardSampleDtoRe" resource="model/sampleRe/qualityStandardSampleDtoRe.xml" />
+
 		<menu:menu-category name="qm" />
 
 		<menu:menu-item name="measuringEquipment" category="qm" view="measuringEquipmentList" />
@@ -114,6 +121,10 @@
 		<view:view resource="view/equipmentQualityStandardRe/equipmentQualityStandardHListRe.xml" />
 		<view:view resource="view/equipmentQualityStandardRe/equipmentQualityStandardHDetailsRe.xml" />
 		<view:view resource="view/equipmentQualityStandardRe/equipmentQualityStandardLDetailsRe.xml" />
+
+		<view:view resource="view/qualityInspectionCommandRe/qualityInspectionCommandListRe.xml" />
+		<view:view resource="view/qualityInspectionCommandRe/qualityInspectionCommandDetailsRe.xml" />
+		<view:view resource="view/qualityInspectionCommandRe/incomingQualityStandardSampleDetailsRe.xml" />
 
 		<model:model-enum-value plugin="basic" model="log" enum="logType" value="measuringEquipmentImport" />
 		<model:model-enum-value plugin="basic" model="log" enum="logType" value="qualityCriteriaImport" />
