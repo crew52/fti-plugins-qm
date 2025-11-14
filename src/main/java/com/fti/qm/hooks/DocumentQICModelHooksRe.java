@@ -44,7 +44,7 @@ public class DocumentQICModelHooksRe {
         }
 
         // --- Chuẩn bị DataDefinition cho QualityInspectionCommand
-        DataDefinition qicDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER,"qualityInspectionCommandRe");
+        DataDefinition qicDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER,QMConstants.MODEL_QUALITY_INSPECTION_COMMAND);
         if (qicDD == null) {
             return;
         }

@@ -39,9 +39,6 @@ public class MeasuringEquipmentHooks {
 
         // Xóa mềm các bản ghi con
         String joinField = QMConstants.MODEL_MEASURING_EQUIPMENT;
-        softDeleteHelper.softDeleteRelatedLines(QMConstants.MODEL_INCOMING_QUALITY_STANDARD_L, joinField, measuringEquipment);
-        softDeleteHelper.softDeleteRelatedLines(QMConstants.MODEL_OUTGOING_QUALITY_STANDARD_L, joinField, measuringEquipment);
-        softDeleteHelper.softDeleteRelatedLines(QMConstants.MODEL_IN_PROCESS_QUALITY_STANDARD_L, joinField, measuringEquipment);
-        softDeleteHelper.softDeleteRelatedLines(QMConstants.MODEL_EQUIPMENT_QUALITY_STANDARD_L, joinField, measuringEquipment);
+        softDeleteHelper.softDeleteRelatedLines(QMConstants.MODEL_QUALITY_STANDARD_L, joinField, measuringEquipment);
     }
 }

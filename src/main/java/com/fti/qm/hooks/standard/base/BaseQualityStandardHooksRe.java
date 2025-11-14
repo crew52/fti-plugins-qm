@@ -2,7 +2,6 @@ package com.fti.qm.hooks.standard.base;
 
 import com.fti.qm.constants.GlobalFields;
 import com.fti.qm.constants.QSHFields;
-import com.fti.qm.constants.equipmentQualityStandardH.EquipmentQualityStandardHFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;

@@ -43,7 +43,7 @@ public class QICContextService {
             Date dateFrom = qICContextEntity.getDateField(QICContextFields.DATE_FROM);
             Date dateTo = qICContextEntity.getDateField(QICContextFields.DATE_TO);
             if(Objects.nonNull(dateFrom) && Objects.nonNull(dateTo) && dateTo.before(dateFrom)) {
-                view.addMessage("qm.qualityInspectionCommandList.window.contextTab.error.datesOrder", ComponentState.MessageType.FAILURE);
+                view.addMessage("qm.qualityInspectionCommandListRe.window.contextTab.error.datesOrder", ComponentState.MessageType.FAILURE);
                 return;
             }
             qICContextEntity = confirmContext(qICContextEntity, args);
@@ -292,7 +292,7 @@ public class QICContextService {
             }
         }
 
-        view.addMessage("qm.qualityInspectionCommandList.reset.success", ComponentState.MessageType.SUCCESS);
+        view.addMessage("qm.qualityInspectionCommandListRe.reset.success", ComponentState.MessageType.SUCCESS);
     }
 
 }

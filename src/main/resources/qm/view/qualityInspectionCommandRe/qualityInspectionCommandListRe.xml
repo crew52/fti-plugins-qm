@@ -43,10 +43,10 @@
                                 confirmContextButtonIcon;
 
                             if (confirmed == 'true' || confirmed == '1') {
-                                confirmContextButtonLabel = "#{translate(qm.qualityInspectionCommandList.window.ribbon.contextActions.changeContext)}";
+                                confirmContextButtonLabel = "#{translate(qm.qualityInspectionCommandListRe.window.ribbon.contextActions.changeContext)}";
                                 confirmContextButtonIcon = "editIcon24_rew.png";
                             } else {
-                                confirmContextButtonLabel = "#{translate(qm.qualityInspectionCommandList.window.ribbon.contextActions.confirmContext)}";
+                                confirmContextButtonLabel = "#{translate(qm.qualityInspectionCommandListRe.window.ribbon.contextActions.confirmContext)}";
                                 confirmContextButtonIcon = "search24_rew.png";
                             }
 

@@ -1,8 +1,6 @@
 package com.fti.qm.hooks;
 
-import com.fti.qm.constants.GlobalFields;
-import com.fti.qm.constants.QualityStandardSampleFields;
-import com.fti.qm.constants.QMConstants;
+import com.fti.qm.constants.*;
 import com.fti.qm.constants.qualityInspectionCommand.QICFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -102,14 +100,14 @@ public class QICDetailsHooksRe {
     private void createSamplesIfNotExist(Entity qic, Entity product, String type) {
 
         DataDefinition sampleDD =
-                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, "qualityStandardSampleRe");
+                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_SAMPLE);
 
         DataDefinition hDD =
-                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, "qualityStandardH");
+                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_H);
 
         List<Entity> hList = hDD.find()
-                .add(SearchRestrictions.eq("product.id", product.getId()))
-                .add(SearchRestrictions.eq("type", type))
+                .add(SearchRestrictions.eq(GlobalFields.PRODUCT_ID, product.getId()))
+                .add(SearchRestrictions.eq(QSHFields.TYPE, type))
                 .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
                 .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
                 .list().getEntities();
@@ -119,30 +117,30 @@ public class QICDetailsHooksRe {
         List<Long> hIds = hList.stream().map(Entity::getId).collect(Collectors.toList());
 
         DataDefinition lDD =
-                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, "qualityStandardL");
+                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_L);
 
         List<Entity> lList = lDD.find()
-                .add(SearchRestrictions.in("qualityStandardH.id", hIds))
+                .add(SearchRestrictions.in(QSLFields.QUALITY_STANDARD_H_ID, hIds))
                 .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
                 .list().getEntities();
 
         for (Entity l : lList) {
 
             boolean exists = !sampleDD.find()
-                    .add(SearchRestrictions.eq("qualityInspectionCommandRe.id", qic.getId()))
-                    .add(SearchRestrictions.eq("qualityStandardL.id", l.getId()))
+                    .add(SearchRestrictions.eq(QualityStandardSampleFields.QUALITY_INSPECTION_COMMAND_ID, qic.getId()))
+                    .add(SearchRestrictions.eq(QualityStandardSampleFields.QUALITY_STANDARD_L_ID, l.getId()))
                     .list().getEntities().isEmpty();
 
             if (exists) continue;
 
-            Integer sampleSize = l.getIntegerField("sampleSize");
+            Integer sampleSize = l.getIntegerField(QSLFields.SAMPLE_SIZE);
             if (sampleSize == null || sampleSize <= 0) sampleSize = 1;
 
             for (int i = 1; i <= sampleSize; i++) {
                 Entity sample = sampleDD.create();
-                sample.setField("qualityInspectionCommandRe", qic);
-                sample.setField("qualityStandardL", l);
-                sample.setField("sampleNumber", i);
+                sample.setField(QMConstants.MODEL_QUALITY_INSPECTION_COMMAND, qic);
+                sample.setField(QMConstants.MODEL_QUALITY_STANDARD_L, l);
+                sample.setField(QualityStandardSampleFields.SAMPLE_NUMBER, i);
                 sampleDD.save(sample);
             }
         }
@@ -164,11 +162,11 @@ public class QICDetailsHooksRe {
      * Kiểm tra xem tiêu chuẩn kiểm tra có tồn tại cho sản phẩm hiện tại hay không.
      */
     private boolean checkIfStandardExists(final Entity product, final String type) {
-        DataDefinition dd = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, "qualityStandardH");
+        DataDefinition dd = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_H);
 
         return dd.find()
-                .add(SearchRestrictions.eq("product.id", product.getId()))
-                .add(SearchRestrictions.eq("type", type))
+                .add(SearchRestrictions.eq(GlobalFields.PRODUCT_ID, product.getId()))
+                .add(SearchRestrictions.eq(QSHFields.TYPE, type))
                 .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
                 .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
                 .setMaxResults(1)

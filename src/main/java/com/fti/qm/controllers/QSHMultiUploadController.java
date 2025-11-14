@@ -1,5 +1,6 @@
 package com.fti.qm.controllers;
 
+import com.fti.qm.constants.QMConstants;
 import com.fti.qm.constants.QSHAttachmentFields;
 import com.fti.qm.controllers.base.AbstractQualityStandardUploadController;
 import org.springframework.stereotype.Controller;
@@ -16,17 +17,17 @@ import javax.servlet.http.HttpServletResponse;
 public class QSHMultiUploadController extends AbstractQualityStandardUploadController {
     @Override
     protected String getHeaderModelName() {
-        return "qualityStandardH";
+        return QMConstants.MODEL_QUALITY_STANDARD_H;
     }
 
     @Override
     protected String getAttachmentModelName() {
-        return "qSHAttachment";
+        return QMConstants.MODEL_QSH_ATTACHMENT;
     }
 
     @Override
     protected String getForeignKeyField() {
-        return "qualityStandardH";
+        return QSHAttachmentFields.QUALITY_STANDARD_H;
     }
 
     @Override

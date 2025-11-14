@@ -30,6 +30,7 @@ public final class QSLFields {
     public static final String QUALITY_CRITERIA = "qualityCriteria";
     public static final String MEASURING_EQUIPMENT = "measuringEquipment";
     public static final String QUALITY_STANDARD_H = "qualityStandardH";
+    public static final String QUALITY_STANDARD_H_ID = QUALITY_STANDARD_H + ".id";
 
     // Soft delete fields
     public static final String DELETED = "deleted";

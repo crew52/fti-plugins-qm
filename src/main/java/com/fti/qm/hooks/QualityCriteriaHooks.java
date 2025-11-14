@@ -21,9 +21,6 @@ public class QualityCriteriaHooks {
 
         // Xóa mềm các bản ghi con
         String joinField = QMConstants.MODEL_QUALITY_CRITERIA;
-        softDeleteHelper.softDeleteRelatedLines(QMConstants.MODEL_INCOMING_QUALITY_STANDARD_L, joinField, qualityCriteria);
-        softDeleteHelper.softDeleteRelatedLines(QMConstants.MODEL_OUTGOING_QUALITY_STANDARD_L, joinField, qualityCriteria);
-        softDeleteHelper.softDeleteRelatedLines(QMConstants.MODEL_IN_PROCESS_QUALITY_STANDARD_L, joinField, qualityCriteria);
-        softDeleteHelper.softDeleteRelatedLines(QMConstants.MODEL_EQUIPMENT_QUALITY_STANDARD_L, joinField, qualityCriteria);
+        softDeleteHelper.softDeleteRelatedLines(QMConstants.MODEL_QUALITY_STANDARD_L, joinField, qualityCriteria);
     }
 }
