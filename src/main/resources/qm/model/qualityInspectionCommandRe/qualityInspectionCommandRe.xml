@@ -49,11 +49,28 @@
         <!-- Ngày kiểm tra -->
         <date name="inspectionDate"/>
 
+        <!-- Ghi chú -->
         <string name="note">
             <validatesLength max="1000"/>
         </string>
 
+        <!-- Nhà cung cấp (Kho) -->
         <belongsTo name="location" model="location" plugin="materialFlow" />
+
+        <!-- Quyết định chất lượng: 01: Chấp nhận, 02: Từ chối, 03: Chấp nhận 1 phần -->
+        <enum name="qualityDecision" values="01accept,02reject,03partial"/>
+
+        <!-- Số lượng nhập kho -->
+        <decimal name="warehouseQuantity"/>
+
+        <!-- Số lượng NG -->
+        <decimal name="ngQuantity"/>
+
+        <!-- Kho nhập -->
+        <belongsTo name="warehouseLocation" model="location" plugin="materialFlow" />
+
+        <!-- Kho NG -->
+        <belongsTo name="ngLocation" model="location" plugin="materialFlow" />
 
         <belongsTo name="qualityInspectionCommandContextRe" plugin="qm" model="qualityInspectionCommandContextRe"/>
         
