@@ -31,27 +31,27 @@ public class QualityStandardSampleDetailsHooks {
 
         // 🔁 Load lại entity từ DB để đảm bảo đầy đủ các belongsTo
         Entity sample = dataDefinitionService
-                .get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_INCOMING_QUALITY_STANDARD_SAMPLE)
+                .get(QMConstants.PLUGIN_IDENTIFIER,  "qualityStandardSampleRe")
                 .get(form.getEntityId());
         if (sample == null) return;
 
         // 🔁 Lấy entity cha từ DB
-        Entity standardLine = sample.getBelongsToField(QMConstants.MODEL_INCOMING_QUALITY_STANDARD_L);
+        Entity standardLine = sample.getBelongsToField("qualityStandardL");
         if (standardLine == null)  return;
 
         Locale locale = LocaleContextHolder.getLocale();
 
         // ✅ Gán giá trị từ standardLine vào form
-        setFieldValue(view, QualityStandardSampleViewFields.POSITION, standardLine.getStringField(IncomingQualityStandardLFields.POSITION));
-        setFieldValue(view, QualityStandardSampleViewFields.DESCRIPTION, standardLine.getStringField(IncomingQualityStandardLFields.DESCRIPTION));
-        setFieldValue(view, QualityStandardSampleViewFields.QUANTITATIVE_VALUE, standardLine.getDecimalField(IncomingQualityStandardLFields.QUANTITATIVE_VALUE));
-        setFieldValue(view, QualityStandardSampleViewFields.UP_VALUE, standardLine.getDecimalField(IncomingQualityStandardLFields.UP_VALUE));
-        setFieldValue(view, QualityStandardSampleViewFields.DOWN_VALUE, standardLine.getDecimalField(IncomingQualityStandardLFields.DOWN_VALUE));
-        setFieldValue(view, QualityStandardSampleViewFields.SAMPLE_NUMBER, standardLine.getIntegerField(IncomingQualityStandardLFields.SAMPLE_SIZE));
-        setFieldValue(view, QualityStandardSampleViewFields.UNIT, standardLine.getStringField(IncomingQualityStandardLFields.UNIT));
+        setFieldValue(view, QualityStandardSampleViewFields.POSITION, standardLine.getStringField("position"));
+        setFieldValue(view, QualityStandardSampleViewFields.DESCRIPTION, standardLine.getStringField("description"));
+        setFieldValue(view, QualityStandardSampleViewFields.QUANTITATIVE_VALUE, standardLine.getDecimalField("quantitativeValue"));
+        setFieldValue(view, QualityStandardSampleViewFields.UP_VALUE, standardLine.getDecimalField("upValue"));
+        setFieldValue(view, QualityStandardSampleViewFields.DOWN_VALUE, standardLine.getDecimalField("downValue"));
+        setFieldValue(view, QualityStandardSampleViewFields.SAMPLE_NUMBER, standardLine.getIntegerField("sampleSize"));
+        setFieldValue(view, QualityStandardSampleViewFields.UNIT, standardLine.getStringField( "unit"));
 
         // ✅ Dịch qualitativeValue
-        translateEnumField(view, QualityStandardSampleViewFields.QUALITATIVE_VALUE, QUALITATIVE_VALUE_PREFIX, standardLine.getStringField(IncomingQualityStandardLFields.QUALITATIVE_VALUE), locale);
+        translateEnumField(view, QualityStandardSampleViewFields.QUALITATIVE_VALUE, QUALITATIVE_VALUE_PREFIX, standardLine.getStringField("qualitativeValue"), locale);
 
          // 5️⃣ Lấy thông tin tiêu chí (qualityCriteria)
         Entity criteria = standardLine.getBelongsToField(QMConstants.MODEL_QUALITY_CRITERIA);

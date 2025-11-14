@@ -1,4 +1,4 @@
-<view name="qualityInspectionCommandDetailsRe" modelName="qualityInspectionCommand"
+<view name="qualityInspectionCommandDetailsRe" modelName="qualityInspectionCommandRe"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
     <component type="window" name="window">
@@ -122,7 +122,7 @@
         <windowTab name="samplesTab" reference="samplesTab">
             <component type="gridLayout" name="samplesGridLayout" columns="1" rows="12">
                 <layoutElement column="1" row="1" height="12">
-                    <component type="grid" name="samples" reference="samples" source="#{form}.incomingQualityStandardSampleDtos">
+                    <component type="grid" name="samples" reference="samples" source="#{form}.qualityStandardSampleDtosRe">
                         <option type="column" name="position" fields="position" link="true"/>
                         <option type="column" name="qcNumber" fields="qcNumber" link="true"/>
                         <option type="column" name="qcName" fields="qcName"/>
@@ -149,9 +149,9 @@
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="false"/>
 
-<!--                        <option type="correspondingView" value="qm/incomingQualityStandardSampleDetails"/>-->
-<!--                        <option type="correspondingComponent" value="form"/>-->
-<!--                        <option type="correspondingViewInModal" value="true"/>-->
+                       <option type="correspondingView" value="qm/qualityStandardSampleDetailsRe"/>
+                       <option type="correspondingComponent" value="form"/>
+                       <option type="correspondingViewInModal" value="true"/>
 
                     </component>
                 </layoutElement>

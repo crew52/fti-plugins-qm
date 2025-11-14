@@ -124,7 +124,7 @@
 
 		<view:view resource="view/qualityInspectionCommandRe/qualityInspectionCommandListRe.xml" />
 		<view:view resource="view/qualityInspectionCommandRe/qualityInspectionCommandDetailsRe.xml" />
-		<view:view resource="view/qualityInspectionCommandRe/incomingQualityStandardSampleDetailsRe.xml" />
+		<view:view resource="view/qualityInspectionCommandRe/qualityStandardSampleDetailsRe.xml" />
 
 		<model:model-enum-value plugin="basic" model="log" enum="logType" value="measuringEquipmentImport" />
 		<model:model-enum-value plugin="basic" model="log" enum="logType" value="qualityCriteriaImport" />
@@ -132,6 +132,10 @@
 
 		<model:model-hook plugin="materialFlowResources" model="document">
 			<model:onSave class="com.fti.qm.hooks.DocumentQICModelHooks" method="createQualityInspectionCommandIfNeeded"/>
+		</model:model-hook>
+
+		<model:model-hook plugin="materialFlowResources" model="document">
+			<model:onSave class="com.fti.qm.hooks.DocumentQICModelHooksRe" method="createQualityInspectionCommandIfNeeded"/>
 		</model:model-hook>
 
 		<view:resource uri="public/**/*" />

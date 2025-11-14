@@ -46,26 +46,6 @@ import java.util.stream.Collectors;
 @Service
 public class QICDetailsHooksRe {
 
-    /**
-     * Bản đồ ánh xạ giữa loại kiểm tra (inspectionType)
-     * và tên model tiêu chuẩn tương ứng trong module QM.
-     *
-     * Ví dụ:
-     * 01 (incoming) → incomingQualityStandardH
-     * 02 (in-process) → inProcessQualityStandardH
-     * 03 (outgoing) → outgoingQualityStandardH
-     * 04 (equipment) → equipmentQualityStandardH
-     */
-    private static final Map<String, String> INSPECTION_TYPE_MODEL_MAP;
-    static {
-        Map<String, String> map = new HashMap<>();
-        map.put(QICFields.INSPECTION_TYPE_INCOMING, QMConstants.MODEL_INCOMING_QUALITY_STANDARD_H);
-        map.put(QICFields.INSPECTION_TYPE_IN_PROCESS, QMConstants.MODEL_IN_PROCESS_QUALITY_STANDARD_H);
-        map.put(QICFields.INSPECTION_TYPE_OUTGOING, QMConstants.MODEL_OUTGOING_QUALITY_STANDARD_H);
-        map.put(QICFields.INSPECTION_TYPE_EQUIPMENT, QMConstants.MODEL_EQUIPMENT_QUALITY_STANDARD_H);
-        INSPECTION_TYPE_MODEL_MAP = Collections.unmodifiableMap(map);
-    }
-
     @Autowired
     private SecurityService securityService;
 
@@ -108,73 +88,66 @@ public class QICDetailsHooksRe {
         Entity product = qic.getBelongsToField(QICFields.PRODUCT);
         if (inspectionType == null || product == null) return;
 
-        String modelName = INSPECTION_TYPE_MODEL_MAP.get(inspectionType);
-        if (modelName == null) return;
-
-        if (!checkIfStandardExists(modelName, product)) {
+        // Vì đã gộp model, ta chỉ cần gọi qualityStandardH
+        if (!checkIfStandardExists(product, inspectionType)) {
             view.addMessage("qm.qualityInspectionCommand.error.noStandardForProduct",
                     ComponentState.MessageType.INFO, false, product.getStringField(ProductFields.NUMBER));
             disableRibbonActionsExceptNavigation(view);
+            return;
         }
 
-        createSamplesIfNotExist(qic, modelName);
+        createSamplesIfNotExist(qic, product, inspectionType);
     }
 
-    /**
-     * Tự động tạo các mẫu thử (sample) cho từng dòng tiêu chuẩn L tương ứng,
-     * nếu chưa có bản ghi trong bảng mẫu thử.
-     *
-     * @param qic        Entity phiếu kiểm tra chất lượng hiện tại
-     * @param modelNameH Tên model của bảng tiêu chuẩn Header (ví dụ: incomingQualityStandardH)
-     */
-    private void createSamplesIfNotExist(Entity qic, String modelNameH) {
-        DataDefinition sampleDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_INCOMING_QUALITY_STANDARD_SAMPLE);
-        Entity product = qic.getBelongsToField(QICFields.PRODUCT);
+    private void createSamplesIfNotExist(Entity qic, Entity product, String type) {
 
-        if (product == null) return;
+        DataDefinition sampleDD =
+                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, "qualityStandardSampleRe");
 
-        // 1️⃣ Lấy tất cả H theo product
-        DataDefinition hDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, modelNameH);
+        DataDefinition hDD =
+                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, "qualityStandardH");
+
         List<Entity> hList = hDD.find()
-                .add(SearchRestrictions.eq(GlobalFields.PRODUCT_ID, product.getId()))
+                .add(SearchRestrictions.eq("product.id", product.getId()))
+                .add(SearchRestrictions.eq("type", type))
                 .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
                 .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
                 .list().getEntities();
+
         if (hList.isEmpty()) return;
 
-        List<Long> hIds = hList.stream()
-                .map(Entity::getId)
-                .collect(Collectors.toList());
+        List<Long> hIds = hList.stream().map(Entity::getId).collect(Collectors.toList());
 
-        // 2️⃣ Lấy tất cả L dựa trên H list
-        String modelNameL = modelNameH.replace("H", "L");
-        DataDefinition lDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, modelNameL);
+        DataDefinition lDD =
+                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, "qualityStandardL");
+
         List<Entity> lList = lDD.find()
-                .add(SearchRestrictions.in(QMConstants.MODEL_INCOMING_QUALITY_STANDARD_H + GlobalFields.DOT_ID, hIds))
+                .add(SearchRestrictions.in("qualityStandardH.id", hIds))
                 .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
                 .list().getEntities();
 
-        // 3️⃣ Tạo sample cho từng L nếu chưa tồn tại
         for (Entity l : lList) {
-            List<Entity> existingSamplesForL = sampleDD.find()
-                    .add(SearchRestrictions.eq(QMConstants.MODEL_QUALITY_INSPECTION_COMMAND + GlobalFields.DOT_ID, qic.getId()))
-                    .add(SearchRestrictions.eq(QMConstants.MODEL_INCOMING_QUALITY_STANDARD_L + GlobalFields.DOT_ID, l.getId()))
-                    .list().getEntities();
 
-            if (!existingSamplesForL.isEmpty()) continue; // đã có sample cho L này → skip
+            boolean exists = !sampleDD.find()
+                    .add(SearchRestrictions.eq("qualityInspectionCommandRe.id", qic.getId()))
+                    .add(SearchRestrictions.eq("qualityStandardL.id", l.getId()))
+                    .list().getEntities().isEmpty();
+
+            if (exists) continue;
 
             Integer sampleSize = l.getIntegerField("sampleSize");
             if (sampleSize == null || sampleSize <= 0) sampleSize = 1;
 
             for (int i = 1; i <= sampleSize; i++) {
                 Entity sample = sampleDD.create();
-                sample.setField(QualityStandardSampleFields.QUALITY_INSPECTION_COMMAND, qic);
-                sample.setField(QualityStandardSampleFields.INCOMING_QUALITY_STANDARD_L, l);
-                sample.setField(QualityStandardSampleFields.SAMPLE_NUMBER, i);
+                sample.setField("qualityInspectionCommandRe", qic);
+                sample.setField("qualityStandardL", l);
+                sample.setField("sampleNumber", i);
                 sampleDD.save(sample);
             }
         }
     }
+
 
     /**
      * Lấy entity chính (form entity) từ view hiện tại.
@@ -190,10 +163,12 @@ public class QICDetailsHooksRe {
     /**
      * Kiểm tra xem tiêu chuẩn kiểm tra có tồn tại cho sản phẩm hiện tại hay không.
      */
-    private boolean checkIfStandardExists(final String modelName, final Entity product) {
-        DataDefinition dd = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, modelName);
+    private boolean checkIfStandardExists(final Entity product, final String type) {
+        DataDefinition dd = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, "qualityStandardH");
+
         return dd.find()
                 .add(SearchRestrictions.eq("product.id", product.getId()))
+                .add(SearchRestrictions.eq("type", type))
                 .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
                 .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
                 .setMaxResults(1)

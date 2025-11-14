@@ -1,4 +1,4 @@
-<view name="incomingQualityStandardSampleDetailsRe" modelName="incomingQualityStandardSample"
+<view name="qualityStandardSampleDetailsRe" modelName="qualityStandardSampleRe"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
     <component type="window" name="window">
@@ -6,7 +6,7 @@
             <template name="standardFormTemplate" includeItems="navigation.back, actions.save"/>
         </ribbon>
         <windowTab name="mainTab">
-            <component type="form" name="incomingQualityStandardSampleDetail" reference="form">
+            <component type="form" name="qualityStandardSampleDetail" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3" rows="7">
 
                     <layoutElement column="1" row="1">
