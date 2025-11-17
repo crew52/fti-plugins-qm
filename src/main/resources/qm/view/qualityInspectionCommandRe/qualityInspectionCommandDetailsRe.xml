@@ -159,18 +159,27 @@
         </windowTab>
 
         <windowTab name="qualityDecisionTab" reference="qualityDecisionTab">
-            <component type="gridLayout" name="qualityDecisionGridLayout" columns="3" rows="5">
+            <component type="gridLayout" name="qualityDecisionGridLayout" columns="4" rows="4">
                 <layoutElement column="1" row="1">
                     <component type="select" name="qualityDecision" field="#{form}.qualityDecision" reference="qualityDecision"/>
                 </layoutElement>
                 <layoutElement column="1" row="2">
-                    <component type="input" name="warehouseQuantity" field="#{form}.warehouseQuantity" reference="warehouseQuantity"/>
+                    <component type="checkbox" name="qualityDecisionCheckBox" reference="qualityDecisionCheckBox">
+                        <listener event="onChange" class="com.fti.qm.listeners.QICDetailsListeners" method="onQualityDecisionCheckBoxChange" />
+                    </component>
                 </layoutElement>
-                <layoutElement column="1" row="3">
-                    <component type="input" name="ngQuantity" field="#{form}.ngQuantity" reference="ngQuantity"/>
+                <layoutElement column="2" row="1">
+                    <component type="input" name="warehouseQuantity" field="#{form}.warehouseQuantity" reference="warehouseQuantity" defaultEnabled="false">
+                        <listener event="onInputChange" class="com.fti.qm.listeners.QICDetailsListeners" method="onWarehouseQtyChange" />
+                    </component>
                 </layoutElement>
-                <layoutElement column="1" row="4">
-                    <component type="lookup" name="warehouseLocation" field="#{form}.warehouseLocation" reference="warehouseLocation" hasDescription="true">
+                <layoutElement column="2" row="2">
+                    <component type="input" name="ngQuantity" field="#{form}.ngQuantity" reference="ngQuantity" defaultEnabled="false">
+                         <listener event="onInputChange" class="com.fti.qm.listeners.QICDetailsListeners" method="onNgQtyChange" />
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="3">
+                    <component type="lookup" name="warehouseLocation" field="#{form}.warehouseLocation" reference="warehouseLocation" hasDescription="true" defaultEnabled="false">
                         <option type="column" name="name" fields="name"/>
                         <option type="expression" value="#number + ' - ' + #name"/>
                         <option type="searchable" value="name"/>
@@ -178,8 +187,8 @@
                         <option type="fieldCode" value="number"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="1" row="5">
-                    <component type="lookup" name="ngLocation" field="#{form}.ngLocation" reference="ngLocation" hasDescription="true">
+                <layoutElement column="2" row="4">
+                    <component type="lookup" name="ngLocation" field="#{form}.ngLocation" reference="ngLocation" hasDescription="true" defaultEnabled="false">
                         <option type="column" name="name" fields="name"/>
                         <option type="expression" value="#number + ' - ' + #name"/>
                         <option type="searchable" value="name"/>
