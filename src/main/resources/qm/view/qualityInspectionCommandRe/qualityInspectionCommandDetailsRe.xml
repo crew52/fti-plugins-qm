@@ -199,6 +199,41 @@
             </component>
             <option type="header" value="true"/>
         </windowTab>
+
+        <windowTab name="attachments">
+            <component type="gridLayout" name="attachmentsLayout" columns="3" rows="6" hasBorders="false">
+
+                <!-- Cột trái: Giao diện upload -->
+                <layoutElement column="1" row="1" height="6">
+                    <component type="staticPage" name="multiUpload">
+                        <option type="page" value="qm/multiUploadForQualityStandardH.jsp"/>
+                    </component>
+
+                    <!-- Trường ẩn: ID thực thể -->
+                    <component type="input" name="qSHIdForMultiUpload" reference="qSHIdForMultiUpload" defaultVisible="false">
+                        <option type="alignment" value="right"/>
+                    </component>
+
+                    <!-- Trường ẩn: Locale -->
+                    <component type="input" name="qSHMultiUploadLocale" reference="qSHMultiUploadLocale" defaultVisible="false" />
+                </layoutElement>
+
+                <!-- Cột phải: Grid danh sách file đã đính kèm -->
+                <layoutElement column="2" row="1" width="2" height="6">
+                    <component type="grid" name="attachments" reference="attachmentsGrid" source="#{form}.attachments">
+                        <option type="column" name="attachment" fields="name" correspondingField="attachmentLocation" link="true" attachment="true"/>
+                        <option type="column" name="attachmentLocation" fields="attachment" hidden="true"/>
+                        <option type="column" name="size" fields="size"/>
+                        <option type="order" column="attachment" direction="desc"/>
+
+                        <option type="softDeletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+
+            </component>
+        </windowTab>
     </component>
 
     <hooks>
