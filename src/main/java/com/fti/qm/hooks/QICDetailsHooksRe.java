@@ -119,8 +119,8 @@ public class QICDetailsHooksRe {
         DataDefinition stdAttachmentDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QSH_ATTACHMENT);
 
         List<Entity> stdAttList = stdAttachmentDD.find()
-                .add(SearchRestrictions.in("qualityStandardH.id", hIds))
-                .add(SearchRestrictions.eq("deleted", false))
+                .add(SearchRestrictions.in(QSLFields.QUALITY_STANDARD_H_ID, hIds))
+                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
                 .list().getEntities();
 
         if (stdAttList.isEmpty()) return;
@@ -133,9 +133,8 @@ public class QICDetailsHooksRe {
 
             // Check tồn tại: tránh insert trùng
             boolean exists = !qicAttachmentDD.find()
-                    .add(SearchRestrictions.eq("qualityInspectionCommandRe.id", qic.getId()))
-//                    .add(SearchRestrictions.eq("sourceAttachmentId", stdAtt.getId())) // cột đánh dấu nguồn
-                    .add(SearchRestrictions.eq("attachment", stdAtt.getStringField("attachment")))
+                    .add(SearchRestrictions.eq(QICFields.QUALITY_INSPECTION_COMMAND_ID, qic.getId()))
+                    .add(SearchRestrictions.eq(QICAttachmentFields.ATTACHMENT, stdAtt.getStringField(QSHAttachmentFields.ATTACHMENT)))
                     .list().getEntities().isEmpty();
 
             if (exists) continue;
@@ -143,12 +142,11 @@ public class QICDetailsHooksRe {
             // 5. Tạo mới attachment record cho QIC
             Entity newAtt = qicAttachmentDD.create();
 
-            newAtt.setField("qualityInspectionCommandRe", qic);
-            newAtt.setField("sourceAttachmentId", stdAtt.getId());
-            newAtt.setField("attachment", stdAtt.getStringField("attachment"));
-            newAtt.setField("name", stdAtt.getStringField("name"));
-            newAtt.setField("size", stdAtt.getField("size"));
-            newAtt.setField("ext", stdAtt.getStringField("ext"));
+            newAtt.setField(QICAttachmentFields.QUALITY_INSPECTION_COMMAND, qic);
+            newAtt.setField(QICAttachmentFields.ATTACHMENT, stdAtt.getStringField(QSHAttachmentFields.ATTACHMENT));
+            newAtt.setField(QICAttachmentFields.NAME, stdAtt.getStringField(QSHAttachmentFields.NAME));
+            newAtt.setField(QICAttachmentFields.SIZE, stdAtt.getField(QSHAttachmentFields.SIZE));
+            newAtt.setField(QICAttachmentFields.EXT, stdAtt.getStringField(QSHAttachmentFields.EXT));
 
             qicAttachmentDD.save(newAtt);
         }

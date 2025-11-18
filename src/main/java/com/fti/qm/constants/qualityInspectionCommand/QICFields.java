@@ -5,6 +5,7 @@ public final class QICFields {
     }
 
     // Fields
+    public static final String QUALITY_INSPECTION_COMMAND_ID = "qualityInspectionCommandRe.id";
     public static final String INSPECTION_TYPE = "inspectionType";
     public static final String INSPECTION_TYPE_INCOMING = "01incoming";
     public static final String INSPECTION_TYPE_IN_PROCESS = "02inprocess";
