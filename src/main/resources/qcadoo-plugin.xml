@@ -44,6 +44,7 @@
 		<model:model model="qualityInspectionCommandRe" resource="model/qualityInspectionCommandRe/qualityInspectionCommandRe.xml" />
 		<model:model model="qualityInspectionCommandContextRe" resource="model/qualityInspectionCommandRe/qualityInspectionCommandContextRe.xml" />
 		<model:model model="qualityInspectionCommandListDtoRe" resource="model/qualityInspectionCommandRe/qualityInspectionCommandListDtoRe.xml" />
+		<model:model model="qicAttachment" resource="model/qualityInspectionCommandRe/qicAttachment.xml" />
 
 		<model:model model="qualityStandardSampleRe" resource="model/sampleRe/qualityStandardSampleRe.xml" />
 		<model:model model="qualityStandardSampleDtoRe" resource="model/sampleRe/qualityStandardSampleDtoRe.xml" />
