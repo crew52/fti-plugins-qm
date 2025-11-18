@@ -25,10 +25,24 @@ public final class QICFields {
     public static final String PO_NUMBER = "poNumber";
     public static final String EXECUTION_DATE = "executionDate";
     public static final String TRANSACTION_QUANTITY = "transactionQuantity";
+
+    public static final String QUALITY_DECISION = "qualityDecision";
+    public static final String QUALITY_DECISION_CHECKBOX = "qualityDecisionCheckBox";
+    public static final String WAREHOUSE_QUANTITY = "warehouseQuantity";
+    public static final String NG_QUANTITY = "ngQuantity";
+    public static final String WAREHOUSE_LOCATION = "warehouseLocation";
+    public static final String NG_LOCATION = "ngLocation";
     public static final String LOCATION = "location";
     public static final String QUALITY_INSPECTION_COMMAND_CONTEXT = "qualityInspectionCommandContextRe";
     public static final String USER = "user";
 
     public static final String INSPECTION_DATE = "inspectionDate";
     public static final String NOTE = "note";
+    public static final class QualityDecision {
+        private QualityDecision() {}
+
+        public static final String ACCEPT = "01accept";
+        public static final String REJECT = "02reject";
+        public static final String PARTIAL = "03partial";
+    }
 }

@@ -1,11 +1,13 @@
 package com.fti.qm.listeners;
 
+import com.fti.qm.constants.qualityInspectionCommand.QICFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -16,15 +18,15 @@ public class QICDetailsListeners {
                                                 final ComponentState componentState,
                                                 final String[] args) {
 
-        FieldComponent checkBox = (FieldComponent) view.getComponentByReference("qualityDecisionCheckBox");
+        FieldComponent checkBox = (FieldComponent) view.getComponentByReference(QICFields.QUALITY_DECISION_CHECKBOX);
         boolean isChecked = "1".equals(checkBox.getFieldValue());
 
         // Components
-        FieldComponent warehouseQty = (FieldComponent) view.getComponentByReference("warehouseQuantity");
-        LookupComponent warehouseLoc = (LookupComponent) view.getComponentByReference("warehouseLocation");
-        FieldComponent ngQty = (FieldComponent) view.getComponentByReference("ngQuantity");
-        LookupComponent ngLoc = (LookupComponent) view.getComponentByReference("ngLocation");
-        FieldComponent decisionField = (FieldComponent) view.getComponentByReference("qualityDecision");
+        FieldComponent warehouseQty = (FieldComponent) view.getComponentByReference(QICFields.WAREHOUSE_QUANTITY);
+        LookupComponent warehouseLoc = (LookupComponent) view.getComponentByReference(QICFields.WAREHOUSE_LOCATION);
+        FieldComponent ngQty = (FieldComponent) view.getComponentByReference(QICFields.NG_QUANTITY);
+        LookupComponent ngLoc = (LookupComponent) view.getComponentByReference(QICFields.NG_LOCATION);
+        FieldComponent decisionField = (FieldComponent) view.getComponentByReference(QICFields.QUALITY_DECISION);
 
         // Enable/disable qualityDecision theo checkbox
         decisionField.setEnabled(!isChecked);
@@ -36,9 +38,9 @@ public class QICDetailsListeners {
         }
 
         // Lấy entity
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity entity = form.getEntity();
-        BigDecimal transactionQty = entity.getDecimalField("transactionQuantity");
+        BigDecimal transactionQty = entity.getDecimalField(QICFields.TRANSACTION_QUANTITY);
 
         String decision = decisionField.getFieldValue() != null
                 ? decisionField.getFieldValue().toString()
@@ -57,21 +59,21 @@ public class QICDetailsListeners {
 
         // ---------------- Switch-case theo quyết định ----------------
         switch (decision) {
-            case "01accept":
+            case QICFields.QualityDecision.ACCEPT:
                 warehouseLoc.setEnabled(true);
                 if (transactionQty != null) {
                     warehouseQty.setFieldValue(transactionQty.toString());
                 }
                 break;
 
-            case "02reject":
+            case QICFields.QualityDecision.REJECT:
                 ngLoc.setEnabled(true);
                 if (transactionQty != null) {
                     ngQty.setFieldValue(transactionQty.toString());
                 }
                 break;
 
-            case "03partial":
+            case QICFields.QualityDecision.PARTIAL:
                 warehouseQty.setEnabled(true);
                 warehouseLoc.setEnabled(true);
                 ngQty.setEnabled(true);
@@ -135,15 +137,15 @@ public class QICDetailsListeners {
                                      final ComponentState state,
                                      final String[] args) {
 
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity entity = form.getEntity();
-        BigDecimal transactionQty = entity.getDecimalField("transactionQuantity");
+        BigDecimal transactionQty = entity.getDecimalField(QICFields.TRANSACTION_QUANTITY);
         if (transactionQty == null) {
             return;
         }
 
-        FieldComponent warehouseQty = (FieldComponent) view.getComponentByReference("warehouseQuantity");
-        FieldComponent ngQty = (FieldComponent) view.getComponentByReference("ngQuantity");
+        FieldComponent warehouseQty = (FieldComponent) view.getComponentByReference(QICFields.WAREHOUSE_QUANTITY);
+        FieldComponent ngQty = (FieldComponent) view.getComponentByReference(QICFields.NG_QUANTITY);
 
         BigDecimal warehouseValue = safeParseDecimal(warehouseQty.getFieldValue());
         BigDecimal ngValue = transactionQty.subtract(warehouseValue);
@@ -159,15 +161,15 @@ public class QICDetailsListeners {
                               final ComponentState state,
                               final String[] args) {
 
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity entity = form.getEntity();
-        BigDecimal transactionQty = entity.getDecimalField("transactionQuantity");
+        BigDecimal transactionQty = entity.getDecimalField(QICFields.TRANSACTION_QUANTITY);
         if (transactionQty == null) {
             return;
         }
 
-        FieldComponent warehouseQty = (FieldComponent) view.getComponentByReference("warehouseQuantity");
-        FieldComponent ngQty = (FieldComponent) view.getComponentByReference("ngQuantity");
+        FieldComponent warehouseQty = (FieldComponent) view.getComponentByReference(QICFields.WAREHOUSE_QUANTITY);
+        FieldComponent ngQty = (FieldComponent) view.getComponentByReference(QICFields.NG_QUANTITY);
 
         BigDecimal ngValue = safeParseDecimal(ngQty.getFieldValue());
         BigDecimal warehouseValue = transactionQty.subtract(ngValue);
