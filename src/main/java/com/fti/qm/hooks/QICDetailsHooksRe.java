@@ -95,6 +95,63 @@ public class QICDetailsHooksRe {
         }
 
         createSamplesIfNotExist(qic, product, inspectionType);
+
+        copyAttachmentsFromStandardH(qic, product, inspectionType);
+    }
+
+    private void copyAttachmentsFromStandardH(Entity qic, Entity product, String inspectionType) {
+
+        DataDefinition hDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_H);
+
+        // 1. Lấy danh sách qualityStandardH phù hợp
+        List<Entity> hList = hDD.find()
+                .add(SearchRestrictions.eq(GlobalFields.PRODUCT_ID, product.getId()))
+                .add(SearchRestrictions.eq(QSHFields.TYPE, inspectionType))
+                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
+                .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
+                .list().getEntities();
+
+        if (hList.isEmpty()) return;
+
+        List<Long> hIds = hList.stream().map(Entity::getId).collect(Collectors.toList());
+
+        // 2. Lấy tất cả attachment của StandardH
+        DataDefinition stdAttachmentDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QSH_ATTACHMENT);
+
+        List<Entity> stdAttList = stdAttachmentDD.find()
+                .add(SearchRestrictions.in("qualityStandardH.id", hIds))
+                .add(SearchRestrictions.eq("deleted", false))
+                .list().getEntities();
+
+        if (stdAttList.isEmpty()) return;
+
+        // 3. DataDefinition cho qicAttachment
+        DataDefinition qicAttachmentDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QIC_ATTACHMENT);
+
+        // 4. Thực hiện copy từng attachment
+        for (Entity stdAtt : stdAttList) {
+
+            // Check tồn tại: tránh insert trùng
+            boolean exists = !qicAttachmentDD.find()
+                    .add(SearchRestrictions.eq("qualityInspectionCommandRe.id", qic.getId()))
+//                    .add(SearchRestrictions.eq("sourceAttachmentId", stdAtt.getId())) // cột đánh dấu nguồn
+                    .add(SearchRestrictions.eq("attachment", stdAtt.getStringField("attachment")))
+                    .list().getEntities().isEmpty();
+
+            if (exists) continue;
+
+            // 5. Tạo mới attachment record cho QIC
+            Entity newAtt = qicAttachmentDD.create();
+
+            newAtt.setField("qualityInspectionCommandRe", qic);
+            newAtt.setField("sourceAttachmentId", stdAtt.getId());
+            newAtt.setField("attachment", stdAtt.getStringField("attachment"));
+            newAtt.setField("name", stdAtt.getStringField("name"));
+            newAtt.setField("size", stdAtt.getField("size"));
+            newAtt.setField("ext", stdAtt.getStringField("ext"));
+
+            qicAttachmentDD.save(newAtt);
+        }
     }
 
     private void createSamplesIfNotExist(Entity qic, Entity product, String type) {

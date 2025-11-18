@@ -3,21 +3,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <%
-String ctx = request.getContextPath();
+    String ctx = request.getContextPath();
 %>
 
 <script src="/basic/public/js/jquery.form.js"></script>
 <script src="/basic/public/js/jquery.ui.widget.js"></script>
 <script src="/basic/public/js/jquery.iframe-transport.js"></script>
 <script src="/basic/public/js/jquery.fileupload.js"></script>
-<script src="/qm/public/js/multiuploadforequipmentfunctions.js"></script>
+<script src="/qm/public/js/multiuploadforqicfunctions.js"></script>
 <script src="/basic/public/js/bootstrap.min.js"></script>
 
 <link href="/basic/public/css/dropzone.css" type="text/css" rel="stylesheet" />
 
 
 
-<form id="fileupload" action="../../../rest/qm/multiUploadForEquipmentFiles.html" method="POST" enctype="multipart/form-data">
+<form id="fileupload" action="../../../rest/qm/multiUploadForQICFiles.html" method="POST" enctype="multipart/form-data">
 
     <input type="file" name="files[]" multiple>
 
@@ -25,7 +25,7 @@ String ctx = request.getContextPath();
 
     <div id="maxUploadFileMessage" style="display: none;">${requestScope.translationsMap['qcadooView.errorPage.error.uploadException.maxSizeExceeded.explanation']}</div>
 
-	<div id="progress" class="progress">
+    <div id="progress" class="progress">
         <div class="progress-bar progress-bar-success"> </div>
     </div>
 

@@ -12,6 +12,20 @@
                 <smallButton name="cancel" icon="cancelIcon16.png" state="enabled" action="#{form}.performCancel;" accesskey="x" />
                 <smallButton name="refresh" icon="updateIcon16.png" state="enabled" action="#{form}.performRefresh;" accesskey="r" />
             </group>
+
+            <group name="atachments">
+                <bigButton name="downloadAtachment" icon="generateIcon24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('downloadAttachment', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="qualityInspectionCommandDetail" reference="form">
@@ -99,25 +113,9 @@
                 </component>
                 <option type="header" value="true"/>
                 <option type="expression" value="#product['number'] + ' - ' + #product['name']" />
+                <listener event="downloadAttachment" method="downloadAttachment" class="com.fti.qm.listeners.AttachmentsListeners"/>
             </component>
         </windowTab>
-        <!-- <windowTab name="generalInformationTab" reference="generalInformationTab">
-            <component type="gridLayout" name="generalInformationGridLayout" columns="2" rows="5">
-                <layoutElement column="1" row="1">
-                    <component type="select" name="inspectionTypeInfo" reference="inspectionTypeInfo" defaultEnabled="never"/>
-                </layoutElement>
-                <layoutElement column="1" row="2">
-                    <component type="calendar" name="inspectionDate" field="#{form}.inspectionDate" reference="inspectionDate" defaultEnabled="never"/>
-                </layoutElement>
-                <layoutElement column="1" row="3">
-                    <component type="input" name="transactionQuantityInfo" field="#{form}.transactionQuantity" reference="transactionQuantityInfo" defaultEnabled="never"/>
-                </layoutElement>
-                <layoutElement column="1" row="4" height="2">
-                    <component type="textarea" name="note" field="#{form}.note" reference="note"/>
-                </layoutElement>
-            </component>
-            <option type="header" value="true"/>
-        </windowTab> -->
 
         <windowTab name="samplesTab" reference="samplesTab">
             <component type="gridLayout" name="samplesGridLayout" columns="1" rows="12">
@@ -206,16 +204,16 @@
                 <!-- Cột trái: Giao diện upload -->
                 <layoutElement column="1" row="1" height="6">
                     <component type="staticPage" name="multiUpload">
-                        <option type="page" value="qm/multiUploadForQualityStandardH.jsp"/>
+                        <option type="page" value="qm/multiUploadForQIC.jsp"/>
                     </component>
 
                     <!-- Trường ẩn: ID thực thể -->
-                    <component type="input" name="qSHIdForMultiUpload" reference="qSHIdForMultiUpload" defaultVisible="false">
+                    <component type="input" name="qicIdForMultiUpload" reference="qicIdForMultiUpload" defaultVisible="false">
                         <option type="alignment" value="right"/>
                     </component>
 
                     <!-- Trường ẩn: Locale -->
-                    <component type="input" name="qSHMultiUploadLocale" reference="qSHMultiUploadLocale" defaultVisible="false" />
+                    <component type="input" name="qicMultiUploadLocale" reference="qicMultiUploadLocale" defaultVisible="false" />
                 </layoutElement>
 
                 <!-- Cột phải: Grid danh sách file đã đính kèm -->
@@ -238,5 +236,6 @@
 
     <hooks>
         <beforeRender class="com.fti.qm.hooks.QICDetailsHooksRe" method="beforeRender"/>
+        <beforeRender class="com.fti.qm.hooks.standard.QICDetailsHooks" method="setQICIdForMultiUploadField"/>
     </hooks>
 </view>

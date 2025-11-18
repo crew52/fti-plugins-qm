@@ -16,6 +16,7 @@ public final class QMConstants {
     public static final String MODEL_QSH_ATTACHMENT = "qSHAttachment";
 
     public static final String MODEL_QUALITY_INSPECTION_COMMAND = "qualityInspectionCommandRe";
+    public static final String MODEL_QIC_ATTACHMENT = "qicAttachment";
     public static final String MODEL_QUALITY_STANDARD_SAMPLE = "qualityStandardSampleRe";
 
 }
