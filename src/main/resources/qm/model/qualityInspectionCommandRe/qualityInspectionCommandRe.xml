@@ -61,14 +61,11 @@
         <enum name="qualityDecision" values="01accept,02reject,03partial"/>
 
         <!-- Số lượng nhập kho -->
-<!--        <decimal name="warehouseQuantity"/>-->
-
         <decimal name="warehouseQuantity">
             <validatesWith class="com.fti.qm.validators.QICDetailsValidationHooks" method="validateWarehouseQuantity" />
         </decimal>
 
         <!-- Số lượng NG -->
-<!--        <decimal name="ngQuantity"/>-->
         <decimal name="ngQuantity">
             <validatesWith class="com.fti.qm.validators.QICDetailsValidationHooks" method="validateNgQuantity" />
         </decimal>
@@ -90,6 +87,5 @@
 
     <!-- Định danh của dòng -->
     <identifier expression="#inspectionOrderNumber"/>
-    <hooks>
-    </hooks>
+    <hooks/>
 </model>
