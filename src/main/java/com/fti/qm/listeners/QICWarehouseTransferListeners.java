@@ -1,6 +1,5 @@
 package com.fti.qm.listeners;
 
-import com.fti.qm.constants.qualityInspectionCommand.QICFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -28,13 +27,17 @@ public class QICWarehouseTransferListeners {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long id = form.getEntityId();
 
-        // 👉 Load entity thật từ DB
+        if (id == null) {
+            view.addMessage("qm.qic.transferWarehouse.noData", ComponentState.MessageType.FAILURE);
+            return;
+        }
+
         DataDefinition qicDD = dataDefinitionService.get("qm", "qualityInspectionCommandRe");
         Entity qic = qicDD.get(id);
 
         String status = qic.getStringField("status");
 
-        // 👉 Chỉ cho phép status = 02inProcess
+        // Chỉ cho phép status = 02inProgress
         if (!"02inProgress".equals(status)) {
             view.addMessage(
                     "qm.qic.transferWarehouse.invalidStatus", ComponentState.MessageType.FAILURE
@@ -42,17 +45,22 @@ public class QICWarehouseTransferListeners {
             return;
         }
 
-        // 👉 Status hợp lệ -> xử lý tiếp
         view.addMessage(
                 "qm.qic.transferWarehouse.validStatus", ComponentState.MessageType.SUCCESS
         );
 
-        // TODO: Place your actual transferWarehouse logic here...
+        // Tạo document dựa theo qualityDecision
+        createDocumentsForQIC(qic);
 
-        createDocumentFromQIC(qic);
+        // Cập nhật status QIC thành completed
+        updateQICStatusToCompleted(qic);
+
+        // Set entity lại vào form
+        form.setEntity(qic);
+        view.addMessage("qm.qic.transferWarehouse.success", ComponentState.MessageType.SUCCESS);
     }
 
-    private void createDocumentFromQIC(Entity qic) {
+    private void createDocumentsForQIC(Entity qic) {
 
         DataDefinition documentDD = dataDefinitionService.get("materialFlowResources", "document");
 
@@ -77,7 +85,6 @@ public class QICWarehouseTransferListeners {
         }
     }
 
-
     private void createSingleDocument(
             DataDefinition documentDD,
             Entity qic,
@@ -88,22 +95,30 @@ public class QICWarehouseTransferListeners {
             return;
         }
 
-        Entity newDoc = documentDD.create();
-
-        newDoc.setField("name", "Transfer from QIC " + qic.getStringField("poNumber"));
-        newDoc.setField("type", "05transfer");
-        newDoc.setField("time", java.util.Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
-
-        newDoc.setField("locationFrom", locationFrom);
-        newDoc.setField("locationTo", locationTo);
-        newDoc.setField("company", qic.getBelongsToField("company"));
-        newDoc.setField("user", securityService.getCurrentUserId());
-
-        newDoc.setField("description", "Auto created from QIC transfer - PO " + qic.getStringField("poNumber"));
-        newDoc.setField("state", "02accepted");
-
         try {
-            newDoc = documentDD.save(newDoc);
+            Entity newDoc = documentDD.create();
+            newDoc.setField("name", "Transfer from QIC " + qic.getStringField("poNumber"));
+            newDoc.setField("type", "05transfer");
+            newDoc.setField("time", java.util.Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+            newDoc.setField("locationFrom", locationFrom);
+            newDoc.setField("locationTo", locationTo);
+            newDoc.setField("company", qic.getBelongsToField("company"));
+            newDoc.setField("user", securityService.getCurrentUserId());
+            newDoc.setField("description", "Auto created from QIC transfer - PO " + qic.getStringField("poNumber"));
+            newDoc.setField("state", "02accepted");
+
+            documentDD.save(newDoc);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateQICStatusToCompleted(Entity qic) {
+        try {
+            qic.setField("status", "03completed");
+            DataDefinition qicDD = dataDefinitionService.get("qm", "qualityInspectionCommandRe");
+            qicDD.save(qic);
         } catch (Exception e) {
             e.printStackTrace();
         }
