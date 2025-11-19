@@ -12,10 +12,7 @@
         <enum name="type" values="01qualitative,02quantitative" />
         <dictionary name="unit" dictionary="units"/>
 
-        <hasMany name="incomingQualityStandardLs" model="incomingQualityStandardL" joinField="qualityCriteria" cascade="delete"/>
-        <hasMany name="outgoingQualityStandardLs" model="outgoingQualityStandardL" joinField="qualityCriteria" cascade="delete"/>
-        <hasMany name="inProcessQualityStandardLs" model="inProcessQualityStandardL" joinField="qualityCriteria" cascade="delete"/>
-        <hasMany name="equipmentQualityStandardLs" model="equipmentQualityStandardL" joinField="qualityCriteria" cascade="delete"/>
+        <hasMany name="qualityStandardLs" model="qualityStandardL" joinField="qualityCriteria" cascade="delete"/>
 
         <boolean name="deleted" default="false" />
         <datetime name="deletedDate" />

@@ -29,7 +29,7 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 @Service
 public class QICContextService {
 
-    private static final String L_QUALITY_INSPECTION_COMMAND = "qualityInspectionCommand";
+    private static final String L_QUALITY_INSPECTION_COMMAND = "qualityInspectionCommandRe";
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -43,7 +43,7 @@ public class QICContextService {
             Date dateFrom = qICContextEntity.getDateField(QICContextFields.DATE_FROM);
             Date dateTo = qICContextEntity.getDateField(QICContextFields.DATE_TO);
             if(Objects.nonNull(dateFrom) && Objects.nonNull(dateTo) && dateTo.before(dateFrom)) {
-                view.addMessage("qm.qualityInspectionCommandList.window.contextTab.error.datesOrder", ComponentState.MessageType.FAILURE);
+                view.addMessage("qm.qualityInspectionCommandListRe.window.contextTab.error.datesOrder", ComponentState.MessageType.FAILURE);
                 return;
             }
             qICContextEntity = confirmContext(qICContextEntity, args);
@@ -144,7 +144,7 @@ public class QICContextService {
         SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
 
         if (args.length > 0 && args[0].equals(L_QUALITY_INSPECTION_COMMAND)) {
-            String sql = "update qm_qualityInspectionCommand set qualityInspectionCommandContext_id = :contextId";
+            String sql = "update qm_qualityInspectionCommandRe set qualityInspectionCommandContextRe_id = :contextId";
 
             jdbcTemplate.update(sql, namedParameters);
 
@@ -292,7 +292,7 @@ public class QICContextService {
             }
         }
 
-        view.addMessage("qm.qualityInspectionCommandList.reset.success", ComponentState.MessageType.SUCCESS);
+        view.addMessage("qm.qualityInspectionCommandListRe.reset.success", ComponentState.MessageType.SUCCESS);
     }
 
 }

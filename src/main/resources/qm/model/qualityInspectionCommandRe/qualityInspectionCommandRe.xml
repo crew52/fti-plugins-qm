@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="qualityInspectionCommandRe"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/model" xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
+    <fields>
+        <!-- Loại kiểm tra: 01: đầu vào, 02: công đoạn, 03: đầu ra, 04: thiết bị đo lường -->
+        <enum name="inspectionType" values="01incoming,02inprocess,03outgoing,04equipment"/>
+
+        <!-- Trạng thái: 01 Khởi tạo, 02 Đang thực hiện, 03 Hoàn thành -->
+        <enum name="status" values="01new,02inProgress,03completed"/>
+
+        <!-- Mã lệnh sản xuất -->
+        <string name="productionOrderNumber">
+            <validatesLength max="255"/>
+        </string>
+
+        <!-- Mã công đoạn -->
+        <string name="operationNumber">
+            <validatesLength max="255"/>
+        </string>
+
+        <!-- Mã nhà cung cấp -->
+        <belongsTo name="company" plugin="basic" model="company"/>
+
+        <!-- Mã sản phẩm -->
+        <belongsTo name="product" plugin="basic" model="product"/>
+
+        <!-- Mã thiết bị -->
+        <belongsTo name="tool" plugin="cmmsMachineParts" model="tool"/>
+
+        <string name="inspectionOrderNumber">
+            <validatesLength max="255"/>
+        </string>
+
+        <integer name="inspectionOrderNumberInt" />
+
+        <!-- Số PO -->
+        <string name="poNumber">
+            <validatesLength max="255"/>
+        </string>
+
+        <!-- Ngày thực hiện -->
+        <date name="executionDate"/>
+
+        <!-- Số lượng giao dịch -->
+        <decimal name="transactionQuantity"/>
+
+        <!-- Ngày kiểm tra -->
+        <date name="inspectionDate"/>
+
+        <!-- Ghi chú -->
+        <string name="note">
+            <validatesLength max="1000"/>
+        </string>
+
+        <!-- Nhà cung cấp (Kho) -->
+        <belongsTo name="location" model="location" plugin="materialFlow" />
+
+        <!-- Quyết định chất lượng: 01: Chấp nhận, 02: Từ chối, 03: Chấp nhận 1 phần -->
+        <enum name="qualityDecision" values="01accept,02reject,03partial"/>
+
+        <!-- Số lượng nhập kho -->
+        <decimal name="warehouseQuantity">
+            <validatesWith class="com.fti.qm.validators.QICDetailsValidationHooks" method="validateWarehouseQuantity" />
+        </decimal>
+
+        <!-- Số lượng NG -->
+        <decimal name="ngQuantity">
+            <validatesWith class="com.fti.qm.validators.QICDetailsValidationHooks" method="validateNgQuantity" />
+        </decimal>
+
+        <!-- Kho nhập -->
+        <belongsTo name="warehouseLocation" model="location" plugin="materialFlow" />
+
+        <!-- Kho NG -->
+        <belongsTo name="ngLocation" model="location" plugin="materialFlow" />
+
+        <belongsTo name="qualityInspectionCommandContextRe" plugin="qm" model="qualityInspectionCommandContextRe"/>
+
+        <belongsTo name="user" model="user" plugin="qcadooSecurity" />
+
+        <hasMany name="qualityStandardSamplesRe" model="qualityStandardSampleRe" joinField="qualityInspectionCommandRe"/>
+        <hasMany name="qualityStandardSampleDtosRe" model="qualityStandardSampleDtoRe" joinField="qualityInspectionCommandRe"/>
+        <hasMany name="attachments" model="qicAttachment" joinField="qualityInspectionCommandRe"/>
+    </fields>
+
+    <!-- Định danh của dòng -->
+    <identifier expression="#inspectionOrderNumber"/>
+    <hooks/>
+</model>

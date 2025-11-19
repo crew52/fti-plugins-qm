@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="equipmentQualityStandardHListRe" modelName="qualityStandardH" menuAccessible="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+    <component type="window" name="window">
+        <ribbon>
+            <template name="standardGridSoftDeleteTemplate"/>
+        </ribbon>
+        <component type="grid" name="equipmentQualityStandardHList" reference="grid">
+            <option type="column" name="toolNumber" fields="tool" expression="#tool['number']" link="true" />
+            <option type="column" name="toolName" fields="tool" expression="#tool['name']" />
+            <option type="column" name="inspectionType" fields="inspectionType"/>
+            <option type="column" name="statusText" fields="statusText" />
+            <option type="order" column="toolName" direction="asc" />
+
+            <option type="correspondingView" value="qm/equipmentQualityStandardHDetailsRe" />
+            <option type="correspondingComponent" value="form" />
+
+            <option type="searchable" value="toolNumber,toolName,statusText,inspectionType" />
+            <option type="orderable" value="toolNumber,toolName" />
+
+            <option type="fullscreen" value="true" />
+            <option type="multiselect" value="true" />
+            <criteriaModifier class="com.fti.qm.criteriaModifiers.common.CommonCriteriaModifier" method="addDeletedFalseCondition"/>
+            <criteriaModifier class="com.fti.qm.criteriaModifiers.common.QSTypeCriteriaModifier" method="addEquipmentTypeCondition"/>
+        </component>
+        <option type="fixedHeight" value="true" />
+        <option type="header" value="false" />
+    </component>
+    <hooks>
+        <beforeRender class="com.fti.qm.hooks.standard.QualityStandardHHooks" method="setStatusText"/>
+    </hooks>
+</view>

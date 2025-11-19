@@ -1,0 +1,177 @@
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd" name="qualityInspectionCommandListRe" modelName="qualityInspectionCommandContextRe" modelPlugin="qm" menuAccessible="true">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <group name="contextActions">
+                <bigButton name="confirmContext" icon="search24_rew.png" state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('confirmContext', ['qualityInspectionCommand']);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
+
+            <group name="customActions">
+                <bigButton name="resetContext" icon="updateIcon24.png" action="#{window}.fireEvent(resetContext);" state="enabled"/>
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab" reference="mainTab">
+            <component type="form" name="eventContextForm" reference="form">
+                <script>
+                    <![CDATA[
+						this.addOnChangeListener({
+							onSetValue: function(value) {
+								if (! value || ! value.content) {
+									return;
+								}
+								updateRibbon();
+							}
+						});
+
+						function updateRibbon() {
+                            var confirmed = #{confirmed}.getValue().content.value,
+                                confirmContextButton = #{window}.getRibbonItem("contextActions.confirmContext"),
+                                confirmContextButtonLabel,
+                                confirmContextButtonIcon;
+
+                            if (confirmed == 'true' || confirmed == '1') {
+                                confirmContextButtonLabel = "#{translate(qm.qualityInspectionCommandListRe.window.ribbon.contextActions.changeContext)}";
+                                confirmContextButtonIcon = "editIcon24_rew.png";
+                            } else {
+                                confirmContextButtonLabel = "#{translate(qm.qualityInspectionCommandListRe.window.ribbon.contextActions.confirmContext)}";
+                                confirmContextButtonIcon = "search24_rew.png";
+                            }
+
+                            confirmContextButton.setLabel(confirmContextButtonLabel);
+                            confirmContextButton.setIcon(confirmContextButtonIcon);
+                        }
+					]]>
+                </script>
+
+                <component type="gridLayout" name="gridLayout" columns="5" rows="15" hasBorders="false">
+                    <layoutElement column="1" row="1">
+                        <component type="select" name="inspectionType" field="inspectionType" reference="inspectionType"/>
+                    </layoutElement>
+
+                    <layoutElement column="1" row="2">
+                        <component type="calendar" name="dateFrom" field="dateFrom" reference="dateFrom"/>
+                    </layoutElement>
+
+                    <layoutElement column="1" row="3">
+                        <component type="calendar" name="dateTo" field="dateTo" reference="dateTo"/>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="1">
+                        <component type="select" name="status" field="status" reference="status"/>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="2">
+                        <component type="input" name="productionOrderNumber" field="productionOrderNumber" reference="productionOrderNumber"/>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="3">
+                        <component type="input" name="operationNumber" field="operationNumber" reference="operationNumber"/>
+                    </layoutElement>
+
+                    <layoutElement column="3" row="1">
+                        <component type="lookup" name="company" field="company" reference="company" hasDescription="true">
+                            <option type="column" name="name" fields="name"/>
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+                            <option type="fieldCode" value="number"/>
+                            <listener event="onSelectedEntityChange" method="onCompanySelected" class="com.fti.qm.listeners.QualityInspectionCommandListListeners"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="3" row="2">
+                        <component type="input" name="companyName" field="companyName" reference="companyName"/>
+                    </layoutElement>
+
+                    <layoutElement column="3" row="3">
+                        <component type="lookup" name="product" field="product" reference="product" hasDescription="true">
+                            <option type="column" name="name" fields="name"/>
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+                            <option type="fieldCode" value="number"/>
+                            <listener event="onSelectedEntityChange" method="onProductSelected" class="com.fti.qm.listeners.QualityInspectionCommandListListeners"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="4" row="1">
+                        <component type="input" name="productName" field="productName" reference="productName"/>
+                    </layoutElement>
+
+                    <layoutElement column="4" row="2">
+                        <component type="lookup" name="tool" field="tool" reference="tool" hasDescription="true">
+                            <option type="column" name="name" fields="name"/>
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+                            <option type="fieldCode" value="number"/>
+                            <listener event="onSelectedEntityChange" method="onToolSelected" class="com.fti.qm.listeners.QualityInspectionCommandListListeners"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="4" row="3">
+                        <component type="input" name="toolName" field="toolName" reference="toolName"/>
+                    </layoutElement>
+
+                    <!-- Hidden field -->
+                    <layoutElement column="5" row="1">
+                        <component type="hidden" name="confirmed" field="confirmed" reference="confirmed"/>
+                    </layoutElement>
+
+                    <layoutElement column="1" row="4" width="5" height="12">
+                        <component type="grid" name="qualityInspectionCommandListDtos" reference="grid" field="#{form}.qualityInspectionCommandListDtoRes">
+                            <option type="column" name="inspectionOrderNumber" fields="inspectionOrderNumber" link="true"/>
+                            <option type="column" name="status" fields="status" link="true"/>
+                            <option type="column" name="poNumber" fields="poNumber"/>
+                            <option type="column" name="executionDate" fields="executionDate"/>
+                            <option type="column" name="productNumber" fields="productNumber"/>
+                            <option type="column" name="productName" fields="productName"/>
+                            <option type="column" name="companyNumber" fields="companyNumber"/>
+                            <option type="column" name="companyName" fields="companyName"/>
+                            <option type="column" name="productionOrderNumber" fields="productionOrderNumber"/>
+                            <option type="column" name="operationNumber" fields="operationNumber"/>
+                            <option type="column" name="transactionQuantity" fields="transactionQuantity"/>
+                            <option type="column" name="locationNumber" fields="locationNumber"/>
+
+                            <option type="correspondingView" value="qm/qualityInspectionCommandDetailsRe" />
+                            <option type="correspondingComponent" value="form" />
+
+                            <option type="searchable" value="inspectionOrderNumber,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,locationNumber,executionDate,operationNumber"/>
+                            <option type="orderable" value="inspectionOrderNumber,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,locationNumber,executionDate,operationNumber"/>
+                            <option type="fullscreen" value="true"/>
+
+                            <option type="order" column="number" direction="desc"/>
+                            <option type="fullscreen" value="true"/>
+                            <option type="height" value="600"/>
+
+                            <criteriaModifier class="com.fti.qm.criteriaModifiers.QICCriteriaModifiersCMP" method="showQICFromContext"/>
+                        </component>
+                    </layoutElement>
+
+                </component>
+                <listener event="confirmContext" method="confirmContext" class="com.fti.qm.listeners.QualityInspectionCommandListListeners"/>
+            </component>
+        </windowTab>
+        <option type="fixedHeight" value="fasle"/>
+        <option type="header" value="false"/>
+
+        <listener event="resetContext" method="resetContextDirect" class="com.fti.qm.listeners.QualityInspectionCommandListListeners"/>
+    </component>
+
+    <hooks>
+        <beforeRender class="com.fti.qm.hooks.QICHooks" method="onBeforeRenderQICListView"/>
+    </hooks>
+</view>

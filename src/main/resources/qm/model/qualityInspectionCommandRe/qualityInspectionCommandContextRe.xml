@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="qualityInspectionCommandContextRe"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
+    <fields>
+        <!-- Loại kiểm tra: 01: đầu vào, 02: công đoạn, 03: đầu ra, 04: thiết bị đo lường -->
+        <enum name="inspectionType" values="01incoming,02inprocess,03outgoing,04equipment"/>
+
+        <!-- Thời gian -->
+        <date name="dateFrom"/>
+        <date name="dateTo"/>
+
+        <!-- Trạng thái: 01 Khởi tạo, 02 Đang thực hiện, 03 Hoàn thành -->
+        <enum name="status" values="01new,02inProgress,03completed"/>
+
+        <!-- Mã lệnh sản xuất -->
+        <string name="productionOrderNumber">
+            <validatesLength max="255"/>
+        </string>
+
+        <!-- Mã công đoạn -->
+        <string name="operationNumber">
+            <validatesLength max="255"/>
+        </string>
+
+        <!-- Mã nhà cung cấp -->
+        <belongsTo name="company" plugin="basic" model="company"/>
+        <string name="companyName">
+            <validatesLength max="255"/>
+        </string>
+
+        <!-- Mã sản phẩm -->
+        <belongsTo name="product" plugin="basic" model="product"/>
+        <string name="productName">
+            <validatesLength max="255"/>
+        </string>
+
+        <!-- Mã thiết bị -->
+        <belongsTo name="tool" plugin="cmmsMachineParts" model="tool"/>
+        <string name="toolName">
+            <validatesLength max="255"/>
+        </string>
+
+        <hasMany name="qualityInspectionCommandRes" model="qualityInspectionCommandRe"
+                 joinField="qualityInspectionCommandContextRe" plugin="qm"/>
+
+        <hasMany name="qualityInspectionCommandListDtoRes" model="qualityInspectionCommandListDtoRe"
+                 joinField="qualityInspectionCommandContextRe" plugin="qm"/>
+                 
+        <boolean name="confirmed" default="false"/>
+    </fields>
+
+    <hooks/>
+
+</model>

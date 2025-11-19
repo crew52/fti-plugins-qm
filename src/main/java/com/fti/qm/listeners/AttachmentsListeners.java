@@ -1,6 +1,6 @@
 package com.fti.qm.listeners;
 
-import com.fti.qm.constants.IQSHAttachmentFields;
+import com.fti.qm.constants.QSHAttachmentFields;
 import com.google.common.collect.Lists;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
@@ -28,7 +28,7 @@ public class AttachmentsListeners {
         GridComponent grid = (GridComponent) view.getComponentByReference("attachmentsGrid");
 
         if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().isEmpty()) {
-            state.addMessage("qm.incomingQualityStandardHDetails.window.ribbon.attachments.nonSelectedAttachment",
+            state.addMessage("qm.incomingQualityStandardHDetailsRe.window.ribbon.attachments.nonSelectedAttachment",
                     ComponentState.MessageType.INFO);
             return;
         }
@@ -37,10 +37,10 @@ public class AttachmentsListeners {
 
         if (selectedAttachments.size() == 1) {
             Entity attachment = selectedAttachments.get(0);
-            File file = new File(attachment.getStringField(IQSHAttachmentFields.ATTACHMENT));
+            File file = new File(attachment.getStringField(QSHAttachmentFields.ATTACHMENT));
 
             if (!file.exists()) {
-                state.addMessage("qm.incomingQualityStandardHDetails.window.ribbon.attachments.fileNotFound",
+                state.addMessage("qm.incomingQualityStandardHDetailsRe.window.ribbon.attachments.fileNotFound",
                         ComponentState.MessageType.FAILURE);
                 return;
             }
@@ -50,7 +50,7 @@ public class AttachmentsListeners {
             List<File> filesToZip = Lists.newArrayList();
 
             for (Entity attachment : selectedAttachments) {
-                File file = new File(attachment.getStringField(IQSHAttachmentFields.ATTACHMENT));
+                File file = new File(attachment.getStringField(QSHAttachmentFields.ATTACHMENT));
 
                 if (file.exists()) {
                     filesToZip.add(file);
@@ -60,7 +60,7 @@ public class AttachmentsListeners {
             }
 
             if (filesToZip.isEmpty()) {
-                state.addMessage("qm.incomingQualityStandardHDetails.window.ribbon.attachments.noValidFiles",
+                state.addMessage("qm.incomingQualityStandardHDetailsRe.window.ribbon.attachments.noValidFiles",
                         ComponentState.MessageType.FAILURE);
                 return;
             }
@@ -70,7 +70,7 @@ public class AttachmentsListeners {
                 view.redirectTo(fileService.getUrl(zipFile.getAbsolutePath()) + "?clean", true, false);
             } catch (IOException e) {
                 LOG.error("Error while compressing files to zip", e);
-                state.addMessage("qm.incomingQualityStandardHDetails.window.ribbon.attachments.zipError",
+                state.addMessage("qm.incomingQualityStandardHDetailsRe.window.ribbon.attachments.zipError",
                         ComponentState.MessageType.FAILURE);
             }
         }

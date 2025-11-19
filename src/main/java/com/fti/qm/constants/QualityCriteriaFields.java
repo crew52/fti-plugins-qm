@@ -12,8 +12,5 @@ public class QualityCriteriaFields {
 
     public static final String ID = "id";
     public static final String QUALITY_CRITERIA_ID = "qualityCriteria." + ID;
-    public static final String INCOMING_QS_LS = "incomingQualityStandardLs";
-    public static final String OUTGOING_QS_LS = "outgoingQualityStandardLs";
-    public static final String INPROCESS_QS_LS = "inProcessQualityStandardLs";
-    public static final String EQUIPMENT_QS_LS = "equipmentQualityStandardLs";
+    public static final String QUALITY_STANDARD_LS = "qualityStandardLs";
 }

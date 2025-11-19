@@ -35,34 +35,24 @@
 
 		<model:model model="measuringEquipment" resource="model/measuringEquipment.xml" />
 		<model:model model="qualityCriteria" resource="model/qualityCriteria.xml" />
-		<model:model model="incomingQualityStandardH" resource="model/incomingQualityStandardH.xml" />
-		<model:model model="incomingQualityStandardL" resource="model/incomingQualityStandardL.xml" />
-		<model:model model="iQSHAttachment" resource="model/iQSHAttachment.xml" />
 
-		<model:model model="outgoingQualityStandardH" resource="model/outgoingQualityStandard/outgoingQualityStandardH.xml" />
-		<model:model model="outgoingQualityStandardL" resource="model/outgoingQualityStandard/outgoingQualityStandardL.xml" />
-		<model:model model="oQSHAttachment" resource="model/outgoingQualityStandard/oQSHAttachment.xml" />
+		<!-- Tái cấu trúc -->
+		<model:model model="qualityStandardH" resource="model/qualityStandardH.xml" />
+		<model:model model="qualityStandardL" resource="model/qualityStandardL.xml" />
+		<model:model model="qSHAttachment" resource="model/qSHAttachment.xml" />
 
-		<model:model model="inProcessQualityStandardH" resource="model/inProcessQualityStandard/inProcessQualityStandardH.xml" />
-		<model:model model="inProcessQualityStandardL" resource="model/inProcessQualityStandard/inProcessQualityStandardL.xml" />
-		<model:model model="iPQSHAttachment" resource="model/inProcessQualityStandard/iPQSHAttachment.xml" />
+		<model:model model="qualityInspectionCommandRe" resource="model/qualityInspectionCommandRe/qualityInspectionCommandRe.xml" />
+		<model:model model="qualityInspectionCommandContextRe" resource="model/qualityInspectionCommandRe/qualityInspectionCommandContextRe.xml" />
+		<model:model model="qualityInspectionCommandListDtoRe" resource="model/qualityInspectionCommandRe/qualityInspectionCommandListDtoRe.xml" />
+		<model:model model="qicAttachment" resource="model/qualityInspectionCommandRe/qicAttachment.xml" />
 
-		<model:model model="equipmentQualityStandardH" resource="model/equipmentQualityStandard/equipmentQualityStandardH.xml" />
-		<model:model model="equipmentQualityStandardL" resource="model/equipmentQualityStandard/equipmentQualityStandardL.xml" />
-		<model:model model="eQSHAttachment" resource="model/equipmentQualityStandard/eQSHAttachment.xml" />
-
-		<model:model model="qualityInspectionCommand" resource="model/qualityInspectionCommand/qualityInspectionCommand.xml" />
-		<model:model model="qualityInspectionCommandContext" resource="model/qualityInspectionCommand/qualityInspectionCommandContext.xml" />
-		<model:model model="qualityInspectionCommandListDto" resource="model/qualityInspectionCommand/qualityInspectionCommandListDto.xml" />
+		<model:model model="qualityStandardSampleRe" resource="model/sampleRe/qualityStandardSampleRe.xml" />
+		<model:model model="qualityStandardSampleDtoRe" resource="model/sampleRe/qualityStandardSampleDtoRe.xml" />
 
 		<menu:menu-category name="qm" />
 
 		<menu:menu-item name="measuringEquipment" category="qm" view="measuringEquipmentList" />
 		<menu:menu-item name="qualityCriteria" category="qm" view="qualityCriteriaList" />
-		<menu:menu-item name="incomingQualityStandardH" category="qm" view="incomingQualityStandardHList" />
-		<menu:menu-item name="outgoingQualityStandardH" category="qm" view="outgoingQualityStandardHList" />
-		<menu:menu-item name="inProcessQualityStandardH" category="qm" view="inProcessQualityStandardHList" />
-		<menu:menu-item name="equipmentQualityStandardH" category="qm" view="equipmentQualityStandardHList" />
 
 		<view:view resource="view/measuringEquipmentList.xml" />
 		<view:view resource="view/measuringEquipmentDetails.xml" />
@@ -70,30 +60,34 @@
 		<view:view resource="view/qualityCriteriaList.xml" />
 		<view:view resource="view/qualityCriteriaDetails.xml" />
 		<view:view resource="view/qualityCriteriasImport.xml" />
-		<view:view resource="view/incomingQualityStandard/incomingQualityStandardHList.xml" />
-		<view:view resource="view/incomingQualityStandard/incomingQualityStandardHDetails.xml" />
-		<view:view resource="view/incomingQualityStandard/incomingQualityStandardLDetails.xml" />
 
-		<view:view resource="view/outgoingQualityStandard/outgoingQualityStandardHList.xml" />
-		<view:view resource="view/outgoingQualityStandard/outgoingQualityStandardHDetails.xml" />
-		<view:view resource="view/outgoingQualityStandard/outgoingQualityStandardLDetails.xml" />
+		<!-- Tái cấu trúc -->
+		<view:view resource="view/incomingQualityStandardRe/incomingQualityStandardHListRe.xml" />
+		<view:view resource="view/incomingQualityStandardRe/incomingQualityStandardHDetailsRe.xml" />
+		<view:view resource="view/incomingQualityStandardRe/incomingQualityStandardLDetailsRe.xml" />
 
-		<view:view resource="view/inProcessQualityStandard/inProcessQualityStandardHList.xml" />
-		<view:view resource="view/inProcessQualityStandard/inProcessQualityStandardHDetails.xml" />
-		<view:view resource="view/inProcessQualityStandard/inProcessQualityStandardLDetails.xml" />
+		<view:view resource="view/outgoingQualityStandardRe/outgoingQualityStandardHListRe.xml" />
+		<view:view resource="view/outgoingQualityStandardRe/outgoingQualityStandardHDetails.xml" />
+		<view:view resource="view/outgoingQualityStandardRe/outgoingQualityStandardLDetails.xml" />
 
-		<view:view resource="view/equipmentQualityStandard/equipmentQualityStandardHList.xml" />
-		<view:view resource="view/equipmentQualityStandard/equipmentQualityStandardHDetails.xml" />
-		<view:view resource="view/equipmentQualityStandard/equipmentQualityStandardLDetails.xml" />
+		<view:view resource="view/inProcessQualityStandardRe/inProcessQualityStandardHListRe.xml" />
+		<view:view resource="view/inProcessQualityStandardRe/inProcessQualityStandardHDetailsRe.xml" />
+		<view:view resource="view/inProcessQualityStandardRe/inProcessQualityStandardLDetailsRe.xml" />
 
-		<view:view resource="view/qualityInspectionCommand/qualityInspectionCommandList.xml" />
+		<view:view resource="view/equipmentQualityStandardRe/equipmentQualityStandardHListRe.xml" />
+		<view:view resource="view/equipmentQualityStandardRe/equipmentQualityStandardHDetailsRe.xml" />
+		<view:view resource="view/equipmentQualityStandardRe/equipmentQualityStandardLDetailsRe.xml" />
+
+		<view:view resource="view/qualityInspectionCommandRe/qualityInspectionCommandListRe.xml" />
+		<view:view resource="view/qualityInspectionCommandRe/qualityInspectionCommandDetailsRe.xml" />
+		<view:view resource="view/qualityInspectionCommandRe/qualityStandardSampleDetailsRe.xml" />
 
 		<model:model-enum-value plugin="basic" model="log" enum="logType" value="measuringEquipmentImport" />
 		<model:model-enum-value plugin="basic" model="log" enum="logType" value="qualityCriteriaImport" />
 		<model:model-enum-value plugin="basic" model="product" enum="globalTypeOfMaterial" value="06componentPart" />
 
 		<model:model-hook plugin="materialFlowResources" model="document">
-			<model:onSave class="com.fti.qm.hooks.DocumentQICModelHooks" method="createQualityInspectionCommandIfNeeded"/>
+			<model:onSave class="com.fti.qm.hooks.DocumentQICModelHooksRe" method="createQualityInspectionCommandIfNeeded"/>
 		</model:model-hook>
 
 		<view:resource uri="public/**/*" />
