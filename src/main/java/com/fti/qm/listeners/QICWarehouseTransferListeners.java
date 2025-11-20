@@ -72,14 +72,14 @@ public class QICWarehouseTransferListeners {
 
         switch (decision) {
             case "01accept":
-                createSingleDocument(documentDD, qic, locationFrom, warehouseLocation);
+                createSingleDocument(documentDD, qic, locationFrom, warehouseLocation, "warehouseQuantity");
                 break;
             case "02reject":
-                createSingleDocument(documentDD, qic, locationFrom, ngLocation);
+                createSingleDocument(documentDD, qic, locationFrom, ngLocation, "ngQuantity");
                 break;
             case "03partial":
-                createSingleDocument(documentDD, qic, locationFrom, warehouseLocation);
-                createSingleDocument(documentDD, qic, locationFrom, ngLocation);
+                createSingleDocument(documentDD, qic, locationFrom, warehouseLocation, "warehouseQuantity");
+                createSingleDocument(documentDD, qic, locationFrom, ngLocation, "ngQuantity");
                 break;
             default:
                 break;
@@ -90,7 +90,8 @@ public class QICWarehouseTransferListeners {
             DataDefinition documentDD,
             Entity qic,
             Entity locationFrom,
-            Entity locationTo
+            Entity locationTo,
+            String quantityFieldName
     ) {
         if (locationTo == null) {
             return;
@@ -116,7 +117,7 @@ public class QICWarehouseTransferListeners {
             Entity newPosition = positionDD.create();
             newPosition.setField("document", newDoc);
             newPosition.setField("product", qic.getBelongsToField("product"));
-            newPosition.setField("quantity", qic.getField("transactionQuantity"));
+            newPosition.setField("quantity", qic.getField(quantityFieldName));
 
             newPosition = positionDD.save(newPosition);
         } catch (Exception e) {
