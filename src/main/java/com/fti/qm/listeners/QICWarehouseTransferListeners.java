@@ -3,6 +3,7 @@ package com.fti.qm.listeners;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -107,8 +108,17 @@ public class QICWarehouseTransferListeners {
             newDoc.setField("description", "Auto created from QIC transfer - PO " + qic.getStringField("poNumber"));
             newDoc.setField("state", "02accepted");
 
-            documentDD.save(newDoc);
+            newDoc = documentDD.save(newDoc); // Gán lại newDoc
 
+            DataDefinition positionDD = dataDefinitionService.get("materialFlowResources", "position");
+
+            // Tạo Position dựa trên QIC
+            Entity newPosition = positionDD.create();
+            newPosition.setField("document", newDoc);
+            newPosition.setField("product", qic.getBelongsToField("product"));
+            newPosition.setField("quantity", qic.getField("transactionQuantity"));
+
+            newPosition = positionDD.save(newPosition);
         } catch (Exception e) {
             e.printStackTrace();
         }
