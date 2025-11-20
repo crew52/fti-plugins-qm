@@ -1,9 +1,11 @@
 package com.fti.qm.listeners;
 
+import com.fti.qm.constants.QMConstants;
+import com.fti.qm.constants.qualityInspectionCommand.QICFields;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -11,6 +13,7 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -23,6 +26,7 @@ public class QICWarehouseTransferListeners {
     @Autowired
     private SecurityService securityService;
 
+    @Transactional
     public void transferWarehouse(final ViewDefinitionState view, final ComponentState state, final String[] args) {
 
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -33,23 +37,18 @@ public class QICWarehouseTransferListeners {
             return;
         }
 
-        DataDefinition qicDD = dataDefinitionService.get("qm", "qualityInspectionCommandRe");
+        DataDefinition qicDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_INSPECTION_COMMAND);
         Entity qic = qicDD.get(id);
 
-        String status = qic.getStringField("status");
+        String status = qic.getStringField(QICFields.STATUS);
 
         // Chỉ cho phép status = 02inProgress
-        if (!"02inProgress".equals(status)) {
+        if (!QICFields.STATUS_IN_PROGRESS.equals(status)) {
             view.addMessage(
                     "qm.qic.transferWarehouse.invalidStatus", ComponentState.MessageType.FAILURE
             );
             return;
         }
-
-        view.addMessage(
-                "qm.qic.transferWarehouse.validStatus", ComponentState.MessageType.SUCCESS
-        );
-
         // Tạo document dựa theo qualityDecision
         createDocumentsForQIC(qic);
 
@@ -63,23 +62,23 @@ public class QICWarehouseTransferListeners {
 
     private void createDocumentsForQIC(Entity qic) {
 
-        DataDefinition documentDD = dataDefinitionService.get("materialFlowResources", "document");
+        DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
-        String decision = qic.getStringField("qualityDecision");
-        Entity locationFrom = qic.getBelongsToField("location");
-        Entity warehouseLocation = qic.getBelongsToField("warehouseLocation");
-        Entity ngLocation = qic.getBelongsToField("ngLocation");
+        String decision = qic.getStringField(QICFields.QUALITY_DECISION);
+        Entity locationFrom = qic.getBelongsToField(QICFields.LOCATION);
+        Entity warehouseLocation = qic.getBelongsToField(QICFields.WAREHOUSE_LOCATION);
+        Entity ngLocation = qic.getBelongsToField(QICFields.NG_LOCATION);
 
         switch (decision) {
-            case "01accept":
-                createSingleDocument(documentDD, qic, locationFrom, warehouseLocation, "warehouseQuantity");
+            case QICFields.QualityDecision.ACCEPT:
+                createSingleDocument(documentDD, qic, locationFrom, warehouseLocation, QICFields.WAREHOUSE_QUANTITY);
                 break;
-            case "02reject":
-                createSingleDocument(documentDD, qic, locationFrom, ngLocation, "ngQuantity");
+            case QICFields.QualityDecision.REJECT:
+                createSingleDocument(documentDD, qic, locationFrom, ngLocation, QICFields.NG_QUANTITY);
                 break;
-            case "03partial":
-                createSingleDocument(documentDD, qic, locationFrom, warehouseLocation, "warehouseQuantity");
-                createSingleDocument(documentDD, qic, locationFrom, ngLocation, "ngQuantity");
+            case QICFields.QualityDecision.PARTIAL:
+                createSingleDocument(documentDD, qic, locationFrom, warehouseLocation, QICFields.WAREHOUSE_QUANTITY);
+                createSingleDocument(documentDD, qic, locationFrom, ngLocation, QICFields.NG_QUANTITY);
                 break;
             default:
                 break;
@@ -99,36 +98,37 @@ public class QICWarehouseTransferListeners {
 
         try {
             Entity newDoc = documentDD.create();
-            newDoc.setField("name", "Transfer from QIC " + qic.getStringField("poNumber"));
+            newDoc.setField("name", "Transfer from QIC " + qic.getStringField(QICFields.PO_NUMBER));
             newDoc.setField("type", "05transfer");
             newDoc.setField("time", java.util.Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
             newDoc.setField("locationFrom", locationFrom);
             newDoc.setField("locationTo", locationTo);
-            newDoc.setField("company", qic.getBelongsToField("company"));
+            newDoc.setField("company", qic.getBelongsToField(QICFields.COMPANY));
             newDoc.setField("user", securityService.getCurrentUserId());
-            newDoc.setField("description", "Auto created from QIC transfer - PO " + qic.getStringField("poNumber"));
+            newDoc.setField("description", "Auto created from QIC transfer - PO " + qic.getStringField(QICFields.PO_NUMBER));
             newDoc.setField("state", "02accepted");
 
             newDoc = documentDD.save(newDoc); // Gán lại newDoc
 
-            DataDefinition positionDD = dataDefinitionService.get("materialFlowResources", "position");
-
-            // Tạo Position dựa trên QIC
-            Entity newPosition = positionDD.create();
-            newPosition.setField("document", newDoc);
-            newPosition.setField("product", qic.getBelongsToField("product"));
-            newPosition.setField("quantity", qic.getField(quantityFieldName));
-
-            newPosition = positionDD.save(newPosition);
+            createPosition(newDoc, qic, quantityFieldName);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    private void createPosition(Entity document, Entity qic, String quantityFieldName) {
+        DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION);
+        Entity pos = positionDD.create();
+        pos.setField("document", document);
+        pos.setField("product", qic.getBelongsToField(QICFields.PRODUCT));
+        pos.setField("quantity", qic.getField(quantityFieldName));
+        positionDD.save(pos);
+    }
+
     private void updateQICStatusToCompleted(Entity qic) {
         try {
-            qic.setField("status", "03completed");
-            DataDefinition qicDD = dataDefinitionService.get("qm", "qualityInspectionCommandRe");
+            qic.setField(QICFields.STATUS, QICFields.STATUS_COMPLETED);
+            DataDefinition qicDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_INSPECTION_COMMAND);
             qicDD.save(qic);
         } catch (Exception e) {
             e.printStackTrace();
