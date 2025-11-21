@@ -198,6 +198,7 @@
                         <option type="searchable" value="name"/>
                         <option type="orderable" value="name"/>
                         <option type="fieldCode" value="number"/>
+                        <criteriaModifier class="com.fti.qm.criteriaModifiers.QICCriteriaModifiers" method="warehouseLocationModifier"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="2" row="4">
@@ -207,6 +208,7 @@
                         <option type="searchable" value="name"/>
                         <option type="orderable" value="name"/>
                         <option type="fieldCode" value="number"/>
+                        <criteriaModifier class="com.fti.qm.criteriaModifiers.QICCriteriaModifiers" method="ngLocationModifier"/>
                     </component>
                 </layoutElement>
             </component>
