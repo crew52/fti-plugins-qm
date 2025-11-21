@@ -1,6 +1,8 @@
 package com.fti.qm.listeners;
 
 import com.fti.qm.constants.qualityInspectionCommand.QICFields;
+import com.fti.qm.utils.DecimalFieldFormatter;
+import com.fti.qm.utils.DecimalFieldListenerUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -8,12 +10,19 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
 @Service
 public class QICDetailsListeners {
+    @Autowired
+    private DecimalFieldFormatter decimalFieldFormatter;
+
+    @Autowired
+    private DecimalFieldListenerUtils decimalFieldListenerUtils;
+
     public void onQualityDecisionCheckBoxChange(final ViewDefinitionState view,
                                                 final ComponentState componentState,
                                                 final String[] args) {
@@ -137,6 +146,8 @@ public class QICDetailsListeners {
                                      final ComponentState state,
                                      final String[] args) {
 
+        decimalFieldListenerUtils.handleDecimalInput(view, state);
+
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity entity = form.getEntity();
         BigDecimal transactionQty = entity.getDecimalField(QICFields.TRANSACTION_QUANTITY);
@@ -147,13 +158,21 @@ public class QICDetailsListeners {
         FieldComponent warehouseQty = (FieldComponent) view.getComponentByReference(QICFields.WAREHOUSE_QUANTITY);
         FieldComponent ngQty = (FieldComponent) view.getComponentByReference(QICFields.NG_QUANTITY);
 
-        BigDecimal warehouseValue = safeParseDecimal(warehouseQty.getFieldValue());
+        // Lấy giá trị decimal đã normalize
+        BigDecimal warehouseValue = decimalFieldFormatter.normalizeDecimalField(warehouseQty, false);
+        if (warehouseValue == null) {
+            warehouseValue = BigDecimal.ZERO;
+        }
+
+        // Tính NG = Transaction - Warehouse
         BigDecimal ngValue = transactionQty.subtract(warehouseValue);
         if (ngValue.compareTo(BigDecimal.ZERO) < 0) {
             ngValue = BigDecimal.ZERO;
         }
 
-        ngQty.setFieldValue(ngValue);
+        // Cập nhật UI
+        ngQty.setFieldValue(decimalFieldFormatter.formatDecimalForLocale(ngValue));
+
         ngQty.requestComponentUpdateState();
     }
 
@@ -161,6 +180,9 @@ public class QICDetailsListeners {
                               final ComponentState state,
                               final String[] args) {
 
+        // Normalize giá trị vừa nhập
+        decimalFieldListenerUtils.handleDecimalInput(view, state);
+
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity entity = form.getEntity();
         BigDecimal transactionQty = entity.getDecimalField(QICFields.TRANSACTION_QUANTITY);
@@ -171,34 +193,20 @@ public class QICDetailsListeners {
         FieldComponent warehouseQty = (FieldComponent) view.getComponentByReference(QICFields.WAREHOUSE_QUANTITY);
         FieldComponent ngQty = (FieldComponent) view.getComponentByReference(QICFields.NG_QUANTITY);
 
-        BigDecimal ngValue = safeParseDecimal(ngQty.getFieldValue());
+        // Lấy giá trị decimal sau khi normalize
+        BigDecimal ngValue = decimalFieldFormatter.normalizeDecimalField(ngQty, false);
+        if (ngValue == null) {
+            ngValue = BigDecimal.ZERO;
+        }
+
+        // Tính Warehouse = Transaction - NG
         BigDecimal warehouseValue = transactionQty.subtract(ngValue);
         if (warehouseValue.compareTo(BigDecimal.ZERO) < 0) {
             warehouseValue = BigDecimal.ZERO;
         }
 
-        warehouseQty.setFieldValue(warehouseValue);
+        warehouseQty.setFieldValue(decimalFieldFormatter.formatDecimalForLocale(warehouseValue));
         warehouseQty.requestComponentUpdateState();
-    }
-
-    /**
-     * Chuyển Object sang BigDecimal an toàn.
-     * Trả về BigDecimal.ZERO nếu null hoặc không hợp lệ.
-     */
-    private BigDecimal safeParseDecimal(Object value) {
-        if (value instanceof BigDecimal) {
-            return (BigDecimal) value;
-        } else if (value instanceof String) {
-            String str = ((String) value).trim();
-            if (!str.isEmpty()) {
-                try {
-                    return new BigDecimal(str);
-                } catch (NumberFormatException e) {
-                    // bỏ qua và trả về ZERO
-                }
-            }
-        }
-        return BigDecimal.ZERO;
     }
 
 }

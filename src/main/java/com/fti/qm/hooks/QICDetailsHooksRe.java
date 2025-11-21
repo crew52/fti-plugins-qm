@@ -15,6 +15,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
@@ -69,6 +70,8 @@ public class QICDetailsHooksRe {
         fillCurrentUser(view);
         updateStatusDisplay(view);
         fillCurrentInspectionDate(view);
+
+        setupLocationFilters(view);
     }
 
     /**
@@ -327,6 +330,45 @@ public class QICDetailsHooksRe {
             inspectionDateField.setFieldValue(todayStr);
             inspectionDateField.requestComponentUpdateState();
         }
+    }
+
+    private void setupLocationFilters(ViewDefinitionState view) {
+
+        // 1) Lấy QIC ID từ form
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        if (form == null) return;
+
+        Long qicId = form.getEntityId();
+        if (qicId == null) return;
+
+        // 2) Lấy QIC từ DB
+        DataDefinition qicDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_INSPECTION_COMMAND);
+        Entity qic = qicDD.get(qicId);
+        if (qic == null) return;
+
+        // 3) Lấy location từ DB
+        Entity location = qic.getBelongsToField(QICFields.LOCATION);
+        if (location == null) {
+            return;
+        }
+
+        Long locationId = location.getId();
+
+        // 4) Apply filter cho từng lookup
+        applyFilter(view, QICFields.WAREHOUSE_LOCATION, locationId);
+        applyFilter(view, QICFields.NG_LOCATION, locationId);
+    }
+
+    private void applyFilter(ViewDefinitionState view, String lookupName, Long excludedId) {
+
+        LookupComponent lookup = (LookupComponent) view.getComponentByReference(lookupName);
+        if (lookup == null) {
+            return;
+        }
+
+        FilterValueHolder filter = lookup.getFilterValue();
+        filter.put("excludedLocationId", excludedId);
+        lookup.setFilterValue(filter);
     }
 }
 
