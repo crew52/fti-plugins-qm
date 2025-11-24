@@ -67,6 +67,7 @@ public class QICDetailsHooksRe {
         fillNameFromBelongsTo(view, QICFields.COMPANY, "companyName");
         fillNameFromBelongsTo(view, QICFields.PRODUCT, "productName");
         fillNameFromBelongsTo(view, QICFields.TOOL, "toolName");
+        fillInspectionOrderDisplay(view);
         fillCurrentUser(view);
         updateStatusDisplay(view);
         fillCurrentInspectionDate(view);
@@ -369,6 +370,50 @@ public class QICDetailsHooksRe {
         FilterValueHolder filter = lookup.getFilterValue();
         filter.put("excludedLocationId", excludedId);
         lookup.setFilterValue(filter);
+    }
+
+    /**
+     * Hiển thị lệnh kiểm tra (Inspection Order) trong view.
+     * <p>
+     * Method này kết hợp 2 field gốc từ database:
+     * <ul>
+     *     <li>{@code inspectionOrderNumber} (prefix, String)</li>
+     *     <li>{@code inspectionOrderNumberInt} (số thứ tự, Integer)</li>
+     * </ul>
+     * Sau đó ghép chúng thành một chuỗi hiển thị và set vào field ảo
+     * {@code inspectionOrder} trong view.
+     * <p>
+     * Lưu ý:
+     * <ul>
+     *     <li>Không lấy dữ liệu từ form, mà truy vấn trực tiếp từ database.</li>
+     *     <li>Trường {@code inspectionOrder} chỉ dùng để hiển thị, không lưu DB.</li>
+     *     <li>Nếu prefix hoặc number là null, field hiển thị sẽ để rỗng.</li>
+     * </ul>
+     *
+     * @param view trạng thái của view hiện tại, dùng để lấy form và field hiển thị
+     */
+    private void fillInspectionOrderDisplay(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Long qicId = form.getEntityId();
+
+        if (qicId == null) return;
+
+        DataDefinition qicDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_INSPECTION_COMMAND);
+        Entity qicFromDB = qicDD.get(qicId);
+
+        String prefix = qicFromDB.getStringField(QICFields.INSPECTION_ORDER_NUMBER);
+        Integer number = qicFromDB.getIntegerField(QICFields.INSPECTION_ORDER_NUMBER_INT);
+
+        String display = "";
+        if (prefix != null && number != null) {
+            display = prefix + number;
+        }
+
+        FieldComponent inspectionOrderField =
+                (FieldComponent) view.getComponentByReference("inspectionOrder");
+
+        inspectionOrderField.setFieldValue(display);
+        inspectionOrderField.requestComponentUpdateState();
     }
 }
 
