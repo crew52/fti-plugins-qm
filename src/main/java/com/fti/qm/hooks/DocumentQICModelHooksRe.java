@@ -74,9 +74,8 @@ public class DocumentQICModelHooksRe {
 
             // --- Tạo sample tự động nếu có standard ---
             try {
-                createSamplesIfNotExist(qic, product, QICFields.INSPECTION_TYPE_INCOMING);
+                createSamples(qic, product, QICFields.INSPECTION_TYPE_INCOMING);
             } catch (Exception ex) {
-                System.out.println("[QIC_CREATOR] Lỗi khi gọi createSamplesIfNotExist cho qicId=" + qic.getId() + " : " + ex.getMessage());
                 ex.printStackTrace();
             }
 
@@ -102,7 +101,7 @@ public class DocumentQICModelHooksRe {
         return lastNumber + 1;
     }
 
-    private void createSamplesIfNotExist(Entity qic, Entity product, String type) {
+    private void createSamples(Entity qic, Entity product, String type) {
 
         DataDefinition sampleDD =
                 dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_SAMPLE);
