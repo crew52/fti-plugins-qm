@@ -14,6 +14,7 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,6 +70,8 @@ public class DocumentQICModelHooksRe {
             qic.setField(QICFields.EXECUTION_DATE, document.getDateField(DocumentFields.TIME));
             qic.setField(QICFields.TRANSACTION_QUANTITY, deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY));
             qic.setField(QICFields.LOCATION, deliveryEntity.getBelongsToField(DeliveryFields.LOCATION));
+            qic.setField(QICFields.VERSION, 1);
+            qic.setField(QICFields.CREATED_DATE, new Date());
 
             qic = qicDD.save(qic);
 

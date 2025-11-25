@@ -134,7 +134,8 @@
                     <layoutElement column="1" row="4" width="5" height="12">
                         <component type="grid" name="qualityInspectionCommandListDtos" reference="grid" field="#{form}.qualityInspectionCommandListDtoRes">
                             <option type="column" name="inspectionOrderNumber" fields="inspectionOrderNumber" link="true"/>
-                            <option type="column" name="status" fields="status" link="true"/>
+                            <option type="column" name="version" fields="version" link="true"/>
+                            <option type="column" name="status" fields="status"/>
                             <option type="column" name="poNumber" fields="poNumber"/>
                             <option type="column" name="executionDate" fields="executionDate"/>
                             <option type="column" name="productNumber" fields="productNumber"/>

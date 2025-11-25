@@ -39,6 +39,10 @@ public final class QICFields {
 
     public static final String INSPECTION_DATE = "inspectionDate";
     public static final String NOTE = "note";
+
+    public static final String VERSION = "version";
+    public static final String CREATED_DATE = "createdDate";
+
     public static final class QualityDecision {
         private QualityDecision() {}
 
