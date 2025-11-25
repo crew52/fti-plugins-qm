@@ -47,7 +47,7 @@ public class QualityStandardSampleDetailsHooks {
         setFieldValue(view, QualityStandardSampleViewFields.QUANTITATIVE_VALUE, standardLine.getDecimalField(QSLFields.QUANTITATIVE_VALUE));
         setFieldValue(view, QualityStandardSampleViewFields.UP_VALUE, standardLine.getDecimalField(QSLFields.UP_VALUE));
         setFieldValue(view, QualityStandardSampleViewFields.DOWN_VALUE, standardLine.getDecimalField(QSLFields.DOWN_VALUE));
-        setFieldValue(view, QualityStandardSampleViewFields.SAMPLE_NUMBER, standardLine.getIntegerField(QSLFields.SAMPLE_SIZE));
+        setFieldValue(view, QualityStandardSampleViewFields.SAMPLE_SIZE, standardLine.getIntegerField(QSLFields.SAMPLE_SIZE));
         setFieldValue(view, QualityStandardSampleViewFields.UNIT, standardLine.getStringField( QSLFields.UNIT));
 
         // ✅ Dịch qualitativeValue
