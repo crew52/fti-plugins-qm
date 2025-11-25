@@ -97,10 +97,10 @@ public class QICDetailsHooksRe {
             disableRibbonActionsExceptNavigation(view);
             return;
         }
-
-        createSamplesIfNotExist(qic, product, inspectionType);
-
-        copyAttachmentsFromStandardH(qic, product, inspectionType);
+//
+//        createSamplesIfNotExist(qic, product, inspectionType);
+//
+//        copyAttachmentsFromStandardH(qic, product, inspectionType);
     }
 
     private void copyAttachmentsFromStandardH(Entity qic, Entity product, String inspectionType) {
@@ -156,55 +156,54 @@ public class QICDetailsHooksRe {
         }
     }
 
-    private void createSamplesIfNotExist(Entity qic, Entity product, String type) {
-
-        DataDefinition sampleDD =
-                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_SAMPLE);
-
-        DataDefinition hDD =
-                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_H);
-
-        List<Entity> hList = hDD.find()
-                .add(SearchRestrictions.eq(GlobalFields.PRODUCT_ID, product.getId()))
-                .add(SearchRestrictions.eq(QSHFields.TYPE, type))
-                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
-                .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
-                .list().getEntities();
-
-        if (hList.isEmpty()) return;
-
-        List<Long> hIds = hList.stream().map(Entity::getId).collect(Collectors.toList());
-
-        DataDefinition lDD =
-                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_L);
-
-        List<Entity> lList = lDD.find()
-                .add(SearchRestrictions.in(QSLFields.QUALITY_STANDARD_H_ID, hIds))
-                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
-                .list().getEntities();
-
-        for (Entity l : lList) {
-
-            boolean exists = !sampleDD.find()
-                    .add(SearchRestrictions.eq(QualityStandardSampleFields.QUALITY_INSPECTION_COMMAND_ID, qic.getId()))
-                    .add(SearchRestrictions.eq(QualityStandardSampleFields.QUALITY_STANDARD_L_ID, l.getId()))
-                    .list().getEntities().isEmpty();
-
-            if (exists) continue;
-
-            Integer sampleSize = l.getIntegerField(QSLFields.SAMPLE_SIZE);
-            if (sampleSize == null || sampleSize <= 0) sampleSize = 1;
-
-            for (int i = 1; i <= sampleSize; i++) {
-                Entity sample = sampleDD.create();
-                sample.setField(QMConstants.MODEL_QUALITY_INSPECTION_COMMAND, qic);
-                sample.setField(QMConstants.MODEL_QUALITY_STANDARD_L, l);
-                sample.setField(QualityStandardSampleFields.SAMPLE_NUMBER, i);
-                sampleDD.save(sample);
-            }
-        }
-    }
-
+//    private void createSamplesIfNotExist(Entity qic, Entity product, String type) {
+//
+//        DataDefinition sampleDD =
+//                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_SAMPLE);
+//
+//        DataDefinition hDD =
+//                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_H);
+//
+//        List<Entity> hList = hDD.find()
+//                .add(SearchRestrictions.eq(GlobalFields.PRODUCT_ID, product.getId()))
+//                .add(SearchRestrictions.eq(QSHFields.TYPE, type))
+//                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
+//                .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
+//                .list().getEntities();
+//
+//        if (hList.isEmpty()) return;
+//
+//        List<Long> hIds = hList.stream().map(Entity::getId).collect(Collectors.toList());
+//
+//        DataDefinition lDD =
+//                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_L);
+//
+//        List<Entity> lList = lDD.find()
+//                .add(SearchRestrictions.in(QSLFields.QUALITY_STANDARD_H_ID, hIds))
+//                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
+//                .list().getEntities();
+//
+//        for (Entity l : lList) {
+//
+//            boolean exists = !sampleDD.find()
+//                    .add(SearchRestrictions.eq(QualityStandardSampleFields.QUALITY_INSPECTION_COMMAND_ID, qic.getId()))
+//                    .add(SearchRestrictions.eq(QualityStandardSampleFields.QUALITY_STANDARD_L_ID, l.getId()))
+//                    .list().getEntities().isEmpty();
+//
+//            if (exists) continue;
+//
+//            Integer sampleSize = l.getIntegerField(QSLFields.SAMPLE_SIZE);
+//            if (sampleSize == null || sampleSize <= 0) sampleSize = 1;
+//
+//            for (int i = 1; i <= sampleSize; i++) {
+//                Entity sample = sampleDD.create();
+//                sample.setField(QMConstants.MODEL_QUALITY_INSPECTION_COMMAND, qic);
+//                sample.setField(QMConstants.MODEL_QUALITY_STANDARD_L, l);
+//                sample.setField(QualityStandardSampleFields.SAMPLE_NUMBER, i);
+//                sampleDD.save(sample);
+//            }
+//        }
+//    }
 
     /**
      * Lấy entity chính (form entity) từ view hiện tại.
