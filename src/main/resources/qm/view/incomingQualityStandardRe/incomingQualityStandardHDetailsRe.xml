@@ -19,7 +19,17 @@
             </group>
 
             <group name="customActions">
-                <bigButton name="generateNewVersion" icon="copyIcon24.png" action="#{window}.fireEvent(generateNewVersion);" state="enabled"/>
+                <bigButton name="generateNewVersion" icon="copyIcon24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('generateNewVersion', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
             </group>
         </ribbon>
         <windowTab name="mainTab">
@@ -89,6 +99,7 @@
                 <option type="expression" value="#product['number'] + ' - ' + #product['name']" />
 
                 <listener event="downloadAttachment" method="downloadAttachment" class="com.fti.qm.listeners.AttachmentsListeners"/>
+                <listener event="generateNewVersion" method="createVersion" class="com.fti.qm.listeners.standard.QualityStandardHVersionListener" />
             </component>
         </windowTab>
 
@@ -129,7 +140,6 @@
     </component>
 
     <hooks>
-        <beforeRender class="com.fti.qm.hooks.standard.QualityStandardHDetailsHooks" method="setDefaultTypeValueIncoming"/>
-        <beforeRender class="com.fti.qm.hooks.standard.QualityStandardHDetailsHooks" method="setQSHIdForMultiUploadField"/>
+        <beforeRender class="com.fti.qm.hooks.standard.QualityStandardHDetailsHooks" method="beforeRender"/>
     </hooks>
 </view>
