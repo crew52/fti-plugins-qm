@@ -17,6 +17,10 @@
                     </script>
                 </bigButton>
             </group>
+
+            <group name="customActions">
+                <bigButton name="generateNewVersion" icon="copyIcon24.png" action="#{window}.fireEvent(generateNewVersion);" state="enabled"/>
+            </group>
         </ribbon>
         <windowTab name="mainTab">
             <component type="form" name="incomingQualityStandardHDetails" reference="form">
