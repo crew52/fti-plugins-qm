@@ -55,7 +55,11 @@ public class QualityStandardHVersionListener {
 
             // Lấy Line và Sample
             List<Entity> oldSamples = oldQIC.getHasManyField(QICFields.QUALITY_STANDARD_SAMPLES_RES);
-            List<Entity> currentLs = qsh.getHasManyField(QSHFields.QUALITY_STANDARD_LS);
+
+            List<Entity> currentLs = qsh.getHasManyField(QSHFields.QUALITY_STANDARD_LS)
+                    .stream()
+                    .filter(l -> !Boolean.TRUE.equals(l.getBooleanField("deleted")))
+                    .collect(Collectors.toList());
 
             // Kiểm tra có L mới
             if (!hasNewLine(oldSamples, currentLs)) {
@@ -171,7 +175,9 @@ public class QualityStandardHVersionListener {
                 .map(Entity::getId)
                 .collect(Collectors.toSet());
 
-        return currentLs.stream().anyMatch(l -> !oldLIds.contains(l.getId()));
+        return currentLs.stream()
+                .filter(l -> !Boolean.TRUE.equals(l.getBooleanField("deleted")))
+                .anyMatch(l -> !oldLIds.contains(l.getId()));
     }
 
     /**
@@ -247,6 +253,10 @@ public class QualityStandardHVersionListener {
         DataDefinition sampleDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_SAMPLE);
 
         for (Entity currentL : currentLs) {
+            // Bỏ qua line bị deleted
+            if (Boolean.TRUE.equals(currentL.getBooleanField("deleted"))) {
+                continue;
+            }
             Long currentLId = currentL.getId();
             if (!oldLIds.contains(currentLId)) {
                 Integer sampleSize = currentL.getIntegerField(QSLFields.SAMPLE_SIZE);
