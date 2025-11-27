@@ -22,68 +22,90 @@ public class QualityStandardHVersionListener {
     private DataDefinitionService dataDefinitionService;
 
     public void createVersion(final ViewDefinitionState view, final ComponentState button, final String[] args) {
+        try {
+            Entity qsh = getQualityStandardH(view);
+            Entity product = getProduct(view, qsh);
+            Entity oldQIC = getLatestQIC(view, product);
+
+            // Lấy Line và Sample
+            List<Entity> oldSamples = oldQIC.getHasManyField("qualityStandardSamplesRe");
+            List<Entity> currentLs = qsh.getHasManyField("qualityStandardLs");
+
+            // Kiểm tra có L mới
+            if (!hasNewLine(oldSamples, currentLs)) {
+                view.addMessage("qm.qualityStandardH.info.noNewL", ComponentState.MessageType.INFO);
+                return;
+            }
+
+            // Tạo QIC mới
+            Entity newQIC = createNewQIC(oldQIC);
+
+            // Copy sample cũ sang QIC mới
+            copyOldSamplesToNewQIC(oldSamples, newQIC);
+
+            // Tạo sample cho L mới
+            createSamplesForNewLs(currentLs, oldSamples, newQIC);
+
+            view.addMessage("qm.qualityStandardH.info.newQicCreated", ComponentState.MessageType.SUCCESS);
+        } catch (Exception ex) {
+            view.addMessage("qm.qualityStandardH.error.creationFailed", ComponentState.MessageType.FAILURE);
+            ex.printStackTrace();
+        }
+    }
+
+    private Entity getQualityStandardH(ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity qshForm = form.getEntity();
-
         if (qshForm == null || qshForm.getId() == null) {
             view.addMessage("qm.qualityStandardH.error.noRecord", ComponentState.MessageType.FAILURE);
-            return;
+            return null;
         }
+        return qshForm.getDataDefinition().get(qshForm.getId());
+    }
 
-        // Reload QSH từ DB để có hasMany
-        Entity qsh = qshForm.getDataDefinition().get(qshForm.getId());
-
-        // Lấy product từ QualityStandardH
+    private Entity getProduct(ViewDefinitionState view, Entity qsh) {
         Entity product = qsh.getBelongsToField("product");
         if (product == null || product.getId() == null) {
             view.addMessage("qm.qualityStandardH.error.noProduct", ComponentState.MessageType.FAILURE);
-            return;
+            return null;
         }
+        return product;
+    }
 
+    private Entity getLatestQIC(ViewDefinitionState view, Entity product) {
         DataDefinition qicDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_INSPECTION_COMMAND);
         if (qicDD == null) {
             view.addMessage("qm.qualityStandardH.error.cannotAccessQIC", ComponentState.MessageType.FAILURE);
-            return;
+            return null;
         }
-
-        // Lấy QIC cũ (product + 01incoming)
         Entity oldQIC = qicDD.find()
                 .add(SearchRestrictions.eq("product.id", product.getId()))
                 .add(SearchRestrictions.eq(QICFields.INSPECTION_TYPE, QICFields.INSPECTION_TYPE_INCOMING))
                 .addOrder(SearchOrders.desc("version"))
                 .setMaxResults(1)
                 .uniqueResult();
-
         if (oldQIC == null) {
             view.addMessage("qm.qualityStandardH.info.qicNotFound", ComponentState.MessageType.INFO);
-            return;
         }
+        return oldQIC;
+    }
 
-        // Lấy danh sách qualityStandardSample từ QIC cũ
-        List<Entity> oldSampleLs = oldQIC.getHasManyField("qualityStandardSamplesRe");
-
-        // Lấy danh sách qualityStandardL hiện tại từ QSH (header)
-        List<Entity> currentLs = qsh.getHasManyField("qualityStandardLs");
-
-        // Kiểm tra xem có L mới nào chưa có sample
-        Set<Long> oldLIds = oldSampleLs.stream()
+    private boolean hasNewLine(List<Entity> oldSamples, List<Entity> currentLs) {
+        Set<Long> oldLIds = oldSamples.stream()
                 .map(s -> s.getBelongsToField("qualityStandardL"))
                 .filter(Objects::nonNull)
                 .map(Entity::getId)
                 .collect(Collectors.toSet());
 
-        boolean hasNewL = currentLs.stream().anyMatch(l -> !oldLIds.contains(l.getId()));
-        if (!hasNewL) {
-            view.addMessage("qm.qualityStandardH.info.noNewL", ComponentState.MessageType.INFO);
-            return; // Không tạo QIC mới nếu không có Line mới
-        }
+        return currentLs.stream().anyMatch(l -> !oldLIds.contains(l.getId()));
+    }
 
-        // Tạo QIC mới
+    private Entity createNewQIC(Entity oldQIC) {
+        DataDefinition qicDD = oldQIC.getDataDefinition();
         Entity newQIC = qicDD.create();
 
-        // Copy dữ liệu từ QIC cũ
         newQIC.setField("inspectionType", oldQIC.getField("inspectionType"));
-        newQIC.setField("status", "01new"); // trạng thái mới
+        newQIC.setField("status", "01new");
         newQIC.setField("productionOrderNumber", oldQIC.getField("productionOrderNumber"));
         newQIC.setField("operationNumber", oldQIC.getField("operationNumber"));
         newQIC.setField("company", oldQIC.getField("company"));
@@ -101,24 +123,16 @@ public class QualityStandardHVersionListener {
         newQIC.setField("warehouseLocation", oldQIC.getField("warehouseLocation"));
         newQIC.setField("ngLocation", oldQIC.getField("ngLocation"));
 
-        // Version mới = version cũ + 1
         Integer oldVersion = oldQIC.getIntegerField("version");
         newQIC.setField("version", oldVersion != null ? oldVersion + 1 : 1);
-
-        // Ngày tạo mới
         newQIC.setField("createdDate", new Date());
 
-        // Lưu QIC mới
-        newQIC = qicDD.save(newQIC);
+        return qicDD.save(newQIC);
+    }
 
-        // ==============================================
-        // ====== THÊM SAMPLE SAU KHI TẠO QIC MỚI =======
-        // ==============================================
-
+    private void copyOldSamplesToNewQIC(List<Entity> oldSamples, Entity newQIC) {
         DataDefinition sampleDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_SAMPLE);
-
-        // ========= 1. COPY TOÀN BỘ SAMPLE CŨ SANG QIC MỚI =========
-        for (Entity oldSample : oldSampleLs) {
+        for (Entity oldSample : oldSamples) {
             Entity newSample = sampleDD.create();
             newSample.setField("qualityInspectionCommandRe", newQIC);
             newSample.setField("qualityStandardL", oldSample.getBelongsToField("qualityStandardL"));
@@ -128,8 +142,17 @@ public class QualityStandardHVersionListener {
             newSample.setField("quantitativeEvaluation", oldSample.getStringField("quantitativeEvaluation"));
             sampleDD.save(newSample);
         }
+    }
 
-        // ========= 2. TẠO SAMPLE CHO L MỚI =========
+    private void createSamplesForNewLs(List<Entity> currentLs, List<Entity> oldSamples, Entity newQIC) {
+        Set<Long> oldLIds = oldSamples.stream()
+                .map(s -> s.getBelongsToField("qualityStandardL"))
+                .filter(Objects::nonNull)
+                .map(Entity::getId)
+                .collect(Collectors.toSet());
+
+        DataDefinition sampleDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_SAMPLE);
+
         for (Entity currentL : currentLs) {
             Long currentLId = currentL.getId();
             if (!oldLIds.contains(currentLId)) {
@@ -145,7 +168,5 @@ public class QualityStandardHVersionListener {
                 }
             }
         }
-
-        view.addMessage("qm.qualityStandardH.info.newQicCreated", ComponentState.MessageType.SUCCESS);
     }
 }
