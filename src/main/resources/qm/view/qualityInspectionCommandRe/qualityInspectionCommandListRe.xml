@@ -134,7 +134,8 @@
                     <layoutElement column="1" row="4" width="5" height="12">
                         <component type="grid" name="qualityInspectionCommandListDtos" reference="grid" field="#{form}.qualityInspectionCommandListDtoRes">
                             <option type="column" name="inspectionOrderNumber" fields="inspectionOrderNumber" link="true"/>
-                            <option type="column" name="status" fields="status" link="true"/>
+                            <option type="column" name="version" fields="version" link="true"/>
+                            <option type="column" name="status" fields="status"/>
                             <option type="column" name="poNumber" fields="poNumber"/>
                             <option type="column" name="executionDate" fields="executionDate"/>
                             <option type="column" name="productNumber" fields="productNumber"/>
@@ -149,8 +150,8 @@
                             <option type="correspondingView" value="qm/qualityInspectionCommandDetailsRe" />
                             <option type="correspondingComponent" value="form" />
 
-                            <option type="searchable" value="inspectionOrderNumber,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,locationNumber,executionDate,operationNumber"/>
-                            <option type="orderable" value="inspectionOrderNumber,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,locationNumber,executionDate,operationNumber"/>
+                            <option type="searchable" value="inspectionOrderNumber,version,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,locationNumber,executionDate,operationNumber"/>
+                            <option type="orderable" value="inspectionOrderNumber,version,status,poNumber,productNumber,productName,companyNumber,companyName,productionOrderNumber,transactionQuantity,locationNumber,executionDate,operationNumber"/>
                             <option type="fullscreen" value="true"/>
 
                             <option type="order" column="number" direction="desc"/>

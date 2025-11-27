@@ -67,6 +67,7 @@ public class QICDetailsHooksRe {
         fillNameFromBelongsTo(view, QICFields.COMPANY, "companyName");
         fillNameFromBelongsTo(view, QICFields.PRODUCT, "productName");
         fillNameFromBelongsTo(view, QICFields.TOOL, "toolName");
+        fillInspectionOrderDisplay(view);
         fillCurrentUser(view);
         updateStatusDisplay(view);
         fillCurrentInspectionDate(view);
@@ -96,10 +97,10 @@ public class QICDetailsHooksRe {
             disableRibbonActionsExceptNavigation(view);
             return;
         }
-
-        createSamplesIfNotExist(qic, product, inspectionType);
-
-        copyAttachmentsFromStandardH(qic, product, inspectionType);
+//
+//        createSamplesIfNotExist(qic, product, inspectionType);
+//
+//        copyAttachmentsFromStandardH(qic, product, inspectionType);
     }
 
     private void copyAttachmentsFromStandardH(Entity qic, Entity product, String inspectionType) {
@@ -155,55 +156,54 @@ public class QICDetailsHooksRe {
         }
     }
 
-    private void createSamplesIfNotExist(Entity qic, Entity product, String type) {
-
-        DataDefinition sampleDD =
-                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_SAMPLE);
-
-        DataDefinition hDD =
-                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_H);
-
-        List<Entity> hList = hDD.find()
-                .add(SearchRestrictions.eq(GlobalFields.PRODUCT_ID, product.getId()))
-                .add(SearchRestrictions.eq(QSHFields.TYPE, type))
-                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
-                .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
-                .list().getEntities();
-
-        if (hList.isEmpty()) return;
-
-        List<Long> hIds = hList.stream().map(Entity::getId).collect(Collectors.toList());
-
-        DataDefinition lDD =
-                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_L);
-
-        List<Entity> lList = lDD.find()
-                .add(SearchRestrictions.in(QSLFields.QUALITY_STANDARD_H_ID, hIds))
-                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
-                .list().getEntities();
-
-        for (Entity l : lList) {
-
-            boolean exists = !sampleDD.find()
-                    .add(SearchRestrictions.eq(QualityStandardSampleFields.QUALITY_INSPECTION_COMMAND_ID, qic.getId()))
-                    .add(SearchRestrictions.eq(QualityStandardSampleFields.QUALITY_STANDARD_L_ID, l.getId()))
-                    .list().getEntities().isEmpty();
-
-            if (exists) continue;
-
-            Integer sampleSize = l.getIntegerField(QSLFields.SAMPLE_SIZE);
-            if (sampleSize == null || sampleSize <= 0) sampleSize = 1;
-
-            for (int i = 1; i <= sampleSize; i++) {
-                Entity sample = sampleDD.create();
-                sample.setField(QMConstants.MODEL_QUALITY_INSPECTION_COMMAND, qic);
-                sample.setField(QMConstants.MODEL_QUALITY_STANDARD_L, l);
-                sample.setField(QualityStandardSampleFields.SAMPLE_NUMBER, i);
-                sampleDD.save(sample);
-            }
-        }
-    }
-
+//    private void createSamplesIfNotExist(Entity qic, Entity product, String type) {
+//
+//        DataDefinition sampleDD =
+//                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_SAMPLE);
+//
+//        DataDefinition hDD =
+//                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_H);
+//
+//        List<Entity> hList = hDD.find()
+//                .add(SearchRestrictions.eq(GlobalFields.PRODUCT_ID, product.getId()))
+//                .add(SearchRestrictions.eq(QSHFields.TYPE, type))
+//                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
+//                .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
+//                .list().getEntities();
+//
+//        if (hList.isEmpty()) return;
+//
+//        List<Long> hIds = hList.stream().map(Entity::getId).collect(Collectors.toList());
+//
+//        DataDefinition lDD =
+//                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_L);
+//
+//        List<Entity> lList = lDD.find()
+//                .add(SearchRestrictions.in(QSLFields.QUALITY_STANDARD_H_ID, hIds))
+//                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
+//                .list().getEntities();
+//
+//        for (Entity l : lList) {
+//
+//            boolean exists = !sampleDD.find()
+//                    .add(SearchRestrictions.eq(QualityStandardSampleFields.QUALITY_INSPECTION_COMMAND_ID, qic.getId()))
+//                    .add(SearchRestrictions.eq(QualityStandardSampleFields.QUALITY_STANDARD_L_ID, l.getId()))
+//                    .list().getEntities().isEmpty();
+//
+//            if (exists) continue;
+//
+//            Integer sampleSize = l.getIntegerField(QSLFields.SAMPLE_SIZE);
+//            if (sampleSize == null || sampleSize <= 0) sampleSize = 1;
+//
+//            for (int i = 1; i <= sampleSize; i++) {
+//                Entity sample = sampleDD.create();
+//                sample.setField(QMConstants.MODEL_QUALITY_INSPECTION_COMMAND, qic);
+//                sample.setField(QMConstants.MODEL_QUALITY_STANDARD_L, l);
+//                sample.setField(QualityStandardSampleFields.SAMPLE_NUMBER, i);
+//                sampleDD.save(sample);
+//            }
+//        }
+//    }
 
     /**
      * Lấy entity chính (form entity) từ view hiện tại.
@@ -307,8 +307,8 @@ public class QICDetailsHooksRe {
 
         String currentStatus = (String) statusField.getFieldValue();
 
-        if (QICFields.STATUS_NEW.equals(currentStatus)) {
-            statusField.setFieldValue(QICFields.STATUS_IN_PROGRESS);
+        if (QICFields.Status.NEW.equals(currentStatus)) {
+            statusField.setFieldValue(QICFields.Status.IN_PROGRESS);
             statusField.requestComponentUpdateState();
         }
     }
@@ -369,6 +369,50 @@ public class QICDetailsHooksRe {
         FilterValueHolder filter = lookup.getFilterValue();
         filter.put("excludedLocationId", excludedId);
         lookup.setFilterValue(filter);
+    }
+
+    /**
+     * Hiển thị lệnh kiểm tra (Inspection Order) trong view.
+     * <p>
+     * Method này kết hợp 2 field gốc từ database:
+     * <ul>
+     *     <li>{@code inspectionOrderNumber} (prefix, String)</li>
+     *     <li>{@code inspectionOrderNumberInt} (số thứ tự, Integer)</li>
+     * </ul>
+     * Sau đó ghép chúng thành một chuỗi hiển thị và set vào field ảo
+     * {@code inspectionOrder} trong view.
+     * <p>
+     * Lưu ý:
+     * <ul>
+     *     <li>Không lấy dữ liệu từ form, mà truy vấn trực tiếp từ database.</li>
+     *     <li>Trường {@code inspectionOrder} chỉ dùng để hiển thị, không lưu DB.</li>
+     *     <li>Nếu prefix hoặc number là null, field hiển thị sẽ để rỗng.</li>
+     * </ul>
+     *
+     * @param view trạng thái của view hiện tại, dùng để lấy form và field hiển thị
+     */
+    private void fillInspectionOrderDisplay(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Long qicId = form.getEntityId();
+
+        if (qicId == null) return;
+
+        DataDefinition qicDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_INSPECTION_COMMAND);
+        Entity qicFromDB = qicDD.get(qicId);
+
+        String prefix = qicFromDB.getStringField(QICFields.INSPECTION_ORDER_NUMBER);
+        Integer number = qicFromDB.getIntegerField(QICFields.INSPECTION_ORDER_NUMBER_INT);
+
+        String display = "";
+        if (prefix != null && number != null) {
+            display = prefix + number;
+        }
+
+        FieldComponent inspectionOrderField =
+                (FieldComponent) view.getComponentByReference("inspectionOrder");
+
+        inspectionOrderField.setFieldValue(display);
+        inspectionOrderField.requestComponentUpdateState();
     }
 }
 

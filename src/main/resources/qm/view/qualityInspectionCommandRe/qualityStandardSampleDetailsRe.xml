@@ -3,7 +3,14 @@
     xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
     <component type="window" name="window">
         <ribbon>
-            <template name="standardFormTemplate" includeItems="navigation.back, actions.save"/>
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack"/>
+            </group>
+            <group name="actions">
+                <bigButton name="save" icon="saveIcon24.png" state="enabled" action="#{form}.performSave;" />
+                <smallButton name="saveBack" icon="saveBackIcon16.png" state="enabled" action="#{form}.performSave; #{window}.performBack;" />
+                <smallButton name="cancel" icon="cancelIcon16.png" state="enabled" action="#{form}.performCancel;" />
+            </group>
         </ribbon>
         <windowTab name="mainTab">
             <component type="form" name="qualityStandardSampleDetail" reference="form">

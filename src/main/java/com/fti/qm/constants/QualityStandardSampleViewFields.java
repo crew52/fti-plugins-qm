@@ -23,4 +23,6 @@ public final class QualityStandardSampleViewFields {
     public static final String QUANTITATIVE_EVALUATION = "quantitativeEvaluation";
     public static final String ME_NAME = "meName";
     public static final String ME_MEASURING_METHOD = "meMeasuringMethod";
+
+    public static final String DELETED = "deleted";
 }

@@ -1,13 +1,12 @@
 package com.fti.qm.hooks;
 
-import com.fti.qm.constants.QMConstants;
+import com.fti.qm.constants.*;
 import com.fti.qm.constants.qualityInspectionCommand.QICFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,9 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DocumentQICModelHooksRe {
@@ -56,11 +57,11 @@ public class DocumentQICModelHooksRe {
                 continue;
             }
 
-            int nextNumber = generateNextInspectionOrderNumberInt(qicDD, QICFields.INSPECTION_TYPE_INCOMING);
+            int nextNumber = generateNextInspectionOrderNumberInt(qicDD, QICFields.InspectionType.INCOMING);
 
             Entity qic = qicDD.create();
-            qic.setField(QICFields.INSPECTION_TYPE, QICFields.INSPECTION_TYPE_INCOMING);
-            qic.setField(QICFields.STATUS, QICFields.STATUS_NEW);
+            qic.setField(QICFields.INSPECTION_TYPE, QICFields.InspectionType.INCOMING);
+            qic.setField(QICFields.STATUS, QICFields.Status.NEW);
             qic.setField(QICFields.COMPANY, document.getBelongsToField(DocumentFields.COMPANY));
             qic.setField(QICFields.PRODUCT, product);
             qic.setField(QICFields.INSPECTION_ORDER_NUMBER, INSPECTION_ORDER_NUMBER_PREFIX_I);
@@ -69,8 +70,18 @@ public class DocumentQICModelHooksRe {
             qic.setField(QICFields.EXECUTION_DATE, document.getDateField(DocumentFields.TIME));
             qic.setField(QICFields.TRANSACTION_QUANTITY, deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY));
             qic.setField(QICFields.LOCATION, deliveryEntity.getBelongsToField(DeliveryFields.LOCATION));
+            qic.setField(QICFields.VERSION, 1);
+            qic.setField(QICFields.CREATED_DATE, new Date());
 
-            qicDD.save(qic);
+            qic = qicDD.save(qic);
+
+            // --- Tạo sample tự động nếu có standard ---
+            try {
+                createSamples(qic, product, QICFields.InspectionType.INCOMING);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
         }
     }
 
@@ -91,6 +102,48 @@ public class DocumentQICModelHooksRe {
         }
 
         return lastNumber + 1;
+    }
+
+    private void createSamples(Entity qic, Entity product, String type) {
+
+        DataDefinition sampleDD =
+                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_SAMPLE);
+
+        DataDefinition hDD =
+                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_H);
+
+        List<Entity> hList = hDD.find()
+                .add(SearchRestrictions.eq(GlobalFields.PRODUCT_ID, product.getId()))
+                .add(SearchRestrictions.eq(QSHFields.TYPE, type))
+                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
+                .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
+                .list().getEntities();
+
+        if (hList.isEmpty()) return;
+
+        List<Long> hIds = hList.stream().map(Entity::getId).collect(Collectors.toList());
+
+        DataDefinition lDD =
+                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_L);
+
+        List<Entity> lList = lDD.find()
+                .add(SearchRestrictions.in(QSLFields.QUALITY_STANDARD_H_ID, hIds))
+                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
+                .list().getEntities();
+
+        for (Entity l : lList) {
+
+            Integer sampleSize = l.getIntegerField(QSLFields.SAMPLE_SIZE);
+            if (sampleSize == null || sampleSize <= 0) sampleSize = 1;
+
+            for (int i = 1; i <= sampleSize; i++) {
+                Entity sample = sampleDD.create();
+                sample.setField(QMConstants.MODEL_QUALITY_INSPECTION_COMMAND, qic);
+                sample.setField(QMConstants.MODEL_QUALITY_STANDARD_L, l);
+                sample.setField(QualityStandardSampleFields.SAMPLE_NUMBER, i);
+                sampleDD.save(sample);
+            }
+        }
     }
 
 }

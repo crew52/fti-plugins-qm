@@ -7,14 +7,7 @@ public final class QICFields {
     // Fields
     public static final String QUALITY_INSPECTION_COMMAND_ID = "qualityInspectionCommandRe.id";
     public static final String INSPECTION_TYPE = "inspectionType";
-    public static final String INSPECTION_TYPE_INCOMING = "01incoming";
-    public static final String INSPECTION_TYPE_IN_PROCESS = "02inprocess";
-    public static final String INSPECTION_TYPE_OUTGOING = "03outgoing";
-    public static final String INSPECTION_TYPE_EQUIPMENT = "04equipment";
     public static final String STATUS = "status";
-    public static final String STATUS_NEW = "01new";
-    public static final String STATUS_IN_PROGRESS = "02inProgress";
-    public static final String STATUS_COMPLETED = "03completed";
 
     public static final String PRODUCTION_ORDER_NUMBER = "productionOrderNumber";
     public static final String OPERATION_NUMBER = "operationNumber";
@@ -39,11 +32,34 @@ public final class QICFields {
 
     public static final String INSPECTION_DATE = "inspectionDate";
     public static final String NOTE = "note";
+
+    public static final String VERSION = "version";
+    public static final String CREATED_DATE = "createdDate";
+
+    public static final String QUALITY_STANDARD_SAMPLES_RES = "qualityStandardSamplesRe";
+
     public static final class QualityDecision {
         private QualityDecision() {}
 
         public static final String ACCEPT = "01accept";
         public static final String REJECT = "02reject";
         public static final String PARTIAL = "03partial";
+    }
+
+    public static final class Status {
+        private Status() {}
+
+        public static final String NEW = "01new";
+        public static final String IN_PROGRESS = "02inProgress";
+        public static final String COMPLETED = "03completed";
+    }
+
+    public static final class InspectionType {
+        private InspectionType() {}
+
+        public static final String INCOMING = "01incoming";
+        public static final String IN_PROCESS = "02inprocess";
+        public static final String OUTGOING = "03outgoing";
+        public static final String EQUIPMENT = "04equipment";
     }
 }

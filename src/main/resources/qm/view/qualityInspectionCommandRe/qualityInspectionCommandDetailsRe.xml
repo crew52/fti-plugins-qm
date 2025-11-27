@@ -45,21 +45,20 @@
             <component type="form" name="qualityInspectionCommandDetail" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3" rows="6">
                     <layoutElement column="1" row="1">
-                        <component type="input" name="inspectionOrderNumber" field="inspectionOrderNumber" reference="inspectionOrderNumber" defaultEnabled="never"/>
+                        <component type="input" name="inspectionOrder" reference="inspectionOrder" defaultEnabled="never">
+                            <option type="alignment" value="right" />
+                        </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
-                        <component type="input" name="inspectionOrderNumberInt" field="inspectionOrderNumberInt" reference="inspectionOrderNumberInt" defaultEnabled="never"/>
-                    </layoutElement>
-                    <layoutElement column="1" row="3">
                         <component type="select" name="inspectionType" field="inspectionType" reference="inspectionType" defaultEnabled="never"/>
                     </layoutElement>
-                    <layoutElement column="1" row="4">
+                    <layoutElement column="1" row="3">  
                         <component type="select" name="status" field="status" reference="status"/>
                     </layoutElement>
-                    <layoutElement column="1" row="5">
+                    <layoutElement column="1" row="4">
                         <component type="input" name="productionOrderNumber" field="productionOrderNumber" reference="productionOrderNumber" defaultEnabled="never"/>
                     </layoutElement>
-                    <layoutElement column="1" row="6">
+                    <layoutElement column="1" row="5">
                         <component type="input" name="operationNumber" field="operationNumber" reference="operationNumber" defaultEnabled="never"/>
                     </layoutElement>
 
@@ -166,6 +165,7 @@
                         <option type="correspondingComponent" value="form"/>
                         <option type="correspondingViewInModal" value="true"/>
 
+                        <criteriaModifier class="com.fti.qm.criteriaModifiers.common.CommonCriteriaModifier" method="addDeletedFalseCondition"/>
                     </component>
                 </layoutElement>
             </component>
@@ -188,7 +188,7 @@
                 </layoutElement>
                 <layoutElement column="2" row="2">
                     <component type="input" name="ngQuantity" field="#{form}.ngQuantity" reference="ngQuantity" defaultEnabled="false">
-                         <listener event="onInputChange" class="com.fti.qm.listeners.QICDetailsListeners" method="onNgQtyChange" />
+                        <listener event="onInputChange" class="com.fti.qm.listeners.QICDetailsListeners" method="onNgQtyChange" />
                     </component>
                 </layoutElement>
                 <layoutElement column="2" row="3">

@@ -83,6 +83,9 @@
         <hasMany name="qualityStandardSamplesRe" model="qualityStandardSampleRe" joinField="qualityInspectionCommandRe"/>
         <hasMany name="qualityStandardSampleDtosRe" model="qualityStandardSampleDtoRe" joinField="qualityInspectionCommandRe"/>
         <hasMany name="attachments" model="qicAttachment" joinField="qualityInspectionCommandRe"/>
+
+        <integer name="version" required="true" />
+        <datetime name="createdDate"/>
     </fields>
 
     <!-- Định danh của dòng -->

@@ -13,6 +13,14 @@ public final class QualityStandardSampleFields {
     public static final String QUANTITATIVE_RESULT = "quantitativeResult";
     public static final String QUANTITATIVE_EVALUATION = "quantitativeEvaluation";
 
-    public static final String RESULT_VALUE_PASS = "01pass";
-    public static final String RESULT_VALUE_FAIL = "02fail";
+    public static final String DELETED = "deleted";
+
+    public static final String DELETED_DATE = "deletedDate";
+
+    public static final class Result {
+        private Result() {}
+
+        public static final String PASS = "01pass";
+        public static final String FAIL = "02fail";
+    }
 }

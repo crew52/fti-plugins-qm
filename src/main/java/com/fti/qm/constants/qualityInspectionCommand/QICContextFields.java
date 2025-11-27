@@ -28,4 +28,14 @@ public final class QICContextFields {
     // --- Boolean flags ---
     public static final String CONFIRMED = "confirmed";
 
+    public static final class Status {
+        private Status() {}
+
+        public static final String NEW = "01new";
+        public static final String IN_PROGRESS = "02inProgress";
+        public static final String COMPLETED = "03completed";
+    }
+
+
+
 }

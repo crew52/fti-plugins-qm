@@ -225,6 +225,12 @@ public class QICContextService {
         if (qICContextEntity.getBooleanField(QICContextFields.CONFIRMED)) {
             prepareViewWithContext(view, qICContextEntity);
         } else {
+            if (qICContextEntity.getId() == null &&
+                    qICContextEntity.getStringField(QICContextFields.STATUS) == null) {
+
+                qICContextEntity.setField(QICContextFields.STATUS, QICContextFields.Status.NEW);
+                formComponent.setEntity(qICContextEntity);
+            }
             prepareViewWithEmptyContext(view, qICContextEntity);
         }
     }

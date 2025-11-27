@@ -26,6 +26,7 @@
         <decimal name="transactionQuantity"/>
         <integer name="location_id"/>
         <string name="locationNumber"/>
+        <string name="version"/>
         
         <belongsTo name="qualityInspectionCommandContextRe" plugin="qm" model="qualityInspectionCommandContextRe"/>
     </fields>

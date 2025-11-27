@@ -38,6 +38,7 @@
     <hooks>
         <onSave class="com.fti.qm.hooks.standard.QualityStandardLHooks" method="onSave" />
         <onView class="com.fti.qm.hooks.standard.QualityStandardLHooks" method="onView" />
+        <onUpdate class="com.fti.qm.hooks.standard.QualityStandardLHooks" method="onUpdate" />
         <onCreate class="com.fti.qm.hooks.common.SetDefaultDeletedHook" method="onCreate" />
     </hooks>
 
