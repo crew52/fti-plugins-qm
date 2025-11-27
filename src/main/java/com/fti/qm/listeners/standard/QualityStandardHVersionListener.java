@@ -224,7 +224,12 @@ public class QualityStandardHVersionListener {
      */
     private void copyOldSamplesToNewQIC(List<Entity> oldSamples, Entity newQIC) {
         DataDefinition sampleDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_SAMPLE);
-        for (Entity oldSample : oldSamples) {
+
+        List<Entity> deletedSamples = oldSamples.stream()
+                .filter(s -> Boolean.FALSE.equals(s.getBooleanField(QualityStandardSampleFields.DELETED)))
+                .collect(Collectors.toList());
+
+        for (Entity oldSample : deletedSamples) {
             Entity newSample = sampleDD.create();
             newSample.setField(QualityStandardSampleFields.QUALITY_INSPECTION_COMMAND, newQIC);
             newSample.setField(QualityStandardSampleFields.QUALITY_STANDARD_L, oldSample.getBelongsToField(QualityStandardSampleFields.QUALITY_STANDARD_L));
