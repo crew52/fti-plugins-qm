@@ -56,16 +56,16 @@ public class QualityStandardSampleListeners {
 
         if (lower != null && upper != null) {
             return value.compareTo(lower) >= 0 && value.compareTo(upper) <= 0
-                    ? QualityStandardSampleFields.RESULT_VALUE_PASS
-                    : QualityStandardSampleFields.RESULT_VALUE_FAIL;
+                    ? QualityStandardSampleFields.Result.PASS
+                    : QualityStandardSampleFields.Result.FAIL;
         } else if (upper != null) {
             return value.compareTo(upper) <= 0
-                    ? QualityStandardSampleFields.RESULT_VALUE_PASS
-                    : QualityStandardSampleFields.RESULT_VALUE_FAIL;
+                    ? QualityStandardSampleFields.Result.PASS
+                    : QualityStandardSampleFields.Result.FAIL;
         } else if (lower != null) {
             return value.compareTo(lower) >= 0
-                    ? QualityStandardSampleFields.RESULT_VALUE_PASS
-                    : QualityStandardSampleFields.RESULT_VALUE_FAIL;
+                    ? QualityStandardSampleFields.Result.PASS
+                    : QualityStandardSampleFields.Result.FAIL;
         }
         return null;
     }
