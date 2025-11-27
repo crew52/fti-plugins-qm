@@ -37,20 +37,35 @@ public class QualityStandardHVersionListener {
                 return;
             }
 
-            // Tạo QIC mới
-            Entity newQIC = createNewQIC(oldQIC);
+            // Kiểm tra version 1 và chưa có sample
+            Entity targetQIC;
+            if (isVersion1WithoutSamples(oldQIC)) {
+                // Thêm sample vào version 1
+                targetQIC = oldQIC;
+            } else {
+                // Tạo QIC mới
+                targetQIC = createNewQIC(oldQIC);
+            }
 
-            // Copy sample cũ sang QIC mới
-            copyOldSamplesToNewQIC(oldSamples, newQIC);
+            // Copy sample cũ sang QIC mới (nếu tạo version mới)
+            if (targetQIC != oldQIC) {
+                copyOldSamplesToNewQIC(oldSamples, targetQIC);
+            }
 
             // Tạo sample cho L mới
-            createSamplesForNewLs(currentLs, oldSamples, newQIC);
+            createSamplesForNewLs(currentLs, oldSamples, targetQIC);
 
             view.addMessage("qm.qualityStandardH.info.newQicCreated", ComponentState.MessageType.SUCCESS);
         } catch (Exception ex) {
             view.addMessage("qm.qualityStandardH.error.creationFailed", ComponentState.MessageType.FAILURE);
             ex.printStackTrace();
         }
+    }
+
+    private boolean isVersion1WithoutSamples(Entity qic) {
+        Integer version = qic.getIntegerField("version");
+        List<Entity> samples = qic.getHasManyField("qualityStandardSamplesRe");
+        return version != null && version == 1 && (samples == null || samples.isEmpty());
     }
 
     private Entity getQualityStandardH(ViewDefinitionState view) {
