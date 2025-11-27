@@ -21,10 +21,6 @@ public class QualityStandardHVersionListener {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    /**
-     * Listener được gọi từ nút "Tạo phiên bản mới".
-     * Ở bước đầu tiên: kiểm tra xem QIC cho product + 01incoming có tồn tại hay không.
-     */
     public void createVersion(final ViewDefinitionState view, final ComponentState button, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity qshForm = form.getEntity();
@@ -59,7 +55,6 @@ public class QualityStandardHVersionListener {
                 .uniqueResult();
 
         if (oldQIC == null) {
-            // TH1: Không tìm thấy QIC
             view.addMessage("qm.qualityStandardH.info.qicNotFound", ComponentState.MessageType.INFO);
             return;
         }
@@ -67,55 +62,10 @@ public class QualityStandardHVersionListener {
         // Lấy danh sách qualityStandardSample từ QIC cũ
         List<Entity> oldSampleLs = oldQIC.getHasManyField("qualityStandardSamplesRe");
 
-// Lấy danh sách qualityStandardL hiện tại từ QSH (header)
+        // Lấy danh sách qualityStandardL hiện tại từ QSH (header)
         List<Entity> currentLs = qsh.getHasManyField("qualityStandardLs");
 
-// DEBUG: In ra danh sách currentLs
-        System.out.println("===== CURRENT Ls FROM QSH =====");
-        for (Entity c : currentLs) {
-            System.out.println("Current L ID = " + c.getId()
-                    + ", Criteria = " + (c.getBelongsToField("qualityCriteria") != null
-                    ? c.getBelongsToField("qualityCriteria").getId()
-                    : "null")
-                    + ", SampleSize = " + c.getIntegerField("sampleSize"));
-        }
-
-// DEBUG: In ra danh sách L trong oldSampleLs
-        System.out.println("===== OLD SAMPLE Ls FROM OLD QIC =====");
-        for (Entity s : oldSampleLs) {
-            Entity l = s.getBelongsToField("qualityStandardL");
-            System.out.println("Sample ID = " + s.getId()
-                    + ", L ID = " + (l != null ? l.getId() : "null")
-                    + ", SampleNumber = " + s.getIntegerField("sampleNumber"));
-        }
-
-// Kiểm tra xem có L mới trong currentLs mà oldSampleLs không có hay không
-        boolean hasNewL = currentLs.stream().anyMatch(currentL -> {
-            Long currentLId = currentL.getId();
-
-            System.out.println("Check L ID in currentLs = " + currentLId);
-
-            boolean exists = oldSampleLs.stream()
-                    .map(s -> s.getBelongsToField("qualityStandardL"))
-                    .filter(l -> l != null)
-                    .map(Entity::getId)
-                    .anyMatch(id -> {
-                        System.out.println("    Compare with old L ID = " + id);
-                        return id.equals(currentLId);
-                    });
-
-            System.out.println(" => Exists in OLD? " + exists);
-            return !exists;
-        });
-
-        System.out.println("===== Final Result: hasNewL = " + hasNewL + " =====");
-
-        if (!hasNewL) {
-            view.addMessage("qm.qualityStandardH.info.noNewL", ComponentState.MessageType.INFO);
-            return;
-        }
-
-        // TH2: Tìm thấy QIC -> tạo QIC mới dựa trên QIC cũ
+        // Tạo QIC mới
         Entity newQIC = qicDD.create();
 
         // Copy dữ liệu từ QIC cũ
@@ -149,72 +99,45 @@ public class QualityStandardHVersionListener {
         newQIC = qicDD.save(newQIC);
 
         // ==============================================
-// ====== THÊM SAMPLE SAU KHI TẠO QIC MỚI =======
-// ==============================================
+        // ====== THÊM SAMPLE SAU KHI TẠO QIC MỚI =======
+        // ==============================================
 
-        DataDefinition sampleDD =
-                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_SAMPLE);
+        DataDefinition sampleDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_SAMPLE);
 
-// Gom sample cũ theo L
-        Map<Long, List<Entity>> oldSamplesByL = oldSampleLs.stream()
-                .filter(s -> s.getBelongsToField("qualityStandardL") != null)
-                .collect(Collectors.groupingBy(s -> s.getBelongsToField("qualityStandardL").getId()));
-
-        System.out.println("===== COPYING OLD SAMPLES INTO NEW QIC =====");
-
-// ========= 1. COPY SAMPLE CŨ SANG QIC MỚI =========
-        for (Map.Entry<Long, List<Entity>> entry : oldSamplesByL.entrySet()) {
-            for (Entity oldSample : entry.getValue()) {
-
-                Entity newSample = sampleDD.create();
-
-                newSample.setField("qualityInspectionCommandRe", newQIC);
-                newSample.setField("qualityStandardL", oldSample.getBelongsToField("qualityStandardL"));
-                newSample.setField("sampleNumber", oldSample.getIntegerField("sampleNumber"));
-
-                sampleDD.save(newSample);
-
-                System.out.println("Copied sample: L=" +
-                        oldSample.getBelongsToField("qualityStandardL").getId() +
-                        ", sampleNumber=" + oldSample.getIntegerField("sampleNumber"));
-            }
+        // ========= 1. COPY TOÀN BỘ SAMPLE CŨ SANG QIC MỚI =========
+        for (Entity oldSample : oldSampleLs) {
+            Entity newSample = sampleDD.create();
+            newSample.setField("qualityInspectionCommandRe", newQIC);
+            newSample.setField("qualityStandardL", oldSample.getBelongsToField("qualityStandardL"));
+            newSample.setField("sampleNumber", oldSample.getIntegerField("sampleNumber"));
+            newSample.setField("qualitativeResult", oldSample.getStringField("qualitativeResult"));
+            newSample.setField("quantitativeResult", oldSample.getDecimalField("quantitativeResult"));
+            newSample.setField("quantitativeEvaluation", oldSample.getStringField("quantitativeEvaluation"));
+            sampleDD.save(newSample);
         }
 
-// ========= 2. TẠO SAMPLE CHO L MỚI =========
-
-        Set<Long> oldLIds = oldSamplesByL.keySet();
-
-        System.out.println("===== CREATING SAMPLE FOR NEW Ls =====");
+        // ========= 2. TẠO SAMPLE CHO L MỚI =========
+        Set<Long> oldLIds = oldSampleLs.stream()
+                .map(s -> s.getBelongsToField("qualityStandardL"))
+                .filter(Objects::nonNull)
+                .map(Entity::getId)
+                .collect(Collectors.toSet());
 
         for (Entity currentL : currentLs) {
-
             Long currentLId = currentL.getId();
-
-            // L mới (không tồn tại trong sample cũ)
             if (!oldLIds.contains(currentLId)) {
-
                 Integer sampleSize = currentL.getIntegerField("sampleSize");
-                if (sampleSize == null || sampleSize <= 0) {
-                    sampleSize = 1; // default
-                }
-
-                System.out.println("Create new samples for L = " + currentLId + ", sampleSize = " + sampleSize);
+                if (sampleSize == null || sampleSize <= 0) sampleSize = 1;
 
                 for (int i = 1; i <= sampleSize; i++) {
                     Entity newSample = sampleDD.create();
-
                     newSample.setField("qualityInspectionCommandRe", newQIC);
                     newSample.setField("qualityStandardL", currentL);
                     newSample.setField("sampleNumber", i);
-
                     sampleDD.save(newSample);
-
-                    System.out.println("Created new sample: L=" + currentLId + ", sampleNumber=" + i);
                 }
             }
         }
-
-        System.out.println("===== DONE CREATING SAMPLES FOR NEW QIC =====");
 
         view.addMessage("qm.qualityStandardH.info.newQicCreated", ComponentState.MessageType.SUCCESS);
     }
