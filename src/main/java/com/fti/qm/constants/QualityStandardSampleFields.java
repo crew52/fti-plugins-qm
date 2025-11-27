@@ -15,4 +15,8 @@ public final class QualityStandardSampleFields {
 
     public static final String RESULT_VALUE_PASS = "01pass";
     public static final String RESULT_VALUE_FAIL = "02fail";
+
+    public static final String DELETED = "deleted";
+
+    public static final String DELETED_DATE = "deletedDate";
 }

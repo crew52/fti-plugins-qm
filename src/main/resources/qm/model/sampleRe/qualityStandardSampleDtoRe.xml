@@ -21,6 +21,7 @@
         <enum name="quantitativeEvaluation" values="01pass,02fail"/>
         <string name="meName"/>
         <string name="meMeasuringMethod"/>
+        <boolean name="deleted"/>
 
         <belongsTo name="qualityInspectionCommandRe" plugin="qm" model="qualityInspectionCommandRe"/>
         <belongsTo name="qualityStandardL" plugin="qm" model="qualityStandardL"/>

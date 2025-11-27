@@ -22,8 +22,11 @@
         <!-- Kết quả PASS/FAIL định lượng -->
         <enum name="quantitativeEvaluation" values="01pass,02fail"/>
 
+        <boolean name="deleted" default="false" />
+        <datetime name="deletedDate" />
     </fields>
     <identifier expression="#qualityInspectionCommandRe['inspectionOrderNumber'] + #qualityInspectionCommandRe['inspectionOrderNumberInt'] + ' - Sample ' + #sampleNumber"/>
     <hooks>
+        <onCreate class="com.fti.qm.hooks.common.SetDefaultDeletedHook" method="onCreate" />
     </hooks>
 </model>
