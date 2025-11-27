@@ -65,6 +65,19 @@ public class QualityStandardHVersionListener {
         // Lấy danh sách qualityStandardL hiện tại từ QSH (header)
         List<Entity> currentLs = qsh.getHasManyField("qualityStandardLs");
 
+        // Kiểm tra xem có L mới nào chưa có sample
+        Set<Long> oldLIds = oldSampleLs.stream()
+                .map(s -> s.getBelongsToField("qualityStandardL"))
+                .filter(Objects::nonNull)
+                .map(Entity::getId)
+                .collect(Collectors.toSet());
+
+        boolean hasNewL = currentLs.stream().anyMatch(l -> !oldLIds.contains(l.getId()));
+        if (!hasNewL) {
+            view.addMessage("qm.qualityStandardH.info.noNewL", ComponentState.MessageType.INFO);
+            return; // Không tạo QIC mới nếu không có Line mới
+        }
+
         // Tạo QIC mới
         Entity newQIC = qicDD.create();
 
@@ -117,12 +130,6 @@ public class QualityStandardHVersionListener {
         }
 
         // ========= 2. TẠO SAMPLE CHO L MỚI =========
-        Set<Long> oldLIds = oldSampleLs.stream()
-                .map(s -> s.getBelongsToField("qualityStandardL"))
-                .filter(Objects::nonNull)
-                .map(Entity::getId)
-                .collect(Collectors.toSet());
-
         for (Entity currentL : currentLs) {
             Long currentLId = currentL.getId();
             if (!oldLIds.contains(currentLId)) {
