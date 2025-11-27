@@ -58,7 +58,7 @@ public class QualityStandardHVersionListener {
 
             List<Entity> currentLs = qsh.getHasManyField(QSHFields.QUALITY_STANDARD_LS)
                     .stream()
-                    .filter(l -> !Boolean.TRUE.equals(l.getBooleanField("deleted")))
+                    .filter(l -> !Boolean.TRUE.equals(l.getBooleanField(QSLFields.DELETED)))
                     .collect(Collectors.toList());
 
             // Kiểm tra có L mới
@@ -176,7 +176,7 @@ public class QualityStandardHVersionListener {
                 .collect(Collectors.toSet());
 
         return currentLs.stream()
-                .filter(l -> !Boolean.TRUE.equals(l.getBooleanField("deleted")))
+                .filter(l -> !Boolean.TRUE.equals(l.getBooleanField(QSLFields.DELETED)))
                 .anyMatch(l -> !oldLIds.contains(l.getId()));
     }
 
@@ -254,7 +254,7 @@ public class QualityStandardHVersionListener {
 
         for (Entity currentL : currentLs) {
             // Bỏ qua line bị deleted
-            if (Boolean.TRUE.equals(currentL.getBooleanField("deleted"))) {
+            if (Boolean.TRUE.equals(currentL.getBooleanField(QSLFields.DELETED))) {
                 continue;
             }
             Long currentLId = currentL.getId();
