@@ -57,11 +57,11 @@ public class DocumentQICModelHooksRe {
                 continue;
             }
 
-            int nextNumber = generateNextInspectionOrderNumberInt(qicDD, QICFields.INSPECTION_TYPE_INCOMING);
+            int nextNumber = generateNextInspectionOrderNumberInt(qicDD, QICFields.InspectionType.INCOMING);
 
             Entity qic = qicDD.create();
-            qic.setField(QICFields.INSPECTION_TYPE, QICFields.INSPECTION_TYPE_INCOMING);
-            qic.setField(QICFields.STATUS, QICFields.STATUS_NEW);
+            qic.setField(QICFields.INSPECTION_TYPE, QICFields.InspectionType.INCOMING);
+            qic.setField(QICFields.STATUS, QICFields.Status.NEW);
             qic.setField(QICFields.COMPANY, document.getBelongsToField(DocumentFields.COMPANY));
             qic.setField(QICFields.PRODUCT, product);
             qic.setField(QICFields.INSPECTION_ORDER_NUMBER, INSPECTION_ORDER_NUMBER_PREFIX_I);
@@ -77,7 +77,7 @@ public class DocumentQICModelHooksRe {
 
             // --- Tạo sample tự động nếu có standard ---
             try {
-                createSamples(qic, product, QICFields.INSPECTION_TYPE_INCOMING);
+                createSamples(qic, product, QICFields.InspectionType.INCOMING);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

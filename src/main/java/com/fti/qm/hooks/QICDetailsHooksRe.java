@@ -307,8 +307,8 @@ public class QICDetailsHooksRe {
 
         String currentStatus = (String) statusField.getFieldValue();
 
-        if (QICFields.STATUS_NEW.equals(currentStatus)) {
-            statusField.setFieldValue(QICFields.STATUS_IN_PROGRESS);
+        if (QICFields.Status.NEW.equals(currentStatus)) {
+            statusField.setFieldValue(QICFields.Status.IN_PROGRESS);
             statusField.requestComponentUpdateState();
         }
     }

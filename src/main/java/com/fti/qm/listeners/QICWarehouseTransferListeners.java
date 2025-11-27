@@ -43,7 +43,7 @@ public class QICWarehouseTransferListeners {
         String status = qic.getStringField(QICFields.STATUS);
 
         // Chỉ cho phép status = 02inProgress
-        if (!QICFields.STATUS_IN_PROGRESS.equals(status)) {
+        if (!QICFields.Status.IN_PROGRESS.equals(status)) {
             view.addMessage(
                     "qm.qic.transferWarehouse.invalidStatus", ComponentState.MessageType.FAILURE
             );
@@ -127,7 +127,7 @@ public class QICWarehouseTransferListeners {
 
     private void updateQICStatusToCompleted(Entity qic) {
         try {
-            qic.setField(QICFields.STATUS, QICFields.STATUS_COMPLETED);
+            qic.setField(QICFields.STATUS, QICFields.Status.COMPLETED);
             DataDefinition qicDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_INSPECTION_COMMAND);
             qicDD.save(qic);
         } catch (Exception e) {
