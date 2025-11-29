@@ -6,6 +6,7 @@ import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConst
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
@@ -122,7 +124,58 @@ public class QICWarehouseTransferListeners {
         pos.setField("document", document);
         pos.setField("product", qic.getBelongsToField(QICFields.PRODUCT));
         pos.setField("quantity", qic.getField(quantityFieldName));
-        positionDD.save(pos);
+        pos.setField("resourceNumber", generateResourceNumber());
+        pos = positionDD.save(pos);
+
+        createResourceFromPosition(pos, document);
+    }
+
+    private void createResourceFromPosition(Entity pos, Entity document) {
+        DataDefinition resourceDD = dataDefinitionService.get(
+                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_RESOURCE
+        );
+
+        Entity res = resourceDD.create();
+        res.setField("number", pos.getStringField("resourceNumber"));
+        res.setField("location", document.getBelongsToField("locationTo"));
+        res.setField("product", pos.getBelongsToField("product"));
+        res.setField("quantity", pos.getDecimalField("quantity"));
+        res.setField("time", document.getDateField("time"));
+        resourceDD.save(res);
+    }
+
+    private String generateResourceNumber() {
+        DataDefinition positionDD = dataDefinitionService.get(
+                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_POSITION
+        );
+
+        // 1. Lấy bản ghi mới nhất
+        Entity lastPos = positionDD.find()
+                .addOrder(SearchOrders.desc("resourceNumber"))
+                .setMaxResults(1)
+                .uniqueResult();
+
+        int currentYear = LocalDate.now().getYear();  // ví dụ 2025
+        int nextNumber = 1; // default khi không có dữ liệu cũ
+
+        if (lastPos != null) {
+            String lastCode = lastPos.getStringField("resourceNumber");   // vd: 2025/00979
+
+            if (lastCode != null && lastCode.contains("/")) {
+                String[] parts = lastCode.split("/");
+
+                int year = Integer.parseInt(parts[0]);        // 2025
+                int number = Integer.parseInt(parts[1]);      // 979
+
+                if (year == currentYear) {
+                    nextNumber = number + 1;                  // +1 nếu cùng năm
+                }
+            }
+        }
+
+        return String.format("%d/%05d", currentYear, nextNumber);
     }
 
     private void updateQICStatusToCompleted(Entity qic) {
