@@ -19,6 +19,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Hook class để tạo tự động các bản ghi Quality Inspection Command (QIC) khi
+ * một phiếu nhập (receipt) được tạo và đã được chấp nhận.
+ * <p>
+ * Quy trình:
+ * - Kiểm tra phiếu nhập mới, trạng thái đã được chấp nhận.
+ * - Lấy các DeliveredProduct liên quan từ Delivery.
+ * - Tạo QIC cho từng sản phẩm.
+ * - Nếu sản phẩm có Quality Standard H (Standard H), tạo các sample và copy attachment.
+ */
 @Service
 public class DocumentQICModelHooksRe {
     public static final String FIELD_DELIVERY = "delivery";
@@ -32,6 +42,12 @@ public class DocumentQICModelHooksRe {
     @Autowired
     private QualityStandardAttachmentService attachmentService;
 
+    /**
+     * Tạo các Quality Inspection Command (QIC) nếu cần dựa trên phiếu nhập.
+     *
+     * @param documentDD DataDefinition của document (phiếu nhập)
+     * @param document   Entity của document hiện tại
+     */
     public void createQualityInspectionCommandIfNeeded(final DataDefinition documentDD, final Entity document) {
         String type = document.getStringField(DocumentFields.TYPE);
         String state = document.getStringField(DocumentFields.STATE);
@@ -103,6 +119,13 @@ public class DocumentQICModelHooksRe {
         }
     }
 
+    /**
+     * Sinh số thứ tự tiếp theo cho Inspection Order Number (dạng int).
+     *
+     * @param qicDD          DataDefinition của QIC
+     * @param inspectionType Loại kiểm tra (incoming/outgoing)
+     * @return Số thứ tự tiếp theo
+     */
     private int generateNextInspectionOrderNumberInt(final DataDefinition qicDD, final String inspectionType) {
         SearchCriteriaBuilder scb = qicDD.find();
         scb.add(SearchRestrictions.eq(QICFields.INSPECTION_TYPE, inspectionType));
@@ -122,6 +145,13 @@ public class DocumentQICModelHooksRe {
         return lastNumber + 1;
     }
 
+    /**
+     * Tạo các sample cho Quality Inspection Command dựa trên Standard H của sản phẩm.
+     *
+     * @param qic    QIC cần tạo sample
+     * @param product Product liên quan
+     * @param type   Loại kiểm tra (incoming/outgoing)
+     */
     private void createSamples(Entity qic, Entity product, String type) {
 
         DataDefinition sampleDD =
