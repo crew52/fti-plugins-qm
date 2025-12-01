@@ -2,6 +2,7 @@ package com.fti.qm.hooks;
 
 import com.fti.qm.constants.*;
 import com.fti.qm.constants.qualityInspectionCommand.QICFields;
+import com.fti.qm.services.QualityStandardAttachmentService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -27,6 +28,9 @@ public class DocumentQICModelHooksRe {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private QualityStandardAttachmentService attachmentService;
 
     public void createQualityInspectionCommandIfNeeded(final DataDefinition documentDD, final Entity document) {
         String type = document.getStringField(DocumentFields.TYPE);
@@ -91,7 +95,7 @@ public class DocumentQICModelHooksRe {
             if (productHasStandardH) {
                 try {
                     createSamples(qic, product, QICFields.InspectionType.INCOMING);
-                    copyAttachmentsFromStandardH(qic, product, QICFields.InspectionType.INCOMING);
+                    attachmentService.copyAttachments(qic, product, QICFields.InspectionType.INCOMING, true);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -159,49 +163,4 @@ public class DocumentQICModelHooksRe {
             }
         }
     }
-
-    private void copyAttachmentsFromStandardH(Entity qic, Entity product, String inspectionType) {
-
-        DataDefinition hDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_H);
-
-        // 1. Lấy danh sách qualityStandardH phù hợp
-        List<Entity> hList = hDD.find()
-                .add(SearchRestrictions.eq(GlobalFields.PRODUCT_ID, product.getId()))
-                .add(SearchRestrictions.eq(QSHFields.TYPE, inspectionType))
-                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
-                .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
-                .list().getEntities();
-
-        if (hList.isEmpty()) return;
-
-        List<Long> hIds = hList.stream().map(Entity::getId).collect(Collectors.toList());
-
-        // 2. Lấy tất cả attachment của StandardH
-        DataDefinition stdAttachmentDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QSH_ATTACHMENT);
-
-        List<Entity> stdAttList = stdAttachmentDD.find()
-                .add(SearchRestrictions.in(QSLFields.QUALITY_STANDARD_H_ID, hIds))
-                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
-                .list().getEntities();
-
-        if (stdAttList.isEmpty()) return;
-
-        // 3. DataDefinition cho qicAttachment
-        DataDefinition qicAttachmentDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QIC_ATTACHMENT);
-
-        // 4. Thực hiện copy từng attachment
-        for (Entity stdAtt : stdAttList) {
-            // 5. Tạo mới attachment record cho QIC
-            Entity newAtt = qicAttachmentDD.create();
-
-            newAtt.setField(QICAttachmentFields.QUALITY_INSPECTION_COMMAND, qic);
-            newAtt.setField(QICAttachmentFields.ATTACHMENT, stdAtt.getStringField(QSHAttachmentFields.ATTACHMENT));
-            newAtt.setField(QICAttachmentFields.NAME, stdAtt.getStringField(QSHAttachmentFields.NAME));
-            newAtt.setField(QICAttachmentFields.SIZE, stdAtt.getField(QSHAttachmentFields.SIZE));
-            newAtt.setField(QICAttachmentFields.EXT, stdAtt.getStringField(QSHAttachmentFields.EXT));
-
-            qicAttachmentDD.save(newAtt);
-        }
-    }
-
 }
