@@ -1,10 +1,8 @@
 package com.fti.qm.listeners.standard;
 
-import com.fti.qm.constants.QMConstants;
-import com.fti.qm.constants.QSHFields;
-import com.fti.qm.constants.QSLFields;
-import com.fti.qm.constants.QualityStandardSampleFields;
+import com.fti.qm.constants.*;
 import com.fti.qm.constants.qualityInspectionCommand.QICFields;
+import com.fti.qm.services.QualityStandardAttachmentService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -32,6 +30,9 @@ import java.util.stream.Collectors;
 public class QualityStandardHVersionListener {
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private QualityStandardAttachmentService attachmentService;
 
     /**
      * Tạo phiên bản mới của QIC dựa trên Quality Standard H hiện tại.
@@ -72,6 +73,7 @@ public class QualityStandardHVersionListener {
             if (isVersion1WithoutSamples(oldQIC)) {
                 // Thêm sample vào version 1
                 targetQIC = oldQIC;
+                attachmentService.copyAttachments(targetQIC, product, QICFields.InspectionType.INCOMING, true);
             } else {
                 // Tạo QIC mới
                 targetQIC = createNewQIC(oldQIC);
@@ -80,6 +82,7 @@ public class QualityStandardHVersionListener {
             // Copy sample cũ sang QIC mới (nếu tạo version mới)
             if (targetQIC != oldQIC) {
                 copyOldSamplesToNewQIC(oldSamples, targetQIC);
+                attachmentService.copyAttachments(targetQIC, product, QICFields.InspectionType.INCOMING, false);
             }
 
             // Tạo sample cho L mới

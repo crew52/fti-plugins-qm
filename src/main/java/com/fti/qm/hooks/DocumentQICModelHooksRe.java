@@ -2,6 +2,7 @@ package com.fti.qm.hooks;
 
 import com.fti.qm.constants.*;
 import com.fti.qm.constants.qualityInspectionCommand.QICFields;
+import com.fti.qm.services.QualityStandardAttachmentService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -18,6 +19,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Hook class để tạo tự động các bản ghi Quality Inspection Command (QIC) khi
+ * một phiếu nhập (receipt) được tạo và đã được chấp nhận.
+ * <p>
+ * Quy trình:
+ * - Kiểm tra phiếu nhập mới, trạng thái đã được chấp nhận.
+ * - Lấy các DeliveredProduct liên quan từ Delivery.
+ * - Tạo QIC cho từng sản phẩm.
+ * - Nếu sản phẩm có Quality Standard H (Standard H), tạo các sample và copy attachment.
+ */
 @Service
 public class DocumentQICModelHooksRe {
     public static final String FIELD_DELIVERY = "delivery";
@@ -28,6 +39,15 @@ public class DocumentQICModelHooksRe {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private QualityStandardAttachmentService attachmentService;
+
+    /**
+     * Tạo các Quality Inspection Command (QIC) nếu cần dựa trên phiếu nhập.
+     *
+     * @param documentDD DataDefinition của document (phiếu nhập)
+     * @param document   Entity của document hiện tại
+     */
     public void createQualityInspectionCommandIfNeeded(final DataDefinition documentDD, final Entity document) {
         String type = document.getStringField(DocumentFields.TYPE);
         String state = document.getStringField(DocumentFields.STATE);
@@ -75,16 +95,37 @@ public class DocumentQICModelHooksRe {
 
             qic = qicDD.save(qic);
 
-            // --- Tạo sample tự động nếu có standard ---
-            try {
-                createSamples(qic, product, QICFields.InspectionType.INCOMING);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            // --- Kiểm tra xem Product của QIC có Standard H nào không
+            DataDefinition hDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_H);
 
+            boolean productHasStandardH = !hDD.find()
+                    .add(SearchRestrictions.eq(GlobalFields.PRODUCT_ID, product.getId()))
+                    .add(SearchRestrictions.eq(QSHFields.TYPE, QICFields.InspectionType.INCOMING))
+                    .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
+                    .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
+                    .setMaxResults(1) // chỉ cần check existence
+                    .list()
+                    .getEntities()
+                    .isEmpty();
+
+            if (productHasStandardH) {
+                try {
+                    createSamples(qic, product, QICFields.InspectionType.INCOMING);
+                    attachmentService.copyAttachments(qic, product, QICFields.InspectionType.INCOMING, true);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }
 
+    /**
+     * Sinh số thứ tự tiếp theo cho Inspection Order Number (dạng int).
+     *
+     * @param qicDD          DataDefinition của QIC
+     * @param inspectionType Loại kiểm tra (incoming/outgoing)
+     * @return Số thứ tự tiếp theo
+     */
     private int generateNextInspectionOrderNumberInt(final DataDefinition qicDD, final String inspectionType) {
         SearchCriteriaBuilder scb = qicDD.find();
         scb.add(SearchRestrictions.eq(QICFields.INSPECTION_TYPE, inspectionType));
@@ -104,13 +145,20 @@ public class DocumentQICModelHooksRe {
         return lastNumber + 1;
     }
 
+    /**
+     * Tạo các sample cho Quality Inspection Command dựa trên Standard H của sản phẩm.
+     *
+     * @param qic    QIC cần tạo sample
+     * @param product Product liên quan
+     * @param type   Loại kiểm tra (incoming/outgoing)
+     */
     private void createSamples(Entity qic, Entity product, String type) {
 
         DataDefinition sampleDD =
                 dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_SAMPLE);
 
         DataDefinition hDD =
-                dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_H);
+                    dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_H);
 
         List<Entity> hList = hDD.find()
                 .add(SearchRestrictions.eq(GlobalFields.PRODUCT_ID, product.getId()))
@@ -145,5 +193,4 @@ public class DocumentQICModelHooksRe {
             }
         }
     }
-
 }
