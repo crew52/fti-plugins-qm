@@ -18,6 +18,9 @@
                 </bigButton>
             </group>
 
+            <group name="actions">
+                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{form}.performRefresh;" />
+            </group>
             <group name="customActions">
                 <bigButton name="resetContext" icon="updateIcon24.png" action="#{window}.fireEvent(resetContext);" state="enabled"/>
             </group>
