@@ -5,7 +5,7 @@
         <ribbon>
             <template name="standardFormSoftDeleteTemplate"/>
             <group name="attachments">
-                <bigButton name="downloadAtachment" icon="generateIcon24.png" state="enabled">
+                <bigButton name="downloadAttachment" icon="generateIcon24.png" state="enabled">
                     <script>
                         <![CDATA[
 							this.addOnChangeListener({
