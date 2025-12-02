@@ -27,8 +27,8 @@
                 </bigButton>
             </group>
 
-            <group name="atachments">
-                <bigButton name="downloadAtachment" icon="generateIcon24.png" state="enabled">
+            <group name="attachments">
+                <bigButton name="downloadAttachment" icon="generateIcon24.png" state="enabled">
                     <script>
                         <![CDATA[
 							this.addOnChangeListener({

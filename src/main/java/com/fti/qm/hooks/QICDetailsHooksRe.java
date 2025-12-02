@@ -2,6 +2,7 @@ package com.fti.qm.hooks;
 
 import com.fti.qm.constants.*;
 import com.fti.qm.constants.qualityInspectionCommand.QICFields;
+import com.fti.qm.utils.RibbonUtils;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -95,7 +96,7 @@ public class QICDetailsHooksRe {
         if (!checkIfStandardExists(product, inspectionType)) {
             view.addMessage("qm.qualityInspectionCommand.error.noStandardForProduct",
                     ComponentState.MessageType.INFO, false, product.getStringField(ProductFields.NUMBER));
-            disableRibbonActionsExceptNavigation(view);
+            RibbonUtils.disableActionsExceptNavigation(view);
             return;
         }
     }
@@ -124,33 +125,6 @@ public class QICDetailsHooksRe {
                 .add(SearchRestrictions.eq(GlobalFields.ACTIVE, true))
                 .setMaxResults(1)
                 .uniqueResult() != null;
-    }
-
-    /**
-     * Vô hiệu hóa tất cả các nút trong ribbon trừ nhóm "navigation"
-     * → Dùng khi sản phẩm chưa có tiêu chuẩn kiểm tra.
-     */
-    private void disableRibbonActionsExceptNavigation(final ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
-        if (window == null) {
-            return;
-        }
-
-        Ribbon ribbon = window.getRibbon();
-        if (ribbon == null) {
-            return;
-        }
-
-        for (RibbonGroup group : ribbon.getGroups()) {
-            if ("navigation".equals(group.getName())) {
-                continue;
-            }
-
-            for (RibbonActionItem item : group.getItems()) {
-                item.setEnabled(false);
-                item.requestUpdate(true);
-            }
-        }
     }
 
     /**
@@ -335,7 +309,11 @@ public class QICDetailsHooksRe {
                 "inspectionDate",
                 "note",
                 "qualityDecision",
-                "qualityDecisionCheckBox"
+                "qualityDecisionCheckBox",
+                "warehouseQuantity",
+                "ngQuantity",
+                "warehouseLocation",
+                "ngLocation"
         );
 
         // 4) Disable từng field trong danh sách
@@ -345,7 +323,7 @@ public class QICDetailsHooksRe {
                 comp.setEnabled(false);
             }
         }
-        disableRibbonActionsExceptNavigation(view);
+        RibbonUtils.disableActionsExceptNavigation(view);
     }
 }
 

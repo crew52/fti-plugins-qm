@@ -2,6 +2,7 @@ package com.fti.qm.hooks;
 
 import com.fti.qm.constants.*;
 import com.fti.qm.constants.qualityInspectionCommand.QICFields;
+import com.fti.qm.utils.RibbonUtils;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -123,5 +124,6 @@ public class QualityStandardSampleDetailsHooks {
                 comp.setEnabled(false);
             }
         }
+        RibbonUtils.disableActionsExceptNavigation(view);
     }
 }

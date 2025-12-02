@@ -4,7 +4,7 @@
     <component type="window" name="window">
         <ribbon>
             <template name="standardFormSoftDeleteTemplate"/>
-            <group name="atachments">
+            <group name="attachments">
                 <bigButton name="downloadAtachment" icon="generateIcon24.png" state="enabled">
                     <script>
                         <![CDATA[
