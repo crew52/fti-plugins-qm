@@ -27,7 +27,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Hook class xử lý logic hiển thị và chuẩn bị dữ liệu cho màn hình chi tiết
@@ -73,6 +72,8 @@ public class QICDetailsHooksRe {
         fillCurrentInspectionDate(view);
 
         setupLocationFilters(view);
+
+        disableFieldsIfCompleted(view);
     }
 
     /**
@@ -307,6 +308,44 @@ public class QICDetailsHooksRe {
 
         inspectionOrderField.setFieldValue(display);
         inspectionOrderField.requestComponentUpdateState();
+    }
+
+    /**
+     * Disable các field chỉ định (khai báo ngay trong method)
+     * khi status = COMPLETED.
+     */
+    private void disableFieldsIfCompleted(final ViewDefinitionState view) {
+
+        // 1) Lấy status
+        FieldComponent statusField =
+                (FieldComponent) view.getComponentByReference(QICFields.STATUS);
+        if (statusField == null) return;
+
+        String status = (String) statusField.getFieldValue();
+
+        // 2) Không phải COMPLETED → thoát
+        if (!QICFields.Status.COMPLETED.equals(status)) {
+            return;
+        }
+
+        // 3) Danh sách field muốn disable (bạn chỉnh sửa danh sách này)
+        List<String> fieldsToDisable = Arrays.asList(
+                "status",
+                "user",
+                "inspectionDate",
+                "note",
+                "qualityDecision",
+                "qualityDecisionCheckBox"
+        );
+
+        // 4) Disable từng field trong danh sách
+        for (String fieldRef : fieldsToDisable) {
+            ComponentState comp = view.getComponentByReference(fieldRef);
+            if (comp != null) {
+                comp.setEnabled(false);
+            }
+        }
+        disableRibbonActionsExceptNavigation(view);
     }
 }
 
