@@ -90,5 +90,7 @@
 
     <!-- Định danh của dòng -->
     <identifier expression="#inspectionOrderNumber"/>
-    <hooks/>
+    <hooks>
+        <validatesWith class="com.fti.qm.validators.QICDetailsValidationHooks" method="validateDecisionDependencies" />
+    </hooks>
 </model>
