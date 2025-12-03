@@ -82,6 +82,7 @@ public class QICDetailsListeners {
         // Nếu checkbox bỏ chọn → reset y như cũ
         if (!isChecked) {
             disable(warehouseQty, warehouseLoc, ngQty, ngLoc);
+            setRequiredFields(null, warehouseQty, warehouseLoc, ngQty, ngLoc);
             return;
         }
 
@@ -125,107 +126,7 @@ public class QICDetailsListeners {
                 break;
         }
 
-        updateFields(warehouseQty, ngQty);
-        updateLookups(warehouseLoc, ngLoc);
-    }
-
-//    public void onQualityDecisionCheckBoxChange(final ViewDefinitionState view,
-//                                                final ComponentState componentState,
-//                                                final String[] args) {
-//
-//        FieldComponent checkBox = (FieldComponent) view.getComponentByReference(QICFields.QUALITY_DECISION_CHECKBOX);
-//        boolean isChecked = "1".equals(checkBox.getFieldValue());
-//
-//        // Components
-//        FieldComponent warehouseQty = (FieldComponent) view.getComponentByReference(QICFields.WAREHOUSE_QUANTITY);
-//        LookupComponent warehouseLoc = (LookupComponent) view.getComponentByReference(QICFields.WAREHOUSE_LOCATION);
-//        FieldComponent ngQty = (FieldComponent) view.getComponentByReference(QICFields.NG_QUANTITY);
-//        LookupComponent ngLoc = (LookupComponent) view.getComponentByReference(QICFields.NG_LOCATION);
-//        FieldComponent decisionField = (FieldComponent) view.getComponentByReference(QICFields.QUALITY_DECISION);
-//
-//        // Enable/disable qualityDecision theo checkbox
-//        decisionField.setEnabled(!isChecked);
-//        decisionField.requestComponentUpdateState();
-//
-//        // Lấy entity từ form (entity hiện trên màn hình)
-//        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-//        Entity entity = form.getEntity();
-//        BigDecimal transactionQty = entity.getDecimalField(QICFields.TRANSACTION_QUANTITY);
-//
-//        String decision = decisionField.getFieldValue() != null
-//                ? decisionField.getFieldValue().toString()
-//                : "";
-//
-//        // ❗ Lấy dữ liệu gốc từ DB
-//        Entity entityFromDB = entity.getDataDefinition().get(entity.getId());
-//        String originalDecision = entityFromDB.getStringField(QICFields.QUALITY_DECISION);
-//
-//        // Nếu checkbox bỏ chọn → reset y như cũ
-//        if (!isChecked) {
-//            resetAndDisable(warehouseQty, warehouseLoc, ngQty, ngLoc);
-//            return;
-//        }
-//
-//        // --- Từ đây checkbox = true ---
-//
-//        boolean isSameDecision = decision.equals(originalDecision);
-//
-//        // Nếu quyết định đang chọn KHÔNG phải quyết định gốc → reset 4 field
-//        if (!isSameDecision) {
-//            disable(warehouseQty, warehouseLoc, ngQty, ngLoc);
-//            warehouseQty.setFieldValue(null);
-//            warehouseLoc.setFieldValue(null);
-//            ngQty.setFieldValue(null);
-//            ngLoc.setFieldValue(null);
-//        }
-//
-//        // ------------------- Switch logic -------------------
-//        switch (decision) {
-//            case QICFields.QualityDecision.ACCEPT:
-//                warehouseLoc.setEnabled(true);
-//                if (transactionQty != null && !isSameDecision) {
-//                    warehouseQty.setFieldValue(transactionQty.toString());
-//                }
-//                break;
-//
-//            case QICFields.QualityDecision.REJECT:
-//                ngLoc.setEnabled(true);
-//                if (transactionQty != null && !isSameDecision) {
-//                    ngQty.setFieldValue(transactionQty.toString());
-//                }
-//                break;
-//
-//            case QICFields.QualityDecision.PARTIAL:
-//                warehouseQty.setEnabled(true);
-//                warehouseLoc.setEnabled(true);
-//                ngQty.setEnabled(true);
-//                ngLoc.setEnabled(true);
-//                break;
-//
-//            default:
-//                break;
-//        }
-//
-//        updateFields(warehouseQty, ngQty);
-//        updateLookups(warehouseLoc, ngLoc);
-//    }
-
-    private void resetAndDisable(FieldComponent warehouseQty,
-                                 LookupComponent warehouseLoc,
-                                 FieldComponent ngQty,
-                                 LookupComponent ngLoc) {
-
-        warehouseQty.setFieldValue(null);
-        warehouseQty.setEnabled(false);
-
-        warehouseLoc.setFieldValue(null);
-        warehouseLoc.setEnabled(false);
-
-        ngQty.setFieldValue(null);
-        ngQty.setEnabled(false);
-
-        ngLoc.setFieldValue(null);
-        ngLoc.setEnabled(false);
+        setRequiredFields(decision, warehouseQty, warehouseLoc, ngQty, ngLoc);
 
         updateFields(warehouseQty, ngQty);
         updateLookups(warehouseLoc, ngLoc);
@@ -319,6 +220,50 @@ public class QICDetailsListeners {
 
         warehouseQty.setFieldValue(decimalFieldFormatter.formatDecimalForLocale(warehouseValue));
         warehouseQty.requestComponentUpdateState();
+    }
+
+    private void setRequiredFields(String decision,
+                                   FieldComponent warehouseQty,
+                                   LookupComponent warehouseLoc,
+                                   FieldComponent ngQty,
+                                   LookupComponent ngLoc) {
+
+        // reset required trước
+        warehouseQty.setRequired(false);
+        warehouseLoc.setRequired(false);
+        ngQty.setRequired(false);
+        ngLoc.setRequired(false);
+
+        if (decision == null) {
+            return;
+        }
+
+        switch (decision) {
+
+            case QICFields.QualityDecision.ACCEPT:
+                warehouseLoc.setRequired(true);
+                break;
+
+            case QICFields.QualityDecision.REJECT:
+                ngLoc.setRequired(true);
+                break;
+
+            case QICFields.QualityDecision.PARTIAL:
+                warehouseQty.setRequired(true);
+                warehouseLoc.setRequired(true);
+                ngQty.setRequired(true);
+                ngLoc.setRequired(true);
+                break;
+
+            default:
+                break;
+        }
+
+        // cần update UI
+        warehouseQty.requestComponentUpdateState();
+        warehouseLoc.requestComponentUpdateState();
+        ngQty.requestComponentUpdateState();
+        ngLoc.requestComponentUpdateState();
     }
 
 }
