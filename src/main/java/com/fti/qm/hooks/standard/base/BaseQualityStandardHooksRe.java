@@ -30,6 +30,14 @@ public class BaseQualityStandardHooksRe {
             return;
         }
 
+//        Entity productEntity = entity.getBelongsToField(productField);
+//        if (productEntity == null) {
+//            // Product chưa resolve, bỏ qua validate (thường là đang import)
+//            return;
+//        }
+//
+//        final Long productId = productEntity.getId();
+
         final Long productId = entity.getBelongsToField(productField).getId();
         final Long currentId = entity.getId();
         final Boolean deleted = entity.getBooleanField(GlobalFields.DELETED);
