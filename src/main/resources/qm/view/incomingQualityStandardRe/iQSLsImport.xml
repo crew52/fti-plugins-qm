@@ -55,9 +55,9 @@
                         	]]>
                         </script>
 
-<!--                        <listener event="onInputChange"-->
-<!--                                  class="com.fti.qm.listeners.IQSHsImportListeners"-->
-<!--                                  method="onInputChange"/>-->
+                        <listener event="onInputChange"
+                                  class="com.fti.qm.listeners.IQSLsImportListeners"
+                                  method="onInputChange"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="2" width="2">
@@ -69,14 +69,14 @@
             </component>
 
 <!--            <listener event="processImportFile"-->
-<!--                      class="com.fti.qm.listeners.IQSHsImportListeners"-->
+<!--                      class="com.fti.qm.listeners.IQSLsImportListeners"-->
 <!--                      method="processImportFile"/>-->
-<!--            <listener event="downloadImportSchema"-->
-<!--                      class="com.fti.qm.listeners.IQSHsImportListeners"-->
-<!--                      method="downloadImportSchema"/>-->
-<!--            <listener event="redirectToLogs"-->
-<!--                      class="com.fti.qm.listeners.IQSHsImportListeners"-->
-<!--                      method="redirectToLogs"/>-->
+            <listener event="downloadImportSchema"
+                      class="com.fti.qm.listeners.IQSLsImportListeners"
+                      method="downloadImportSchema"/>
+            <listener event="redirectToLogs"
+                      class="com.fti.qm.listeners.IQSLsImportListeners"
+                      method="redirectToLogs"/>
 
             <option type="header" value="false"/>
         </component>
