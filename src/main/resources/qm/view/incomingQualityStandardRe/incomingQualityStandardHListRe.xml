@@ -7,8 +7,8 @@
             <template name="standardGridSoftDeleteTemplate"/>
 
             <group name="import">
-                <bigButton name="openIQSHsImportPage" state="enabled" icon="xlsIcon24.png"
-                           action="#{window}.fireEvent(openIQSHsImportPage);"/>
+                <bigButton name="openIQSHsImportPage" state="enabled" icon="xlsIcon24.png" action="#{window}.fireEvent(openIQSHsImportPage);"/>
+                <bigButton name="openIQSLsImportPage" state="enabled" icon="xlsIcon24.png" action="#{window}.fireEvent(openIQSLsImportPage);"/>
             </group>
         </ribbon>
         <component type="grid" name="incomingQualityStandardHList" reference="grid">
@@ -31,9 +31,8 @@
         <option type="fixedHeight" value="true" />
         <option type="header" value="false" />
 
-        <listener event="openIQSHsImportPage"
-                  class="com.fti.qm.listeners.QSHsListListeners"
-                  method="openIQSHsImportPage"/>
+        <listener event="openIQSHsImportPage" class="com.fti.qm.listeners.QSHsListListeners" method="openIQSHsImportPage"/>
+        <listener event="openIQSLsImportPage" class="com.fti.qm.listeners.QSLsListListeners" method="openIQSLsImportPage"/>
     </component>
     <hooks>
         <beforeRender class="com.fti.qm.hooks.standard.QualityStandardHHooks" method="setStatusText"/>

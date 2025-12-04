@@ -66,6 +66,7 @@
 		<view:view resource="view/incomingQualityStandardRe/incomingQualityStandardHDetailsRe.xml" />
 		<view:view resource="view/incomingQualityStandardRe/incomingQualityStandardLDetailsRe.xml" />
 		<view:view resource="view/incomingQualityStandardRe/iQSHsImport.xml" />
+		<view:view resource="view/incomingQualityStandardRe/iQSLsImport.xml" />
 
 		<view:view resource="view/outgoingQualityStandardRe/outgoingQualityStandardHListRe.xml" />
 		<view:view resource="view/outgoingQualityStandardRe/outgoingQualityStandardHDetails.xml" />

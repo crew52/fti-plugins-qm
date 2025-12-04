@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<view name="iQSHsImport" menuAccessible="true"
+<view name="iQSLsImport" menuAccessible="true"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
@@ -39,7 +39,7 @@
 
         <component type="form" name="import" reference="form">
             <component type="gridLayout" name="gridLayout" columns="3"
-                       rows="1">
+                       rows="2">
                 <layoutElement column="1" row="1" width="2">
                     <component type="checkbox" name="imported" reference="imported">
                         <script>
@@ -55,22 +55,28 @@
                         	]]>
                         </script>
 
-                        <listener event="onInputChange"
-                                  class="com.fti.qm.listeners.IQSHsImportListeners"
-                                  method="onInputChange"/>
+<!--                        <listener event="onInputChange"-->
+<!--                                  class="com.fti.qm.listeners.IQSHsImportListeners"-->
+<!--                                  method="onInputChange"/>-->
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2" width="2">
+                    <component type="checkbox" name="shouldUpdate" reference="shouldUpdate">
+                        <option type="labelWidth" value="80"/>
+                        <option type="align" value="right"/>
                     </component>
                 </layoutElement>
             </component>
 
-            <listener event="processImportFile"
-                      class="com.fti.qm.listeners.IQSHsImportListeners"
-                      method="processImportFile"/>
-            <listener event="downloadImportSchema"
-                      class="com.fti.qm.listeners.IQSHsImportListeners"
-                      method="downloadImportSchema"/>
-            <listener event="redirectToLogs"
-                      class="com.fti.qm.listeners.IQSHsImportListeners"
-                      method="redirectToLogs"/>
+<!--            <listener event="processImportFile"-->
+<!--                      class="com.fti.qm.listeners.IQSHsImportListeners"-->
+<!--                      method="processImportFile"/>-->
+<!--            <listener event="downloadImportSchema"-->
+<!--                      class="com.fti.qm.listeners.IQSHsImportListeners"-->
+<!--                      method="downloadImportSchema"/>-->
+<!--            <listener event="redirectToLogs"-->
+<!--                      class="com.fti.qm.listeners.IQSHsImportListeners"-->
+<!--                      method="redirectToLogs"/>-->
 
             <option type="header" value="false"/>
         </component>
