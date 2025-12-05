@@ -1,6 +1,9 @@
 package com.fti.qm.imports.iQSL;
 
 import com.qcadoo.mes.basic.imports.dtos.CellBinderRegistry;
+import com.qcadoo.mes.basic.imports.helpers.CellParser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -15,9 +18,13 @@ public class IQSLCellBinderRegistry {
     public IQSLCellBinderRegistry() {
     }
 
+    @Autowired
+    @Qualifier("qshIncomingByProductNumberParser")
+    private CellParser qshIncomingLookupByProductNumberParser;
+
     @PostConstruct
     private void init() {
-        cellBinderRegistry.setCellBinder(required("qualityStandardH"));
+        cellBinderRegistry.setCellBinder(required("qualityStandardH", qshIncomingLookupByProductNumberParser));
         cellBinderRegistry.setCellBinder(required("qualityCriteria"));
         cellBinderRegistry.setCellBinder(required("measuringEquipment"));
         cellBinderRegistry.setCellBinder(required("sampleSize"));
