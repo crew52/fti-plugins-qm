@@ -1,5 +1,6 @@
 package com.fti.qm.imports.iQSL;
 
+import com.fti.qm.constants.QSLFields;
 import com.qcadoo.mes.basic.imports.dtos.CellBinderRegistry;
 import com.qcadoo.mes.basic.imports.helpers.CellParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,18 +38,18 @@ public class IQSLCellBinderRegistry {
 
     @PostConstruct
     private void init() {
-        cellBinderRegistry.setCellBinder(required("qualityStandardH", qshIncomingLookupByProductNumberParser));
-        cellBinderRegistry.setCellBinder(required("qualityCriteria", qualityCriteriaCellParser));
-        cellBinderRegistry.setCellBinder(required("measuringEquipment", measuringEquipmentCellParser));
-        cellBinderRegistry.setCellBinder(required("sampleSize"));
-        cellBinderRegistry.setCellBinder(optional("position"));
-        cellBinderRegistry.setCellBinder(optional("description"));
-        cellBinderRegistry.setCellBinder(optional("qualitativeValue", qSLQualitativeValueCellParser));
-        cellBinderRegistry.setCellBinder(optional("quantitativeValue", decimalCommaToDotParser));
-        cellBinderRegistry.setCellBinder(optional("tolerance", decimalCommaToDotParser));
-        cellBinderRegistry.setCellBinder(optional("upValue", decimalCommaToDotParser));
-        cellBinderRegistry.setCellBinder(optional("downValue", decimalCommaToDotParser));
-        cellBinderRegistry.setCellBinder(optional("unit"));
+        cellBinderRegistry.setCellBinder(required(QSLFields.QUALITY_STANDARD_H, qshIncomingLookupByProductNumberParser));
+        cellBinderRegistry.setCellBinder(required(QSLFields.QUALITY_CRITERIA, qualityCriteriaCellParser));
+        cellBinderRegistry.setCellBinder(required(QSLFields.MEASURING_EQUIPMENT, measuringEquipmentCellParser));
+        cellBinderRegistry.setCellBinder(required(QSLFields.SAMPLE_SIZE));
+        cellBinderRegistry.setCellBinder(optional(QSLFields.POSITION));
+        cellBinderRegistry.setCellBinder(optional(QSLFields.DESCRIPTION));
+        cellBinderRegistry.setCellBinder(optional(QSLFields.QUALITATIVE_VALUE, qSLQualitativeValueCellParser));
+        cellBinderRegistry.setCellBinder(optional(QSLFields.QUANTITATIVE_VALUE, decimalCommaToDotParser));
+        cellBinderRegistry.setCellBinder(optional(QSLFields.TOLERANCE, decimalCommaToDotParser));
+        cellBinderRegistry.setCellBinder(optional(QSLFields.UP_VALUE, decimalCommaToDotParser));
+        cellBinderRegistry.setCellBinder(optional(QSLFields.DOWN_VALUE, decimalCommaToDotParser));
+        cellBinderRegistry.setCellBinder(optional(QSLFields.UNIT));
     }
 
     public CellBinderRegistry getCellBinderRegistry() {
