@@ -65,6 +65,8 @@
 		<view:view resource="view/incomingQualityStandardRe/incomingQualityStandardHListRe.xml" />
 		<view:view resource="view/incomingQualityStandardRe/incomingQualityStandardHDetailsRe.xml" />
 		<view:view resource="view/incomingQualityStandardRe/incomingQualityStandardLDetailsRe.xml" />
+		<view:view resource="view/incomingQualityStandardRe/iQSHsImport.xml" />
+		<view:view resource="view/incomingQualityStandardRe/iQSLsImport.xml" />
 
 		<view:view resource="view/outgoingQualityStandardRe/outgoingQualityStandardHListRe.xml" />
 		<view:view resource="view/outgoingQualityStandardRe/outgoingQualityStandardHDetails.xml" />
@@ -84,6 +86,8 @@
 
 		<model:model-enum-value plugin="basic" model="log" enum="logType" value="measuringEquipmentImport" />
 		<model:model-enum-value plugin="basic" model="log" enum="logType" value="qualityCriteriaImport" />
+		<model:model-enum-value plugin="basic" model="log" enum="logType" value="qualityStandardHImport" />
+		<model:model-enum-value plugin="basic" model="log" enum="logType" value="qualityStandardLImport" />
 		<model:model-enum-value plugin="basic" model="product" enum="globalTypeOfMaterial" value="06componentPart" />
 
 		<model:model-hook plugin="materialFlowResources" model="document">
