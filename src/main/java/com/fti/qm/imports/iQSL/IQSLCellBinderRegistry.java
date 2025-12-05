@@ -22,11 +22,17 @@ public class IQSLCellBinderRegistry {
     @Qualifier("qshIncomingByProductNumberParser")
     private CellParser qshIncomingLookupByProductNumberParser;
 
+    @Autowired
+    private CellParser qualityCriteriaCellParser;
+
+    @Autowired
+    private CellParser measuringEquipmentCellParser;
+
     @PostConstruct
     private void init() {
         cellBinderRegistry.setCellBinder(required("qualityStandardH", qshIncomingLookupByProductNumberParser));
-        cellBinderRegistry.setCellBinder(required("qualityCriteria"));
-        cellBinderRegistry.setCellBinder(required("measuringEquipment"));
+        cellBinderRegistry.setCellBinder(required("qualityCriteria", qualityCriteriaCellParser));
+        cellBinderRegistry.setCellBinder(required("measuringEquipment", measuringEquipmentCellParser));
         cellBinderRegistry.setCellBinder(required("sampleSize"));
         cellBinderRegistry.setCellBinder(optional("position"));
         cellBinderRegistry.setCellBinder(optional("description"));
