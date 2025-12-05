@@ -32,6 +32,9 @@ public class IQSLCellBinderRegistry {
     @Qualifier("qslQualitativeValueCellParser")
     private CellParser qSLQualitativeValueCellParser;
 
+    @Autowired
+    private CellParser decimalCommaToDotParser;
+
     @PostConstruct
     private void init() {
         cellBinderRegistry.setCellBinder(required("qualityStandardH", qshIncomingLookupByProductNumberParser));
@@ -41,10 +44,10 @@ public class IQSLCellBinderRegistry {
         cellBinderRegistry.setCellBinder(optional("position"));
         cellBinderRegistry.setCellBinder(optional("description"));
         cellBinderRegistry.setCellBinder(optional("qualitativeValue", qSLQualitativeValueCellParser));
-        cellBinderRegistry.setCellBinder(optional("quantitativeValue"));
-        cellBinderRegistry.setCellBinder(optional("tolerance"));
-        cellBinderRegistry.setCellBinder(optional("upValue"));
-        cellBinderRegistry.setCellBinder(optional("downValue"));
+        cellBinderRegistry.setCellBinder(optional("quantitativeValue", decimalCommaToDotParser));
+        cellBinderRegistry.setCellBinder(optional("tolerance", decimalCommaToDotParser));
+        cellBinderRegistry.setCellBinder(optional("upValue", decimalCommaToDotParser));
+        cellBinderRegistry.setCellBinder(optional("downValue", decimalCommaToDotParser));
         cellBinderRegistry.setCellBinder(optional("unit"));
     }
 

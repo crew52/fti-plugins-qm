@@ -1,14 +1,10 @@
 package com.fti.qm.imports.iQSH;
 
 import com.fti.qm.constants.QSHFields;
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.imports.services.XlsxImportService;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -22,8 +18,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class IQSHXlsxImportService extends XlsxImportService {
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     private static final String ERROR_PRODUCT_REQUIRED   = "qm.iqsh.error.product.required";
     private static final String ERROR_PRODUCT_NOT_FOUND  = "qm.iqsh.error.product.notFound";
