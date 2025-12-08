@@ -45,8 +45,8 @@ public class QualityStandardSampleDetailsHooks {
             fillFieldsFromStandardLine(view, standardLine);
         }
 
-        // 3️⃣ Disable các field nếu QIC status = COMPLETED
-        disableFieldsIfCompleted(view);
+        // 3️⃣ Disable các field nếu QIC status = COMPLETED and NEW
+        disableFieldsIfNewAndCompleted(view);
     }
 
     private Entity loadSampleEntity(FormComponent form) {
@@ -101,7 +101,7 @@ public class QualityStandardSampleDetailsHooks {
     /**
      * Disable các field nếu status của QIC = COMPLETED
      */
-    public void disableFieldsIfCompleted(final ViewDefinitionState view) {
+    public void disableFieldsIfNewAndCompleted(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form == null || form.getEntity() == null) return;
 
@@ -110,7 +110,7 @@ public class QualityStandardSampleDetailsHooks {
         if (qic == null) return;
 
         String status = (String) qic.getField(QICFields.STATUS);
-        if (!QICFields.Status.COMPLETED.equals(status)) return;
+        if (!QICFields.Status.NEW.equals(status) && !QICFields.Status.COMPLETED.equals(status)) return;
 
         List<String> fieldsToDisable = Arrays.asList(
                 QualityStandardSampleViewFields.QUALITATIVE_RESULT,
