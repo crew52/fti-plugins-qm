@@ -12,4 +12,7 @@ public class MeasuringEquipmentFields {
     public static final String MEASURING_EQUIPMENT_ID = "measuringEquipment." + ID;
 
     public static final String QUALITY_STANDARD_LS = "qualityStandardLs";
+
+    public static final String DELETED = "deleted";
+    public static final String DELETED_DATE = "deletedDate";
 }
