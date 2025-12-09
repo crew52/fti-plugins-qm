@@ -40,4 +40,48 @@ public class SoftDeleteHelper {
             lineDD.save(line);
         }
     }
+
+    /**
+     * Kiểm tra xem entity có đang được tham chiếu ở model con hay không.
+     *
+     * @param dataDefinition  DataDefinition hiện tại
+     * @param entity          Entity đang bị xóa mềm
+     * @param childPlugin     Plugin chứa model con
+     * @param childModel      Tên model con
+     * @param childFieldName  Tên field trên model con tham chiếu đến entity cha
+     * @param errorMessageKey Key thông báo lỗi nếu bị chặn
+     */
+    public void validateSoftDelete(
+            DataDefinition dataDefinition,
+            Entity entity,
+            String childPlugin,
+            String childModel,
+            String childFieldName,
+            String errorMessageKey
+    ) {
+
+        Boolean deleted = entity.getBooleanField(GlobalFields.DELETED);
+        if (deleted == null || !deleted) {
+            return;
+        }
+
+        Long id = entity.getId();
+
+        DataDefinition childDD = dataDefinitionService.get(childPlugin, childModel);
+
+        boolean exists = !childDD.find()
+                .add(SearchRestrictions.eq(childFieldName, id))
+                .add(SearchRestrictions.eq(GlobalFields.DELETED, false))
+                .setMaxResults(1)
+                .list()
+                .getEntities()
+                .isEmpty();
+
+        if (exists) {
+            entity.addError(
+                    dataDefinition.getField(GlobalFields.DELETED),
+                    errorMessageKey
+            );
+        }
+    }
 }

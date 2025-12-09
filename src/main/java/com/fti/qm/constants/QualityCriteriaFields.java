@@ -13,4 +13,7 @@ public class QualityCriteriaFields {
     public static final String ID = "id";
     public static final String QUALITY_CRITERIA_ID = "qualityCriteria." + ID;
     public static final String QUALITY_STANDARD_LS = "qualityStandardLs";
+
+    public static final String DELETED = "deleted";
+    public static final String DELETED_DATE = "deletedDate";
 }
