@@ -1,7 +1,7 @@
 package com.fti.qm.listeners.qSImport;
 
-import com.fti.qm.imports.iQSH.IQSHCellBinderRegistry;
-import com.fti.qm.imports.oQSH.OQSHXlsxImportService;
+import com.fti.qm.imports.qshProduct.OQSHXlsxImportService;
+import com.fti.qm.imports.qshProduct.QSHProductCellBinderRegistry;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,24 +9,23 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
-
 @Service
 public class OQSHsImportListeners {
 
     @Autowired
     private OQSHXlsxImportService oqshXlsxImportService;
     @Autowired
-    private IQSHCellBinderRegistry iqshCellBinderRegistry;
+    private QSHProductCellBinderRegistry oqshCellBinderRegistry;
 
     public OQSHsImportListeners() {
     }
 
     public void downloadImportSchema(ViewDefinitionState view, ComponentState state, String[] args) {
-        this.oqshXlsxImportService.downloadImportSchema(view, "qm", "iQSH", "xlsx");
+        this.oqshXlsxImportService.downloadImportSchema(view, "qm", "qSHProduct", "xlsx");
     }
 
     public void processImportFile(ViewDefinitionState view, ComponentState state, String[] args) throws IOException {
-        this.oqshXlsxImportService.processImportFile(view, this.iqshCellBinderRegistry.getCellBinderRegistry(), true, "qm", "qualityStandardH");
+        this.oqshXlsxImportService.processImportFile(view, this.oqshCellBinderRegistry.getCellBinderRegistry(), true, "qm", "qualityStandardH");
     }
 
     public void redirectToLogs(ViewDefinitionState view, ComponentState state, String[] args) {
