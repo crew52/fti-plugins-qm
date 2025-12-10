@@ -1,7 +1,9 @@
 package com.fti.qm.listeners.qSImport;
 
+import com.fti.qm.constants.QMConstants;
 import com.fti.qm.imports.oQSL.OQSLCellBinderRegistry;
 import com.fti.qm.imports.oQSL.OQSLXlsxImportService;
+import com.qcadoo.mes.basic.imports.services.XlsxImportService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +22,15 @@ public class OQSLsImportListeners {
     }
 
     public void downloadImportSchema(ViewDefinitionState view, ComponentState state, String[] args) {
-        this.oqslXlsxImportService.downloadImportSchema(view, "qm", "iQSL", "xlsx");
+        this.oqslXlsxImportService.downloadImportSchema(view, QMConstants.PLUGIN_IDENTIFIER, "qSLProduct", XlsxImportService.L_XLSX);
     }
 
     public void processImportFile(ViewDefinitionState view, ComponentState state, String[] args) throws IOException {
-        this.oqslXlsxImportService.processImportFile(view, this.oqslCellBinderRegistry.getCellBinderRegistry(), true, "qm", "qualityStandardL");
+        this.oqslXlsxImportService.processImportFile(view, this.oqslCellBinderRegistry.getCellBinderRegistry(), true, QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_STANDARD_L);
     }
 
     public void redirectToLogs(ViewDefinitionState view, ComponentState state, String[] args) {
-        this.oqslXlsxImportService.redirectToLogs(view, "qualityStandardL");
+        this.oqslXlsxImportService.redirectToLogs(view, QMConstants.MODEL_QUALITY_STANDARD_L);
     }
 
     public void onInputChange(ViewDefinitionState view, ComponentState state, String[] args) {
