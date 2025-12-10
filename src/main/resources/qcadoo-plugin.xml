@@ -77,6 +77,8 @@
 		<view:view resource="view/inProcessQualityStandardRe/inProcessQualityStandardHListRe.xml" />
 		<view:view resource="view/inProcessQualityStandardRe/inProcessQualityStandardHDetailsRe.xml" />
 		<view:view resource="view/inProcessQualityStandardRe/inProcessQualityStandardLDetailsRe.xml" />
+		<view:view resource="view/inProcessQualityStandardRe/iPQSHsImport.xml" />
+		<view:view resource="view/inProcessQualityStandardRe/iPQSLsImport.xml" />
 
 		<view:view resource="view/equipmentQualityStandardRe/equipmentQualityStandardHListRe.xml" />
 		<view:view resource="view/equipmentQualityStandardRe/equipmentQualityStandardHDetailsRe.xml" />
