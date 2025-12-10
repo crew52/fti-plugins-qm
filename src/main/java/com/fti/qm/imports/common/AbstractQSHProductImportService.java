@@ -1,4 +1,4 @@
-package com.fti.qm.imports.qshProduct;
+package com.fti.qm.imports.common;
 
 import com.fti.qm.constants.QSHFields;
 import com.qcadoo.mes.basic.imports.services.XlsxImportService;

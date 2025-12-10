@@ -1,4 +1,4 @@
-package com.fti.qm.imports.parsers;
+package com.fti.qm.imports.common;
 
 import com.qcadoo.mes.basic.imports.helpers.CellParser;
 import com.fti.qm.constants.QMConstants;

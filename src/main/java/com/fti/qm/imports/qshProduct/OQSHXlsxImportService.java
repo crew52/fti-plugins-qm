@@ -1,11 +1,12 @@
 package com.fti.qm.imports.qshProduct;
 
 import com.fti.qm.constants.QSHFields;
+import com.fti.qm.imports.common.AbstractQSHProductImportService;
 import com.qcadoo.model.api.Entity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class OQSHXlsxImportService extends AbstractQSHProductImportService  {
+public class OQSHXlsxImportService extends AbstractQSHProductImportService {
 
     private static final String ERROR_PRODUCT_INVALID_TYPE_OF_MATERIAL = "qm.oqsh.product.invalidMaterialType";
     private static final String VALUE_FINAL_PRODUCT = "03finalProduct";
