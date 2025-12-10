@@ -1,4 +1,4 @@
-package com.fti.qm.imports.iQSL;
+package com.fti.qm.imports.oQSL;
 
 import com.fti.qm.imports.common.AbstractQSLCellBinderRegistry;
 import com.qcadoo.mes.basic.imports.helpers.CellParser;
@@ -7,13 +7,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class IQSLCellBinderRegistry extends AbstractQSLCellBinderRegistry {
+public class OQSLCellBinderRegistry extends AbstractQSLCellBinderRegistry {
     @Autowired
-    @Qualifier("qshIncomingByProductNumberParser")
-    private CellParser qshIncomingLookupByProductNumberParser;
+    @Qualifier("qshOutgoingByProductNumberParser")
+    private CellParser qshOutgoingLookupByProductNumberParser;
 
     @Override
     protected CellParser getLookupParser() {
-        return qshIncomingLookupByProductNumberParser;
+        return qshOutgoingLookupByProductNumberParser;
     }
 }

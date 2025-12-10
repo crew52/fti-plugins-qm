@@ -5,6 +5,10 @@
     <component type="window" name="window">
         <ribbon>
             <template name="standardGridSoftDeleteTemplate"/>
+            <group name="import">
+                <bigButton name="openOQSHsImportPage" state="enabled" icon="xlsIcon24.png" action="#{window}.fireEvent(openOQSHsImportPage);"/>
+                <bigButton name="openOQSLsImportPage" state="enabled" icon="xlsIcon24.png" action="#{window}.fireEvent(openOQSLsImportPage);"/>
+            </group>
         </ribbon>
         <component type="grid" name="outgoingQualityStandardHList" reference="grid">
             <option type="column" name="productNumber" fields="product" expression="#product['number']" link="true" />
@@ -25,6 +29,8 @@
         </component>
         <option type="fixedHeight" value="true" />
         <option type="header" value="false" />
+        <listener event="openOQSHsImportPage" class="com.fti.qm.listeners.QSHsListListeners" method="openOQSHsImportPage"/>
+        <listener event="openOQSLsImportPage" class="com.fti.qm.listeners.QSLsListListeners" method="openOQSLsImportPage"/>
     </component>
     <hooks>
         <beforeRender class="com.fti.qm.hooks.standard.QualityStandardHHooks" method="setStatusText"/>

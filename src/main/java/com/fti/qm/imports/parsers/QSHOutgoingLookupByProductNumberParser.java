@@ -4,10 +4,10 @@ import com.fti.qm.constants.QSHFields;
 import com.fti.qm.imports.common.AbstractQSHLookupByProductNumberParser;
 import org.springframework.stereotype.Component;
 
-@Component("qshIncomingByProductNumberParser")
-public class QSHIncomingLookupByProductNumberParser extends AbstractQSHLookupByProductNumberParser {
+@Component("qshOutgoingByProductNumberParser")
+public class QSHOutgoingLookupByProductNumberParser extends AbstractQSHLookupByProductNumberParser {
     @Override
     protected String getType() {
-        return QSHFields.Type.INCOMING;
+        return QSHFields.Type.OUTGOING;
     }
 }
