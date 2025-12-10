@@ -11,4 +11,10 @@ public class QSHsListListeners {
 
         view.openModal(url.toString());
     }
+
+    public void openOQSHsImportPage(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        StringBuilder url = new StringBuilder("../page/qm/oQSHsImport.html");
+
+        view.openModal(url.toString());
+    }
 }
