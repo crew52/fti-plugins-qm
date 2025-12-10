@@ -55,22 +55,22 @@
                         	]]>
                         </script>
 
-<!--                        <listener event="onInputChange"-->
-<!--                                  class="com.fti.qm.listeners.qSImport.OQSHsImportListeners"-->
-<!--                                  method="onInputChange"/>-->
+                        <listener event="onInputChange"
+                                  class="com.fti.qm.listeners.qSImport.IPQSHsImportListeners"
+                                  method="onInputChange"/>
                     </component>
                 </layoutElement>
             </component>
 
-<!--            <listener event="processImportFile"-->
-<!--                      class="com.fti.qm.listeners.qSImport.OQSHsImportListeners"-->
-<!--                      method="processImportFile"/>-->
-<!--            <listener event="downloadImportSchema"-->
-<!--                      class="com.fti.qm.listeners.qSImport.OQSHsImportListeners"-->
-<!--                      method="downloadImportSchema"/>-->
-<!--            <listener event="redirectToLogs"-->
-<!--                      class="com.fti.qm.listeners.qSImport.OQSHsImportListeners"-->
-<!--                      method="redirectToLogs"/>-->
+            <listener event="processImportFile"
+                      class="com.fti.qm.listeners.qSImport.IPQSHsImportListeners"
+                      method="processImportFile"/>
+            <listener event="downloadImportSchema"
+                      class="com.fti.qm.listeners.qSImport.IPQSHsImportListeners"
+                      method="downloadImportSchema"/>
+            <listener event="redirectToLogs"
+                      class="com.fti.qm.listeners.qSImport.IPQSHsImportListeners"
+                      method="redirectToLogs"/>
 
             <option type="header" value="false"/>
         </component>
