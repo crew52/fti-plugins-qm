@@ -55,9 +55,9 @@
                         	]]>
                         </script>
 
-<!--                        <listener event="onInputChange"-->
-<!--                                  class="com.fti.qm.listeners.qSImport.IQSHsImportListeners"-->
-<!--                                  method="onInputChange"/>-->
+                        <listener event="onInputChange"
+                                  class="com.fti.qm.listeners.qSImport.EQSHsImportListeners"
+                                  method="onInputChange"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="2" width="2">
@@ -68,15 +68,15 @@
                 </layoutElement>
             </component>
 
-<!--            <listener event="processImportFile"-->
-<!--                      class="com.fti.qm.listeners.qSImport.IQSHsImportListeners"-->
-<!--                      method="processImportFile"/>-->
-<!--            <listener event="downloadImportSchema"-->
-<!--                      class="com.fti.qm.listeners.qSImport.IQSHsImportListeners"-->
-<!--                      method="downloadImportSchema"/>-->
-<!--            <listener event="redirectToLogs"-->
-<!--                      class="com.fti.qm.listeners.qSImport.IQSHsImportListeners"-->
-<!--                      method="redirectToLogs"/>-->
+            <listener event="processImportFile"
+                      class="com.fti.qm.listeners.qSImport.EQSHsImportListeners"
+                      method="processImportFile"/>
+            <listener event="downloadImportSchema"
+                      class="com.fti.qm.listeners.qSImport.EQSHsImportListeners"
+                      method="downloadImportSchema"/>
+            <listener event="redirectToLogs"
+                      class="com.fti.qm.listeners.qSImport.EQSHsImportListeners"
+                      method="redirectToLogs"/>
 
             <option type="header" value="false"/>
         </component>
