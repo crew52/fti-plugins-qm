@@ -5,6 +5,10 @@
     <component type="window" name="window">
         <ribbon>
             <template name="standardGridSoftDeleteTemplate"/>
+            <group name="import">
+                <bigButton name="openEQSHsImportPage" state="enabled" icon="xlsIcon24.png" action="#{window}.fireEvent(openEQSHsImportPage);"/>
+                <bigButton name="openEQSLsImportPage" state="enabled" icon="xlsIcon24.png" action="#{window}.fireEvent(openEQSLsImportPage);"/>
+            </group>
         </ribbon>
         <component type="grid" name="equipmentQualityStandardHList" reference="grid">
             <option type="column" name="toolNumber" fields="tool" expression="#tool['number']" link="true" />
@@ -26,6 +30,8 @@
         </component>
         <option type="fixedHeight" value="true" />
         <option type="header" value="false" />
+        <listener event="openEQSHsImportPage" class="com.fti.qm.listeners.QSHsListListeners" method="openEQSHsImportPage"/>
+        <listener event="openEQSLsImportPage" class="com.fti.qm.listeners.QSLsListListeners" method="openEQSLsImportPage"/>
     </component>
     <hooks>
         <beforeRender class="com.fti.qm.hooks.standard.QualityStandardHHooks" method="setStatusText"/>

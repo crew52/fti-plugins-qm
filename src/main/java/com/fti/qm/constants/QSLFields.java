@@ -32,6 +32,9 @@ public final class QSLFields {
     public static final String QUALITY_STANDARD_H = "qualityStandardH";
     public static final String QUALITY_STANDARD_H_ID = QUALITY_STANDARD_H + ".id";
 
+    public static final String IMPORT_TOOL_NUMBER = "importToolNumber";
+    public static final String IMPORT_INSPECTION_TYPE = "importInspectionType";
+
     // Soft delete fields
     public static final String DELETED = "deleted";
     public static final String DELETED_DATE = "deletedDate";

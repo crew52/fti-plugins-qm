@@ -31,6 +31,9 @@
 
         <boolean name="deleted" default="false" />
         <datetime name="deletedDate" />
+
+        <string name="importToolNumber" persistent="false"/>
+        <enum name="importInspectionType" values="01equipment,02internalCalibration,03externalCalibration" persistent="false"/>
     </fields>
 
     <identifier expression="#qualityCriteria['number'] + ' - ' + #qualityCriteria['name']" />

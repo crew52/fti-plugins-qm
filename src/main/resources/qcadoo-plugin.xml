@@ -83,6 +83,8 @@
 		<view:view resource="view/equipmentQualityStandardRe/equipmentQualityStandardHListRe.xml" />
 		<view:view resource="view/equipmentQualityStandardRe/equipmentQualityStandardHDetailsRe.xml" />
 		<view:view resource="view/equipmentQualityStandardRe/equipmentQualityStandardLDetailsRe.xml" />
+		<view:view resource="view/equipmentQualityStandardRe/eQSHsImport.xml" />
+		<view:view resource="view/equipmentQualityStandardRe/eQSLsImport.xml" />
 
 		<view:view resource="view/qualityInspectionCommandRe/qualityInspectionCommandListRe.xml" />
 		<view:view resource="view/qualityInspectionCommandRe/qualityInspectionCommandDetailsRe.xml" />
