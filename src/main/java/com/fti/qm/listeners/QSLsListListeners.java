@@ -23,4 +23,10 @@ public class QSLsListListeners {
 
         view.openModal(url.toString());
     }
+
+    public void openEQSLsImportPage(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        StringBuilder url = new StringBuilder("../page/qm/eQSLsImport.html");
+
+        view.openModal(url.toString());
+    }
 }
