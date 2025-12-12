@@ -20,6 +20,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+/**
+ * Listener xử lý nghiệp vụ chuyển kho (warehouse transfer) cho QIC.
+ * Chỉ thực hiện khi QIC ở trạng thái IN_PROGRESS.
+ *
+ * Chức năng gồm:
+ * - Tạo tài liệu chuyển kho theo Quality Decision.
+ * - Tạo position và resource tương ứng.
+ * - Cập nhật trạng thái QIC sang COMPLETED.
+ */
 @Service
 public class QICWarehouseTransferListeners {
     @Autowired
@@ -28,6 +37,12 @@ public class QICWarehouseTransferListeners {
     @Autowired
     private SecurityService securityService;
 
+    /**
+     * Action chuyển kho từ giao diện:
+     * - Kiểm tra QIC hợp lệ và đang IN_PROGRESS.
+     * - Tạo document, position, resource theo quyết định chất lượng.
+     * - Cập nhật trạng thái QIC -> COMPLETED.
+     */
     @Transactional
     public void transferWarehouse(final ViewDefinitionState view, final ComponentState state, final String[] args) {
 
@@ -62,6 +77,12 @@ public class QICWarehouseTransferListeners {
         view.addMessage("qm.qic.transferWarehouse.success", ComponentState.MessageType.SUCCESS);
     }
 
+    /**
+     * Tạo các document dựa trên qualityDecision:
+     * - ACCEPT  → chuyển vào warehouseLocation.
+     * - REJECT  → chuyển vào ngLocation.
+     * - PARTIAL → tạo cả 2 document.
+     */
     private void createDocumentsForQIC(Entity qic) {
 
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_DOCUMENT);
@@ -87,6 +108,11 @@ public class QICWarehouseTransferListeners {
         }
     }
 
+    /**
+     * Tạo một document chuyển kho:
+     * - Gồm từ locationFrom → locationTo.
+     * - Tạo position tương ứng với quantityFieldName.
+     */
     private void createSingleDocument(
             DataDefinition documentDD,
             Entity qic,
@@ -118,6 +144,11 @@ public class QICWarehouseTransferListeners {
         }
     }
 
+    /**
+     * Tạo position cho document:
+     * - Gán product, quantity, resourceNumber.
+     * - Sau đó tạo resource tương ứng.
+     */
     private void createPosition(Entity document, Entity qic, String quantityFieldName) {
         DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION);
         Entity pos = positionDD.create();
@@ -130,6 +161,11 @@ public class QICWarehouseTransferListeners {
         createResourceFromPosition(pos, document);
     }
 
+    /**
+     * Tạo resource mới dựa trên position:
+     * - Lấy số hiệu resourceNumber.
+     * - Gán product, location, quantity, time.
+     */
     private void createResourceFromPosition(Entity pos, Entity document) {
         DataDefinition resourceDD = dataDefinitionService.get(
                 MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
@@ -145,6 +181,11 @@ public class QICWarehouseTransferListeners {
         resourceDD.save(res);
     }
 
+    /**
+     * Sinh mã resource theo format: YEAR/xxxxx.
+     * - Nếu năm hiện tại trùng với mã cuối → tăng số thứ tự.
+     * - Ngược lại bắt đầu từ 00001.
+     */
     private String generateResourceNumber() {
         DataDefinition positionDD = dataDefinitionService.get(
                 MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
@@ -178,6 +219,9 @@ public class QICWarehouseTransferListeners {
         return String.format("%d/%05d", currentYear, nextNumber);
     }
 
+    /**
+     * Cập nhật trạng thái QIC sang COMPLETED.
+     */
     private void updateQICStatusToCompleted(Entity qic) {
         try {
             qic.setField(QICFields.STATUS, QICFields.Status.COMPLETED);
