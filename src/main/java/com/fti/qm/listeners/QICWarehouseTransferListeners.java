@@ -6,7 +6,6 @@ import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConst
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
@@ -109,9 +107,13 @@ public class QICWarehouseTransferListeners {
     }
 
     /**
-     * Tạo một document chuyển kho:
-     * - Gồm từ locationFrom → locationTo.
-     * - Tạo position tương ứng với quantityFieldName.
+     * Tạo Document chuyển kho tự động từ QIC và sinh Position + Resource tương ứng.
+     *
+     * @param documentDD DataDefinition của Document
+     * @param qic Quality Inspection Command
+     * @param locationFrom kho nguồn
+     * @param locationTo kho đích
+     * @param quantityFieldName field số lượng dùng để tạo Position/Resource
      */
     private void createSingleDocument(
             DataDefinition documentDD,
@@ -138,85 +140,75 @@ public class QICWarehouseTransferListeners {
 
             newDoc = documentDD.save(newDoc); // Gán lại newDoc
 
-            createPosition(newDoc, qic, quantityFieldName);
+            Entity newResource = createResource(newDoc, qic, quantityFieldName);
+            createPosition(newDoc, qic, quantityFieldName, newResource);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * Tạo position cho document:
-     * - Gán product, quantity, resourceNumber.
-     * - Sau đó tạo resource tương ứng.
+     * Tạo Position cho Document chuyển kho và liên kết với Resource đã tạo.
+     *
+     * @param document Document chuyển kho
+     * @param qic Quality Inspection Command
+     * @param quantityFieldName field số lượng trong QIC
+     * @param resource Resource đã được tạo để liên kết
      */
-    private void createPosition(Entity document, Entity qic, String quantityFieldName) {
+    private void createPosition(Entity document, Entity qic, String quantityFieldName, Entity resource) {
         DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION);
         Entity pos = positionDD.create();
         pos.setField("document", document);
         pos.setField("product", qic.getBelongsToField(QICFields.PRODUCT));
         pos.setField("quantity", qic.getField(quantityFieldName));
-        pos.setField("resourceNumber", generateResourceNumber());
+        pos.setField("givenUnit", qic.getBelongsToField("product").getStringField("unit"));
+        pos.setField("givenQuantity", qic.getField(quantityFieldName));
+        pos.setField("conversion", 1);
+        pos.setField("waste", false);
+        pos.setField("resourceReceiptDocument", resource.getId());
+        pos.setField("resourceNumber", resource.getStringField("number"));
         pos = positionDD.save(pos);
-
-        createResourceFromPosition(pos, document);
     }
 
     /**
-     * Tạo resource mới dựa trên position:
-     * - Lấy số hiệu resourceNumber.
-     * - Gán product, location, quantity, time.
+     * Tạo Resource tại kho đích dựa trên Document và QIC.
+     *
+     * - Gán locationTo, product, quantity theo QIC
+     * - Thiết lập đơn vị, hệ số chuyển đổi và thời gian
+     * - Lưu thông tin người thực hiện và loại chứng từ
+     *
+     * @param document Document chuyển kho
+     * @param qic Quality Inspection Command
+     * @param quantityFieldName field số lượng trong QIC
+     * @return Resource đã được lưu
+     * @throws IllegalStateException nếu lưu Resource thất bại
      */
-    private void createResourceFromPosition(Entity pos, Entity document) {
+    private Entity createResource(Entity document, Entity qic, String quantityFieldName) {
         DataDefinition resourceDD = dataDefinitionService.get(
                 MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE
         );
 
         Entity res = resourceDD.create();
-        res.setField("number", pos.getStringField("resourceNumber"));
         res.setField("location", document.getBelongsToField("locationTo"));
-        res.setField("product", pos.getBelongsToField("product"));
-        res.setField("quantity", pos.getDecimalField("quantity"));
+        res.setField("product", qic.getBelongsToField("product"));
+        res.setField("quantity", qic.getField(quantityFieldName));
         res.setField("time", document.getDateField("time"));
-        resourceDD.save(res);
-    }
+        res.setField("quantityInAdditionalUnit", qic.getField(quantityFieldName));
+        res.setField("conversion", 1);
+        res.setField("givenUnit", qic.getBelongsToField("product").getStringField("unit"));
+        res.setField("userName", qic.getBelongsToField("user").getStringField("userName"));
+        res.setField("documentNumber", document.getStringField("number").split("/")[0]);
 
-    /**
-     * Sinh mã resource theo format: YEAR/xxxxx.
-     * - Nếu năm hiện tại trùng với mã cuối → tăng số thứ tự.
-     * - Ngược lại bắt đầu từ 00001.
-     */
-    private String generateResourceNumber() {
-        DataDefinition positionDD = dataDefinitionService.get(
-                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_POSITION
-        );
+        Entity saved = resourceDD.save(res);
 
-        // 1. Lấy bản ghi mới nhất
-        Entity lastPos = positionDD.find()
-                .addOrder(SearchOrders.desc("resourceNumber"))
-                .setMaxResults(1)
-                .uniqueResult();
-
-        int currentYear = LocalDate.now().getYear();  // ví dụ 2025
-        int nextNumber = 1; // default khi không có dữ liệu cũ
-
-        if (lastPos != null) {
-            String lastCode = lastPos.getStringField("resourceNumber");   // vd: 2025/00979
-
-            if (lastCode != null && lastCode.contains("/")) {
-                String[] parts = lastCode.split("/");
-
-                int year = Integer.parseInt(parts[0]);        // 2025
-                int number = Integer.parseInt(parts[1]);      // 979
-
-                if (year == currentYear) {
-                    nextNumber = number + 1;                  // +1 nếu cùng năm
-                }
-            }
+        if (!saved.isValid()) {
+            throw new IllegalStateException(
+                    "Không thể tạo Resource: " + saved.getGlobalErrors()
+            );
         }
 
-        return String.format("%d/%05d", currentYear, nextNumber);
+        return saved;
     }
 
     /**
