@@ -28,6 +28,8 @@ public final class QSHFields {
 
     public static final String ACTIVE = "active";
 
+    public static final String IMPORT_PRODUCT_NAME = "importProductName";
+
     public static final class Type {
         private Type() {}
 
