@@ -6,7 +6,6 @@ import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConst
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -16,10 +15,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+/**
+ * Listener xử lý chuyển kho cho Quality Inspection Command (QIC).
+ *
+ * <p>
+ * Được gọi từ giao diện QIC khi thực hiện action Transfer Warehouse.
+ * Chỉ áp dụng cho QIC ở trạng thái {@code IN_PROGRESS}.
+ * </p>
+ *
+ * <p>
+ * Dựa trên {@code qualityDecision}, listener tạo Document chuyển kho (DRAFT)
+ * và Position tương ứng. Việc cập nhật tồn kho và sinh Resource
+ * được engine {@code materialFlowResources} xử lý khi Document được ACCEPT.
+ * </p>
+ *
+ * <p>
+ * Sau khi tạo Document, trạng thái QIC được cập nhật sang {@code COMPLETED}.
+ * </p>
+ */
 @Service
 public class QICWarehouseTransferListeners {
     @Autowired
@@ -28,40 +44,58 @@ public class QICWarehouseTransferListeners {
     @Autowired
     private SecurityService securityService;
 
+    /**
+     * Thực hiện chuyển kho cho QIC từ giao diện.
+     *
+     * <p>
+     * Kiểm tra trạng thái QIC, tạo Document chuyển kho theo Quality Decision
+     * và cập nhật QIC sang {@code COMPLETED}.
+     * </p>
+     */
     @Transactional
     public void transferWarehouse(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        try {
+            FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+            Long id = form.getEntityId();
 
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Long id = form.getEntityId();
+            if (id == null) {
+                view.addMessage("qm.qic.transferWarehouse.noData", ComponentState.MessageType.FAILURE);
+                return;
+            }
 
-        if (id == null) {
-            view.addMessage("qm.qic.transferWarehouse.noData", ComponentState.MessageType.FAILURE);
-            return;
+            DataDefinition qicDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_INSPECTION_COMMAND);
+            Entity qic = qicDD.get(id);
+
+            String status = qic.getStringField(QICFields.STATUS);
+
+            // Chỉ cho phép status = 02inProgress
+            if (!QICFields.Status.IN_PROGRESS.equals(status)) {
+                view.addMessage(
+                        "qm.qic.transferWarehouse.invalidStatus", ComponentState.MessageType.FAILURE
+                );
+                return;
+            }
+            // Tạo document dựa theo qualityDecision
+            createDocumentsForQIC(qic);
+
+            // Cập nhật status QIC thành completed
+            updateQICStatusToCompleted(qic);
+
+            // Set entity lại vào form
+            form.setEntity(qic);
+            view.addMessage("qm.qic.transferWarehouse.success", ComponentState.MessageType.SUCCESS);
+
+        } catch (Exception e) {
+            view.addMessage("qm.qic.transferWarehouse.error",
+                    ComponentState.MessageType.FAILURE);
+            throw e;
         }
-
-        DataDefinition qicDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_INSPECTION_COMMAND);
-        Entity qic = qicDD.get(id);
-
-        String status = qic.getStringField(QICFields.STATUS);
-
-        // Chỉ cho phép status = 02inProgress
-        if (!QICFields.Status.IN_PROGRESS.equals(status)) {
-            view.addMessage(
-                    "qm.qic.transferWarehouse.invalidStatus", ComponentState.MessageType.FAILURE
-            );
-            return;
-        }
-        // Tạo document dựa theo qualityDecision
-        createDocumentsForQIC(qic);
-
-        // Cập nhật status QIC thành completed
-        updateQICStatusToCompleted(qic);
-
-        // Set entity lại vào form
-        form.setEntity(qic);
-        view.addMessage("qm.qic.transferWarehouse.success", ComponentState.MessageType.SUCCESS);
     }
 
+    /**
+     * Tạo Document chuyển kho dựa trên Quality Decision của QIC:
+     * ACCEPT, REJECT hoặc PARTIAL.
+     */
     private void createDocumentsForQIC(Entity qic) {
 
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_DOCUMENT);
@@ -87,6 +121,15 @@ public class QICWarehouseTransferListeners {
         }
     }
 
+    /**
+     * Tạo một Document chuyển kho (DRAFT) và Position tương ứng từ QIC.
+     *
+     * @param documentDD DataDefinition của Document
+     * @param qic        Quality Inspection Command
+     * @param locationFrom kho nguồn
+     * @param locationTo   kho đích
+     * @param quantityFieldName field số lượng trong QIC
+     */
     private void createSingleDocument(
             DataDefinition documentDD,
             Entity qic,
@@ -108,7 +151,7 @@ public class QICWarehouseTransferListeners {
             newDoc.setField("company", qic.getBelongsToField(QICFields.COMPANY));
             newDoc.setField("user", securityService.getCurrentUserId());
             newDoc.setField("description", "Auto created from QIC transfer - PO " + qic.getStringField(QICFields.PO_NUMBER));
-            newDoc.setField("state", "02accepted");
+            newDoc.setField("state", "01draft");
 
             newDoc = documentDD.save(newDoc); // Gán lại newDoc
 
@@ -118,66 +161,22 @@ public class QICWarehouseTransferListeners {
         }
     }
 
+    /**
+     * Tạo Position cho Document chuyển kho dựa trên thông tin QIC.
+     */
     private void createPosition(Entity document, Entity qic, String quantityFieldName) {
         DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION);
         Entity pos = positionDD.create();
         pos.setField("document", document);
         pos.setField("product", qic.getBelongsToField(QICFields.PRODUCT));
         pos.setField("quantity", qic.getField(quantityFieldName));
-        pos.setField("resourceNumber", generateResourceNumber());
+        pos.setField("givenUnit", qic.getBelongsToField("product").getStringField("unit"));
         pos = positionDD.save(pos);
-
-        createResourceFromPosition(pos, document);
     }
 
-    private void createResourceFromPosition(Entity pos, Entity document) {
-        DataDefinition resourceDD = dataDefinitionService.get(
-                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_RESOURCE
-        );
-
-        Entity res = resourceDD.create();
-        res.setField("number", pos.getStringField("resourceNumber"));
-        res.setField("location", document.getBelongsToField("locationTo"));
-        res.setField("product", pos.getBelongsToField("product"));
-        res.setField("quantity", pos.getDecimalField("quantity"));
-        res.setField("time", document.getDateField("time"));
-        resourceDD.save(res);
-    }
-
-    private String generateResourceNumber() {
-        DataDefinition positionDD = dataDefinitionService.get(
-                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_POSITION
-        );
-
-        // 1. Lấy bản ghi mới nhất
-        Entity lastPos = positionDD.find()
-                .addOrder(SearchOrders.desc("resourceNumber"))
-                .setMaxResults(1)
-                .uniqueResult();
-
-        int currentYear = LocalDate.now().getYear();  // ví dụ 2025
-        int nextNumber = 1; // default khi không có dữ liệu cũ
-
-        if (lastPos != null) {
-            String lastCode = lastPos.getStringField("resourceNumber");   // vd: 2025/00979
-
-            if (lastCode != null && lastCode.contains("/")) {
-                String[] parts = lastCode.split("/");
-
-                int year = Integer.parseInt(parts[0]);        // 2025
-                int number = Integer.parseInt(parts[1]);      // 979
-
-                if (year == currentYear) {
-                    nextNumber = number + 1;                  // +1 nếu cùng năm
-                }
-            }
-        }
-
-        return String.format("%d/%05d", currentYear, nextNumber);
-    }
-
+    /**
+     * Cập nhật trạng thái QIC sang {@code COMPLETED}.
+     */
     private void updateQICStatusToCompleted(Entity qic) {
         try {
             qic.setField(QICFields.STATUS, QICFields.Status.COMPLETED);
@@ -187,5 +186,4 @@ public class QICWarehouseTransferListeners {
             e.printStackTrace();
         }
     }
-
 }
