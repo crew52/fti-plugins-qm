@@ -6,6 +6,7 @@ import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConst
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -136,12 +137,11 @@ public class QICWarehouseTransferListeners {
             newDoc.setField("company", qic.getBelongsToField(QICFields.COMPANY));
             newDoc.setField("user", securityService.getCurrentUserId());
             newDoc.setField("description", "Auto created from QIC transfer - PO " + qic.getStringField(QICFields.PO_NUMBER));
-            newDoc.setField("state", "02accepted");
+            newDoc.setField("state", "01draft");
 
             newDoc = documentDD.save(newDoc); // Gán lại newDoc
 
-            Entity newResource = createResource(newDoc, qic, quantityFieldName);
-            createPosition(newDoc, qic, quantityFieldName, newResource);
+            createPosition(newDoc, qic, quantityFieldName);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -153,9 +153,8 @@ public class QICWarehouseTransferListeners {
      * @param document Document chuyển kho
      * @param qic Quality Inspection Command
      * @param quantityFieldName field số lượng trong QIC
-     * @param resource Resource đã được tạo để liên kết
      */
-    private void createPosition(Entity document, Entity qic, String quantityFieldName, Entity resource) {
+    private void createPosition(Entity document, Entity qic, String quantityFieldName) {
         DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION);
         Entity pos = positionDD.create();
         pos.setField("document", document);
@@ -165,50 +164,8 @@ public class QICWarehouseTransferListeners {
         pos.setField("givenQuantity", qic.getField(quantityFieldName));
         pos.setField("conversion", 1);
         pos.setField("waste", false);
-        pos.setField("resourceReceiptDocument", resource.getId());
-        pos.setField("resourceNumber", resource.getStringField("number"));
+        pos.setField("resource", findSourceResourceFromQIC(qic));
         pos = positionDD.save(pos);
-    }
-
-    /**
-     * Tạo Resource tại kho đích dựa trên Document và QIC.
-     *
-     * - Gán locationTo, product, quantity theo QIC
-     * - Thiết lập đơn vị, hệ số chuyển đổi và thời gian
-     * - Lưu thông tin người thực hiện và loại chứng từ
-     *
-     * @param document Document chuyển kho
-     * @param qic Quality Inspection Command
-     * @param quantityFieldName field số lượng trong QIC
-     * @return Resource đã được lưu
-     * @throws IllegalStateException nếu lưu Resource thất bại
-     */
-    private Entity createResource(Entity document, Entity qic, String quantityFieldName) {
-        DataDefinition resourceDD = dataDefinitionService.get(
-                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_RESOURCE
-        );
-
-        Entity res = resourceDD.create();
-        res.setField("location", document.getBelongsToField("locationTo"));
-        res.setField("product", qic.getBelongsToField("product"));
-        res.setField("quantity", qic.getField(quantityFieldName));
-        res.setField("time", document.getDateField("time"));
-        res.setField("quantityInAdditionalUnit", qic.getField(quantityFieldName));
-        res.setField("conversion", 1);
-        res.setField("givenUnit", qic.getBelongsToField("product").getStringField("unit"));
-        res.setField("userName", qic.getBelongsToField("user").getStringField("userName"));
-        res.setField("documentNumber", document.getStringField("number").split("/")[0]);
-
-        Entity saved = resourceDD.save(res);
-
-        if (!saved.isValid()) {
-            throw new IllegalStateException(
-                    "Không thể tạo Resource: " + saved.getGlobalErrors()
-            );
-        }
-
-        return saved;
     }
 
     /**
@@ -222,6 +179,35 @@ public class QICWarehouseTransferListeners {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private Entity findSourceResourceFromQIC(Entity qic) {
+
+        DataDefinition resourceDD = dataDefinitionService.get(
+                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_RESOURCE
+        );
+
+        Entity sourceResource = resourceDD.find()
+                .add(SearchRestrictions.belongsTo(
+                        "product",
+                        qic.getBelongsToField(QICFields.PRODUCT)
+                ))
+                .add(SearchRestrictions.eq(
+                        "deliveryNumber",
+                        qic.getStringField(QICFields.PO_NUMBER)
+                ))
+                .setMaxResults(1)
+                .uniqueResult();
+
+        if (sourceResource == null) {
+            throw new IllegalStateException(
+                    "Không tìm thấy Resource nguồn cho PO: "
+                            + qic.getStringField(QICFields.PO_NUMBER)
+            );
+        }
+
+        return sourceResource;
     }
 
 }
