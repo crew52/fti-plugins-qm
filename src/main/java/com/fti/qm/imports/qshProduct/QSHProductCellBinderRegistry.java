@@ -23,6 +23,7 @@ public class QSHProductCellBinderRegistry {
     @PostConstruct
     private void init() {
         cellBinderRegistry.setCellBinder(required(QSHFields.PRODUCT, productCellParser));
+        cellBinderRegistry.setCellBinder(required(QSHFields.IMPORT_PRODUCT_NAME));
     }
 
     public CellBinderRegistry getCellBinderRegistry() {
