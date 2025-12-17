@@ -54,6 +54,10 @@ public class QualityStandardHVersionListener {
             Entity product = getProduct(view, qsh);
             Entity oldQIC = getLatestQIC(view, product);
 
+            if (oldQIC == null) {
+                return;
+            }
+
             // Lấy Line và Sample
             List<Entity> oldSamples = oldQIC.getHasManyField(QICFields.QUALITY_STANDARD_SAMPLES_RES);
 
