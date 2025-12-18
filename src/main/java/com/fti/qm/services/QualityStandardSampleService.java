@@ -2,6 +2,7 @@ package com.fti.qm.services;
 
 import com.fti.qm.dto.QualityStandardSampleDTO;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.GridResponse;
@@ -13,7 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class QualityStandardSampleService {
@@ -44,14 +47,6 @@ public class QualityStandardSampleService {
 
         // 1. Xây dựng câu truy vấn SQL (Dựa trên bảng sinh ra từ model qualityStandardSampleRe)
         // Tên bảng thường là pluginName_modelName (ví dụ: qm_qualitystandardsamplere)
-//        String query = "SELECT %s FROM ( "
-//                + " SELECT s.id, s.qualityinspectioncommandre_id AS qualityInspectionCommandRe, "
-//                + " s.qualityStandardL_id AS qualityStandardL, "
-//                + " s.samplenumber AS sampleNumber, s.qualitativeresult AS qualitativeResult, "
-//                + " s.quantitativeresult AS quantitativeResult, s.quantitativeevaluation AS quantitativeEvaluation "
-//                + " FROM qm_qualityStandardSampleRe s "
-//                + " WHERE s.qualityinspectioncommandre_id = :qicId "
-//                + ") q ";
 
         String query = "SELECT %s FROM ( "
                 + " SELECT "
@@ -138,5 +133,70 @@ public class QualityStandardSampleService {
 
         // 5. Trả về kết quả theo định dạng GridResponse cho jqGrid
         return new GridResponse<>(page, (int) Math.ceil((double) countRecords / perPage), countRecords, records);
+    }
+
+    /**
+     * Lấy cấu hình Grid theo chuẩn Meta-config của DocumentPosition
+     */
+    public Map<String, Object> getGridConfig(final Long qicId) {
+        Map<String, Object> config = Maps.newHashMap();
+        List<Map<String, Object>> columns = Lists.newArrayList();
+
+        // 1. Định nghĩa danh sách cột (Chỉ trả về meta-data, không trả về style hiển thị)
+        // Cấu trúc: name, checked, forAttribute, attributeDataType, attributeValueType
+
+        columns.add(createColumn("act", true)); // Cột action (edit/delete)
+        columns.add(createColumn("position", true));
+        columns.add(createColumn("qcNumber", true));
+        columns.add(createColumn("qcName", true));
+        columns.add(createColumn("qcType", true));
+        columns.add(createColumn("unit", true));
+        columns.add(createColumn("description", true));
+        columns.add(createColumn("sampleSize", true));
+        columns.add(createColumn("sampleNumber", true));
+        columns.add(createColumn("qualitativeResult", true));
+        columns.add(createColumn("quantitativeValue", true)); // Giá trị chuẩn
+        columns.add(createColumn("upValue", true));
+        columns.add(createColumn("downValue", true));
+        columns.add(createColumn("quantitativeResult", true)); // Kết quả thực tế
+        columns.add(createColumn("quantitativeEvaluation", true)); // Đánh giá
+        columns.add(createColumn("meName", true));
+        columns.add(createColumn("meMeasuringMethod", true));
+
+        config.put("columns", columns);
+
+        // 2. Các tham số điều khiển hành vi của Grid (Giống DocumentPosition)
+        config.put("readOnly", isReadOnly(qicId));
+
+        return config;
+    }
+
+    /**
+     * Hàm hỗ trợ tạo cấu hình cột chuẩn Meta-config
+     */
+    private Map<String, Object> createColumn(String name, boolean checked) {
+        Map<String, Object> col = Maps.newHashMap();
+        col.put("name", name);
+        col.put("checked", checked);
+        col.put("forAttribute", false);
+        col.put("attributeDataType", null);
+        col.put("attributeValueType", null);
+        return col;
+    }
+
+    /**
+     * Kiểm tra xem Grid có ở chế độ chỉ đọc hay không (Dựa vào trạng thái QIC)
+     */
+    private boolean isReadOnly(final Long qicId) {
+        String query = "SELECT status FROM qm_qualityinspectioncommandre WHERE id = :qicId";
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("qicId", qicId);
+        try {
+            String status = jdbcTemplate.queryForObject(query, params, String.class);
+            // Nếu trạng thái là '03completed' thì khóa grid không cho sửa
+            return "03completed".equals(status);
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

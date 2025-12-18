@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/rest/qualityStandardSamplesRes")
@@ -26,6 +27,12 @@ public class QualityStandardSamplesController {
         // ... Logic gọi service để lấy danh sách mẫu theo ID lệnh QC ...
         // Đảm bảo dữ liệu trả về theo format GridResponse<DTO>
         return qualityStandardSampleService.findAllByCommandId(id, sidx, sord, page, perPage, sampleDTO);
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "gridConfig/{id}")
+    public Map<String, Object> gridConfig(@PathVariable Long id) {
+        return qualityStandardSampleService.getGridConfig(id);
     }
 
 }
