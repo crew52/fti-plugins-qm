@@ -43,6 +43,36 @@
         </ribbon>
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="qualityInspectionCommandDetail" reference="form">
+                <script>
+                    <![CDATA[
+                        this.addOnChangeListener({
+                            onSetValue: function(value) {
+                                if (!value || !value.content)
+                                    return;
+
+                                if (value.content.entityId) {
+                                    documentIdChanged(value.content.entityId);
+                                }
+                            }
+                        });
+
+                        var isCanClose;
+                        var controllerCanClose = controller.canClose;
+                        controller.canClose = function(){
+                            isCanClose = controllerCanClose();
+                            return isCanClose;
+                        }
+
+                        var formComponent = window.mainController.getComponentByReferenceName("form");
+                        var formPerformRefresh = formComponent.performRefresh;
+                        formComponent.performRefresh = function(){
+                            formPerformRefresh();
+                            if(isCanClose){
+                                viewRefresh();
+                            }
+                        }
+                    ]]>
+                </script>
                 <component type="gridLayout" name="gridLayout" columns="3" rows="6">
                     <layoutElement column="1" row="1">
                         <component type="input" name="inspectionOrder" reference="inspectionOrder" defaultEnabled="never">
@@ -52,7 +82,7 @@
                     <layoutElement column="1" row="2">
                         <component type="select" name="inspectionType" field="inspectionType" reference="inspectionType" defaultEnabled="never"/>
                     </layoutElement>
-                    <layoutElement column="1" row="3">  
+                    <layoutElement column="1" row="3">
                         <component type="select" name="status" field="status" reference="status"/>
                     </layoutElement>
                     <layoutElement column="1" row="4">
@@ -131,7 +161,18 @@
             </component>
         </windowTab>
 
-        <windowTab name="samplesTab" reference="samplesTab">
+        <windowTab name="samplesGridTab" reference="samplesGridTab">
+            <component type="flowGridLayout" name="flowGridLayout" columns="1" rows="6">
+                <layoutElement column="1" row="1" minHeight="6">
+                    <component type="staticPage" name="samplesGrid" reference="samplesGrid">
+                        <option type="page" value="qm/samplesGrid.jsp"/>
+                        <option type="messagesGroup" value="documentGrid"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+        <!-- <windowTab name="samplesTab" reference="samplesTab">
             <component type="gridLayout" name="samplesGridLayout" columns="1" rows="12">
                 <layoutElement column="1" row="1" height="12">
                     <component type="grid" name="samples" reference="samples" source="#{form}.qualityStandardSampleDtosRe">
@@ -169,7 +210,7 @@
                     </component>
                 </layoutElement>
             </component>
-        </windowTab>
+        </windowTab> -->
 
         <windowTab name="qualityDecisionTab" reference="qualityDecisionTab">
             <component type="gridLayout" name="qualityDecisionGridLayout" columns="4" rows="4">
