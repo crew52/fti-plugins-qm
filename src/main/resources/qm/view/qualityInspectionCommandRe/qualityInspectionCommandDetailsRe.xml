@@ -166,7 +166,7 @@
                 <layoutElement column="1" row="1" minHeight="6">
                     <component type="staticPage" name="samplesGrid" reference="samplesGrid">
                         <option type="page" value="qm/samplesGrid.jsp"/>
-                        <option type="messagesGroup" value="documentGrid"/>
+                        <option type="messagesGroup" value="samplesGrid"/>
                     </component>
                 </layoutElement>
             </component>

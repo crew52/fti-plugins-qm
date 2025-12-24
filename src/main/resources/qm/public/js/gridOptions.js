@@ -137,9 +137,9 @@ myApp.directive('ngJqGrid', function ($window) {
                     element.append(angular.element('<div id="jqGridPager"></div>'));
                     $(table).jqGrid(newValue);
 
-                    var positionsHeader = QCD.translate('documentGrid.gridHeader.positions');
+                    var samplesHeader = QCD.translate('samplesGrid.gridHeader.samples');
 
-                    var gridTitle = '<div class="gridTitle">' + positionsHeader + ' <span id="rows-num">(0)</span></div>';
+                    var gridTitle = '<div class="gridTitle">' + samplesHeader + ' <span id="rows-num">(0)</span></div>';
 
                     $('#t_grid').append('<div class="t_grid__container"></div>');
                     $('#t_grid .t_grid__container').append(gridTitle);
