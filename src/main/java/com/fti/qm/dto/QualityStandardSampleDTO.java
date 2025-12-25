@@ -24,6 +24,8 @@ public class QualityStandardSampleDTO {
     private String description;
     private Integer sampleSize;
     private Integer sampleNumber;
+
+    private String qualitativeValue; // Enum: 01pass
     private String qualitativeResult; // Enum: 01pass, 02fail
     @JsonDeserialize(using = BigDecimalDeserializer.class)
     private BigDecimal quantitativeValue; // Decimal
@@ -129,6 +131,14 @@ public class QualityStandardSampleDTO {
         this.sampleNumber = sampleNumber;
     }
 
+    public String getQualitativeValue() {
+        return qualitativeValue;
+    }
+
+    public void setQualitativeValue(String qualitativeValue) {
+        this.qualitativeValue = qualitativeValue;
+    }
+
     public String getQualitativeResult() {
         return qualitativeResult;
     }
@@ -207,6 +217,7 @@ public class QualityStandardSampleDTO {
         hash = 67 * hash + java.util.Objects.hashCode(this.description);
         hash = 67 * hash + java.util.Objects.hashCode(this.sampleSize);
         hash = 67 * hash + java.util.Objects.hashCode(this.sampleNumber);
+        hash = 67 * hash + java.util.Objects.hashCode(this.qualitativeValue);
         hash = 67 * hash + java.util.Objects.hashCode(this.quantitativeValue);
         hash = 67 * hash + java.util.Objects.hashCode(this.upValue);
         hash = 67 * hash + java.util.Objects.hashCode(this.downValue);
@@ -258,6 +269,9 @@ public class QualityStandardSampleDTO {
             return false;
         }
         if (!java.util.Objects.equals(this.sampleNumber, other.sampleNumber)) {
+            return false;
+        }
+        if (!java.util.Objects.equals(this.qualitativeValue, other.qualitativeValue)) {
             return false;
         }
         if (!java.util.Objects.equals(this.quantitativeValue, other.quantitativeValue)) {

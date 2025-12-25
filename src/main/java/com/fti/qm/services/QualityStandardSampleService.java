@@ -61,6 +61,7 @@ public class QualityStandardSampleService {
                 + "   l.description AS description, "
                 + "   l.samplesize AS sampleSize, "
                 + "   s.samplenumber AS sampleNumber, "
+                + "   l.qualitativeValue AS qualitativeValue, "
                 + "   s.qualitativeresult AS qualitativeResult, "
                 + "   l.quantitativevalue AS quantitativeValue, "
                 + "   l.upvalue AS upValue, "
@@ -118,6 +119,19 @@ public class QualityStandardSampleService {
             }
             dto.setUnit(resultSet.getString("unit"));
             dto.setDescription(resultSet.getString("description"));
+            String qualitativeValue = resultSet.getString("qualitativeValue");
+
+            if (qualitativeValue != null) {
+                String key = "qm.qualityStandardL.qualitativeValue.value." + qualitativeValue;
+                dto.setQualitativeValue(
+                        translationService.translate(
+                                key,
+                                LocaleContextHolder.getLocale()
+                        )
+                );
+            } else {
+                dto.setQualitativeValue(null);
+            }
             dto.setSampleSize(resultSet.getInt("sampleSize"));
             dto.setSampleNumber(resultSet.getInt("sampleNumber"));
             dto.setQualitativeResult(resultSet.getString("qualitativeResult"));
@@ -154,6 +168,7 @@ public class QualityStandardSampleService {
         columns.add(createColumn("description", true));
         columns.add(createColumn("sampleSize", true));
         columns.add(createColumn("sampleNumber", true));
+        columns.add(createColumn("qualitativeValue", true));
         columns.add(createColumn("qualitativeResult", true));
         columns.add(createColumn("quantitativeValue", true)); // Giá trị chuẩn
         columns.add(createColumn("upValue", true));
