@@ -225,9 +225,9 @@ function refreshForm() {
     }
 }
 
-function documentIdChanged(id) {
+function qicIdChanged(id) {
     saveAllRows();
-    angular.element($("#GridController")).scope().documentIdChanged(id);
+    angular.element($("#GridController")).scope().qicIdChanged(id);
     return false;
 }
 
@@ -348,7 +348,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             });
         }
 
-        function getDocumentId() {
+        function getQICId() {
             if (context) {
                 var contextObject = JSON.parse(context);
                 if (contextObject && contextObject['window.generalTab.form.id']) {
@@ -451,7 +451,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         $("#window\\.samplesGridTab").resize($scope.resize);
 
         var config = {
-            url: '../../rest/rest/qualityStandardSamplesRes/' + getDocumentId() + '.html',
+            url: '../../rest/rest/qualityStandardSamplesRes/' + getQICId() + '.html',
             datatype: "json",
             height: '100%',
             autowidth: true,
@@ -461,7 +461,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             toolbar: [true, "top"],
             rownumbers: false,
             altRows: true,
-            multiselect: true,
+            multiselect: false,
             altclass: 'qcadooRowClass',
             errorTextFormat: function (response) {
                 return translateMessages(JSON.parse(response.responseText).message);
@@ -479,7 +479,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     hidden: true,
                     editable: true,
                     editoptions: {
-                        defaultValue: getDocumentId()
+                        defaultValue: getQICId()
                     }
                 },
                 {
@@ -545,7 +545,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     index: 'unit',
                     hidden: false,
                     editable: false,
-                    editoptions: {}
+                    stype: 'select',
+                    editoptions: {},
+                    searchoptions: {}
                 },
                 {
                     name: 'description',
@@ -766,50 +768,30 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 config.colModel = columns;
                 config.colNames = colNames;
 
-                var newConfig = {};
+                // Search Units -> và đẩy vào config
+                $http({
+                        method: 'GET',
+                        url: '../../rest/units'
+                }).then(function successCallback(response) {
+                        selectOptionsUnits = [':' + translateMessages('samplesGrid.allItem')];
+                        angular.forEach(response.data, function (value, key) {
+                            selectOptionsUnits.push(value.key + ':' + value.value);
+                        });
+
+                        getColModelByIndex('unit', config).searchoptions.value = selectOptionsUnits.join(';');
+
+                        var newConfig = {};
                         newConfig = angular.merge(newConfig, config);
                         $scope.config = newConfig;
                         $('#gridWrapper').unblock();
 
-                // $http({
-                //     method: 'GET',
-                //     url: '../../rest/typeOfPallets'
-                // }).then(function successCallback(response) {
-                //     var selectOptionsTypeOfPallets = [':' + translateMessages('documentGrid.allItem')];
-                //     var selectOptionsTypeOfPalletsEdit = [':' + translateMessages('documentGrid.emptyItem')];
-                //     angular.forEach(response.data, function (value, key) {
-                //         selectOptionsTypeOfPallets.push(value.key + ':' + value.value);
-                //         selectOptionsTypeOfPalletsEdit.push(value.key + ':' + value.value);
-                //     });
-
-                //     getColModelByIndex('typeOfPallet', config).editoptions.value = selectOptionsTypeOfPalletsEdit.join(';');
-                //     getColModelByIndex('typeOfPallet', config).searchoptions.value = selectOptionsTypeOfPallets.join(';');
-
-                //     $http({
-                //         method: 'GET',
-                //         url: '../../rest/units'
-                //     }).then(function successCallback(response) {
-                //         selectOptionsUnits = [':' + translateMessages('documentGrid.allItem')];
-                //         angular.forEach(response.data, function (value, key) {
-                //             selectOptionsUnits.push(value.key + ':' + value.value);
-                //         });
-
-                //         getColModelByIndex('unit', config).searchoptions.value = selectOptionsUnits.join(';');
-                //         getColModelByIndex('givenunit', config).searchoptions.value = selectOptionsUnits.join(';');
-
-                //         var newConfig = {};
-                //         newConfig = angular.merge(newConfig, config);
-                //         $scope.config = newConfig;
-                //         $('#gridWrapper').unblock();
-
-                //     }, errorCallback);
-                // }, errorCallback);
+                }, errorCallback);
 
             }, errorCallback);
 
             return config;
         }
-        $scope.documentIdChanged = function (id) {
+        $scope.qicIdChanged = function (id) {
             config.url = '../../rest/rest/qualityStandardSamplesRes/' + id + '.html';
             config.document_id = id;
 

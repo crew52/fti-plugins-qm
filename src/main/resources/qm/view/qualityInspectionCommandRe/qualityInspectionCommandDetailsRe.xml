@@ -51,7 +51,7 @@
                                     return;
 
                                 if (value.content.entityId) {
-                                    documentIdChanged(value.content.entityId);
+                                    qicIdChanged(value.content.entityId);
                                 }
                             }
                         });
