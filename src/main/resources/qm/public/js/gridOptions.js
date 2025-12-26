@@ -10,13 +10,14 @@
     var a = $([]), e = $.resize = $.extend($.resize, {}), i, k = "setTimeout", j = "resize", d = j + "-special-event", b = "delay", f = "throttleWindow";
     e[b] = 250;
     e[f] = true;
-    $.event.special[j] = {setup: function () {
+    $.event.special[j] = {
+        setup: function () {
             if (!e[f] && this[k]) {
                 return false
             }
             var l = $(this);
             a = a.add(l);
-            $.data(this, d, {w: l.width(), h: l.height()});
+            $.data(this, d, { w: l.width(), h: l.height() });
             if (a.length === 1) {
                 g()
             }
@@ -48,7 +49,8 @@
                 n = l.handler;
                 l.handler = m
             }
-        }};
+        }
+    };
     function g() {
         i = h[k](function () {
             a.each(function () {
@@ -59,7 +61,8 @@
             });
             g()
         }, e[b])
-    }}
+    }
+}
 )(jQuery, this);
 
 var myApp = angular.module('gridApp', []);
@@ -115,7 +118,7 @@ function parseAndValidateInputNumber($element) {
         $element.addClass('error-grid');
         $element.val(rawValue);
     }
-    
+
     return $element.val();
 }
 
@@ -248,7 +251,7 @@ function openLookup(name, parameters) {
     if (name == 'attribute') {
         mainController.openModal('body', '../' + name + "/" + parameters.custom_attr_name + lookupHtml, false, function onModalClose() {
         }, function onModalRender(modalWindow) {
-        }, {width: 1000, height: 560});
+        }, { width: 1000, height: 560 });
     } else {
         if (parameters) {
             var urlParams = $.param(parameters);
@@ -256,13 +259,13 @@ function openLookup(name, parameters) {
         }
         mainController.openModal('body', '../' + name + lookupHtml, false, function onModalClose() {
         }, function onModalRender(modalWindow) {
-        }, {width: 1000, height: 560});
+        }, { width: 1000, height: 560 });
     }
 }
 
 function updateFieldValue(field, value, rowId) {
     // edit inline
-    var selector =  $("[id='"+rowId + '_' + field+"']");
+    var selector = $("[id='" + rowId + '_' + field + "']");
 
     var element = $(selector);
     if (element.length && element[0].tagName.toLowerCase() === 'span') {
@@ -285,11 +288,11 @@ function clearSelect(field, rowId) {
 function onSelectLookupRow(row, recordName) {
     if (row) {
         var code = row.code || row.number || row.value;
-        recordName = recordName.replace('attribute/','');
+        recordName = recordName.replace('attribute/', '');
         var rowId = $('#product').length ? null : jQuery('#grid').jqGrid('getGridParam', 'selrow');
         var field = updateFieldValue(recordName, code, rowId);
-        if(recordName == "batch") {
-            if( row.id == 0) {
+        if (recordName == "batch") {
+            if (row.id == 0) {
                 var fieldBatchId = updateFieldValue("batchId", null, rowId);
                 fieldBatchId.trigger('change');
             } else {
@@ -309,497 +312,529 @@ var columnConfiguration;
 myApp.controller('GridController', ['$scope', '$window', '$http', function ($scope, $window, $http) {
 
     var _this = this;
-        var quantities = {};
-        var conversionModified = true;
-        var lastSel;
-        var firstLoad = true;
-        var hasAdditionalUnit = false;
+    var quantities = {};
+    var conversionModified = true;
+    var lastSel;
+    var firstLoad = true;
+    var hasAdditionalUnit = false;
 
-        function getJsonByQuery(url, params, callback) {
-            if (params && params.query) {
-                return $.ajax({
-                    dataType: "json",
-                    url: url,
-                    data: params,
-                    success: function (data) {
-                        callback(data);
-                    }
-                });
-
-            } else {
-                callback({entities: [], numberOfResults: 0});
-            }
-        }
-
-        function getRowIdFromElement(el) {
-            var rowId = el.attr('rowId');
-            if ('_empty' === rowId) {
-                rowId = 0;
-            }
-
-            return rowId;
-        }
-
-        function showMessage(type, title, content) {
-            mainController.showMessage({
-                type: type,
-                title: title,
-                content: content
+    function getJsonByQuery(url, params, callback) {
+        if (params && params.query) {
+            return $.ajax({
+                dataType: "json",
+                url: url,
+                data: params,
+                success: function (data) {
+                    callback(data);
+                }
             });
+
+        } else {
+            callback({ entities: [], numberOfResults: 0 });
+        }
+    }
+
+    function getRowIdFromElement(el) {
+        var rowId = el.attr('rowId');
+        if ('_empty' === rowId) {
+            rowId = 0;
         }
 
-        function getQICId() {
-            if (context) {
-                var contextObject = JSON.parse(context);
-                if (contextObject && contextObject['window.generalTab.form.id']) {
-                    return contextObject['window.generalTab.form.id'];
+        return rowId;
+    }
+
+    function showMessage(type, title, content) {
+        mainController.showMessage({
+            type: type,
+            title: title,
+            content: content
+        });
+    }
+
+    function getQICId() {
+        if (context) {
+            var contextObject = JSON.parse(context);
+            if (contextObject && contextObject['window.generalTab.form.id']) {
+                return contextObject['window.generalTab.form.id'];
+            }
+        }
+
+        var config = angular.element($("#GridController")).scope().config;
+
+        return config ? config.document_id : 0;
+    }
+
+    function getColModelByIndex(index, c) {
+        c = c || $scope.config;
+        var col = c.colModel.filter(function (element, i) {
+            return element.name === index;
+        })[0];
+        if (!col) {
+            console.error(index);
+        }
+        return col;
+    }
+
+    function getColModelOrPrepareForAttribute(columnProperties, c) {
+        c = c || $scope.config;
+        var col = c.colModel.filter(function (element, i) {
+            return element.index === columnProperties.name;
+        })[0];
+        if (columnProperties.forAttribute) {
+            var attrColModel = {};
+            attrColModel.name = columnProperties.name;
+            attrColModel.index = "attrs." + columnProperties.name;
+            attrColModel.jsonmap = "attrs." + columnProperties.name;
+            attrColModel.editable = true;
+            if (columnProperties.attributeDataType == '01calculated') {
+                attrColModel.edittype = 'custom';
+                var editoptions = {};
+                editoptions.custom_element = attributeLookup_createElement;
+                editoptions.custom_value = lookup_value;
+                editoptions.custom_attr_name = columnProperties.name;
+                attrColModel.editoptions = editoptions;
+            } else if (columnProperties.attributeValueType == '02numeric') {
+                attrColModel.formatter = numberFormatter;
+                attrColModel.unformat = numberUnformat;
+                attrColModel.edittype = 'custom';
+                var editoptions = {};
+                editoptions.custom_element = attribute_createElement;
+                editoptions.custom_value = input_value;
+                editoptions.custom_attr_name = columnProperties.name;
+                attrColModel.editoptions = editoptions;
+            } else {
+                var editoptions = {};
+                attrColModel.editoptions = editoptions;
+            }
+
+            col = attrColModel;
+        } else if (!col) {
+            console.error(columnProperties.name);
+        }
+        return col;
+    }
+
+    function errorCallback(response) {
+        showMessage('failure', QCD.translate('documentGrid.notification.failure'), response.data.message);
+    }
+
+    function input_value(elem, operation, value) {
+        if (operation === 'get') {
+            return $(elem).val();
+
+        } else if (operation === 'set') {
+            return $('input', elem).val(value);
+        }
+    }
+
+    function numberFormatter(cellvalue, options, rowObject) {
+        var val = cellvalue || '';
+        return '<span class="number-cell">' + val + '</span>';
+    }
+
+    function numberUnformat(cellvalue, options, cell) {
+        var val = $('span', cell).text();
+        return val || '';
+    }
+
+    // resize: Thiết kế màn hình phù hợp cho mọi màn hình
+    $scope.resize = function () {
+        var $grid = jQuery('#grid').setGridWidth($("#window\\.samplesGridTab").width() - 23, true);
+        if ($grid.is(':visible')) {
+            var $flowGridLayout = $('div.flow-grid-layout-item');
+            var containerHeight = $flowGridLayout.innerHeight();
+            var gridHeight = $('.ui-jqgrid-bdiv', $flowGridLayout).outerHeight();
+            var totalGridHeight = $('#gbox_grid', $flowGridLayout).outerHeight();
+            var newGridHeightToFillWholeSpace = containerHeight - totalGridHeight + gridHeight;
+            $grid.setGridHeight(newGridHeightToFillWholeSpace);
+            config.height = newGridHeightToFillWholeSpace;
+        }
+    };
+
+    $("#window\\.samplesGridTab").resize($scope.resize);
+
+    var config = {
+        url: '../../rest/rest/qualityStandardSamplesRes/' + getQICId() + '.html',
+        datatype: "json",
+        height: '100%',
+        autowidth: true,
+        rowNum: 20,
+        rowList: [20, 30, 50, 100, 200],
+        sortname: 'qualityStandardL',
+        toolbar: [true, "top"],
+        rownumbers: false,
+        altRows: true,
+        multiselect: false,
+        altclass: 'qcadooRowClass',
+        errorTextFormat: function (response) {
+            return translateMessages(JSON.parse(response.responseText).message);
+        },
+        colModel: [
+            {
+                name: 'id',
+                index: 'id',
+                key: true,
+                hidden: true
+            },
+            {
+                name: 'qualityInspectionCommandRe',
+                index: 'qualityInspectionCommandRe',
+                hidden: true,
+                editable: true,
+                editoptions: {
+                    defaultValue: getQICId()
+                }
+            },
+            {
+                name: 'act',
+                index: 'act',
+                width: 55,
+                align: 'center',
+                sortable: false,
+                search: false,
+                formatter: 'actions',
+                formatoptions: {
+                    // keys: true, // we want use [Enter] key to save the row and [Esc] to cancel editing.
+                    // editOptions: gridEditOptions,
+                    // url: '../../rest/rest/documentPositions/' + 1 + '.html',
+                    // delbutton: false,
+                    // onEdit: function (id) {
+                    //     if (typeof (lastSel) !== "undefined" && id !== lastSel) {
+                    //         cancelEditing(id);
+                    //     }
+                    //     prepareViewOnStartEdit();
+                    //     gridEditOptions.url = '../../rest/rest/documentPositions/' + id + '.html';
+                    //     lastSel = id;
+                    // },
+                    // afterRestore: function () {
+                    //     cancelEditing();
+                    //     prepareViewOnEndEdit();
+                    //     $("#grid").trigger("reloadGrid");
+                    //     viewRefresh();
+                    // }
+                }
+            },
+            {
+                name: 'position',
+                index: 'position',
+                width: 50,
+                hidden: false,
+                editable: false,
+                // formatter: numberFormatter
+            },
+            {
+                name: 'qcNumber',
+                index: 'qcNumber',
+                hidden: false,
+                editable: false,
+                editoptions: {}
+            },
+            {
+                name: 'qcName',
+                index: 'qcName',
+                hidden: false,
+                editable: false,
+                editoptions: {}
+            },
+            {
+                name: 'qcType',
+                index: 'qcType',
+                hidden: false,
+                editable: false,
+                editoptions: {},
+                stype: 'select',
+                searchoptions: {
+                    sopt: ['eq'],
+                    value:
+                        ':;' +
+                        '01qualitative:' + translateMessages('samplesGrid.01qualitative') + ';' +
+                        '02quantitative:' + translateMessages('samplesGrid.02quantitative')
+                }
+            },
+            {
+                name: 'unit',
+                index: 'unit',
+                hidden: false,
+                editable: false,
+                stype: 'select',
+                editoptions: {},
+                searchoptions: {}
+            },
+            {
+                name: 'description',
+                index: 'description',
+                hidden: false,
+                editable: false,
+                editoptions: {}
+            },
+            {
+                name: 'sampleSize',
+                index: 'sampleSize',
+                hidden: false,
+                editable: false,
+                editoptions: {}
+            },
+            {
+                name: 'qualitativeResult',
+                index: 'qualitativeResult',
+                hidden: false,
+                editable: true,
+                editoptions: {},
+                stype: 'select',
+                searchoptions: {
+                    sopt: ['eq'],
+                    value:
+                        ':;' +
+                        '01pass:' + translateMessages('samplesGrid.01pass') + ';' +
+                        '02fail:' + translateMessages('samplesGrid.02fail')
+                }
+            },
+            {
+                name: 'quantitativeValue',
+                index: 'quantitativeValue',
+                hidden: false,
+                editable: false,
+                editoptions: {}
+            },
+            {
+                name: 'upValue',
+                index: 'upValue',
+                hidden: false,
+                editable: false,
+                editoptions: {}
+            },
+            {
+                name: 'downValue',
+                index: 'downValue',
+                hidden: false,
+                editable: false,
+                editoptions: {}
+            },
+            {
+                name: 'quantitativeResult',
+                index: 'quantitativeResult',
+                hidden: false,
+                editable: true,
+                editoptions: {}
+            },
+            {
+                name: 'quantitativeEvaluation',
+                index: 'quantitativeEvaluation',
+                hidden: false,
+                editable: true,
+                editoptions: {},
+                // loại seach
+                stype: 'select',
+                // option search
+                searchoptions: {
+                    sopt: ['eq'],
+                    value:
+                        ':;' +
+                        '01pass:' + translateMessages('samplesGrid.01pass') + ';' +
+                        '02fail:' + translateMessages('samplesGrid.02fail')
+                }
+            },
+            {
+                name: 'meName',
+                index: 'meName',
+                hidden: false,
+                editable: false,
+                editoptions: {}
+            },
+            {
+                name: 'meMeasuringMethod',
+                index: 'meMeasuringMethod',
+                hidden: false,
+                editable: false,
+                editoptions: {}
+            },
+            {
+                name: 'sampleNumber',
+                index: 'sampleNumber',
+                hidden: false,
+                editable: false,
+                editoptions: {}
+            },
+            {
+                name: 'qualitativeValue',
+                index: 'qualitativeValue',
+                hidden: false,
+                editable: false,
+                editoptions: {},
+                stype: 'select',
+                searchoptions: {
+                    sopt: ['eq'],
+                    value:
+                        ':;' +
+                        '01pass:' + translateMessages('samplesGrid.01pass')
+                }
+            },
+        ],
+        pager: "#jqGridPager",
+        gridComplete: function () {
+            var grid = $('#grid');
+            var rows = grid.jqGrid('getDataIDs');
+            if ($scope.config.readOnly) {
+                for (i = 0; i < rows.length; i++) {
+                    $("tr#" + rows[i] + " div.ui-inline-edit").hide();
                 }
             }
-
-            var config = angular.element($("#GridController")).scope().config;
-
-            return config ? config.document_id : 0;
-        }
-
-        function getColModelByIndex(index, c) {
-            c = c || $scope.config;
-            var col = c.colModel.filter(function (element, i) {
-                return element.name === index;
-            })[0];
-            if (!col) {
-                console.error(index);
-            }
-            return col;
-        }
-
-        function getColModelOrPrepareForAttribute(columnProperties, c) {
-            c = c || $scope.config;
-            var col = c.colModel.filter(function (element, i) {
-                return element.index === columnProperties.name;
-            })[0];
-            if (columnProperties.forAttribute) {
-                var attrColModel = {};
-                attrColModel.name = columnProperties.name;
-                attrColModel.index = "attrs."+columnProperties.name;
-                attrColModel.jsonmap = "attrs."+columnProperties.name;
-                attrColModel.editable = true;
-                if(columnProperties.attributeDataType == '01calculated') {
-                    attrColModel.edittype = 'custom';
-                    var editoptions = {};
-                    editoptions.custom_element = attributeLookup_createElement;
-                    editoptions.custom_value = lookup_value;
-                    editoptions.custom_attr_name = columnProperties.name;
-                    attrColModel.editoptions = editoptions;
-                } else if(columnProperties.attributeValueType == '02numeric') {
-                    attrColModel.formatter = numberFormatter;
-                    attrColModel.unformat = numberUnformat;
-                     attrColModel.edittype = 'custom';
-                     var editoptions = {};
-                     editoptions.custom_element = attribute_createElement;
-                     editoptions.custom_value = input_value;
-                     editoptions.custom_attr_name = columnProperties.name;
-                     attrColModel.editoptions = editoptions;
-                } else {
-                     var editoptions = {};
-                     attrColModel.editoptions = editoptions;
+            $('#rows-num').text('(' + grid.getGridParam('records') + ')');
+        },
+        onSelectRow: function (rowid, status) {
+        },
+        beforeSelectRow: function (rowid, e) {
+            var $td = $(e.target).closest("tr.jqgrow>td");
+            if ($td.length > 0) {
+                var $grid = $(this);
+                var i = $.jgrid.getCellIndex($td);
+                var cm = $grid.jqGrid('getGridParam', 'colModel');
+                if (cm[i].name === 'act') {
+                    if (e.target.className === 'ui-icon ui-icon-cancel') {
+                        return false;
+                    }
+                    $grid.jqGrid('resetSelection');
+                    return true;
                 }
-
-                col = attrColModel;
-            } else if (!col) {
-                console.error(columnProperties.name);
+                return (cm[i].name === 'cb');
             }
-            return col;
+            return false;
+        },
+        beforeRequest: function () {
+            $.cookie("jqgrid_conf", JSON.stringify({
+                rowNum: $(this).getGridParam("rowNum")
+            }));
+        },
+        ajaxRowOptions: {
+            contentType: "application/json"
+        },
+        serializeRowData: function (postdata) {
+            delete postdata.oper;
+            postdata.attrs = {};
+            angular.forEach(columnConfiguration, function (columnInGrid, key) {
+                if (columnInGrid.forAttribute) {
+                    postdata.attrs[columnInGrid.name] = postdata[columnInGrid.name];
+                    delete postdata[columnInGrid.name];
+                }
+            });
+
+            return validateSerializeData(postdata);
+        },
+        beforeSubmit: function (postdata, formid) {
+            return [false, 'ble'];
+        }
+    };
+
+    function prepareGridConfig(config) {
+        var c = $.cookie("jqgrid_conf");
+        if (c) {
+            $.extend(config, JSON.parse(c));
         }
 
-        function errorCallback(response) {
-            showMessage('failure', QCD.translate('documentGrid.notification.failure'), response.data.message);
-        }
-
-        function input_value(elem, operation, value) {
-            if (operation === 'get') {
-                return $(elem).val();
-
-            } else if (operation === 'set') {
-                return $('input', elem).val(value);
+        var readOnlyInType = function (outDocument, inBufferDocument, columnIndex) {
+            if (outDocument && (columnIndex === 'expirationDate' || columnIndex === 'productionDate' ||
+                columnIndex === 'price' || columnIndex === 'waste' ||
+                columnIndex === 'palletNumber' || columnIndex === 'typeOfPallet' || columnIndex === 'storageLocation')) {
+                return true;
             }
-        }
-
-        function numberFormatter(cellvalue, options, rowObject) {
-            var val = cellvalue || '';
-            return '<span class="number-cell">' + val + '</span>';
-        }
-
-        function numberUnformat(cellvalue, options, cell) {
-            var val = $('span', cell).text();
-            return val || '';
-        }
-
-        // resize: Thiết kế màn hình phù hợp cho mọi màn hình
-        $scope.resize = function () {
-            var $grid = jQuery('#grid').setGridWidth($("#window\\.samplesGridTab").width() - 23, true);
-            if($grid.is(':visible')){
-                var $flowGridLayout = $('div.flow-grid-layout-item');
-                var containerHeight = $flowGridLayout.innerHeight();
-                var gridHeight = $('.ui-jqgrid-bdiv', $flowGridLayout).outerHeight();
-                var totalGridHeight = $('#gbox_grid', $flowGridLayout).outerHeight();
-                var newGridHeightToFillWholeSpace = containerHeight - totalGridHeight + gridHeight;
-                $grid.setGridHeight(newGridHeightToFillWholeSpace);
-                config.height = newGridHeightToFillWholeSpace;
+            if ((columnIndex === 'resource') && (inBufferDocument || !outDocument)) {
+                return true;
             }
+            if (columnIndex === 'lastResource') {
+                return true;
+            }
+            if (!outDocument && columnIndex === 'sellingPrice') {
+                return true;
+            }
+
+            return false;
         };
 
-        $("#window\\.samplesGridTab").resize($scope.resize);
+        $http({
+            method: 'GET',
+            url: '../../rest/rest/qualityStandardSamplesRes/gridConfig/' + config.document_id + '.html'
 
-        var config = {
-            url: '../../rest/rest/qualityStandardSamplesRes/' + getQICId() + '.html',
-            datatype: "json",
-            height: '100%',
-            autowidth: true,
-            rowNum: 20,
-            rowList: [20, 30, 50, 100, 200],
-            sortname: 'qualityStandardL',
-            toolbar: [true, "top"],
-            rownumbers: false,
-            altRows: true,
-            multiselect: false,
-            altclass: 'qcadooRowClass',
-            errorTextFormat: function (response) {
-                return translateMessages(JSON.parse(response.responseText).message);
-            },
-            colModel: [
-                {
-                    name: 'id',
-                    index: 'id',
-                    key: true,
-                    hidden: true
-                },
-                {
-                    name: 'qualityInspectionCommandRe',
-                    index: 'qualityInspectionCommandRe',
-                    hidden: true,
-                    editable: true,
-                    editoptions: {
-                        defaultValue: getQICId()
-                    }
-                },
-                {
-                    name: 'act',
-                    index: 'act',
-                    width: 55,
-                    align: 'center',
-                    sortable: false,
-                    search: false,
-                    formatter: 'actions',
-                    formatoptions: {
-                        // keys: true, // we want use [Enter] key to save the row and [Esc] to cancel editing.
-                        // editOptions: gridEditOptions,
-                        // url: '../../rest/rest/documentPositions/' + 1 + '.html',
-                        // delbutton: false,
-                        // onEdit: function (id) {
-                        //     if (typeof (lastSel) !== "undefined" && id !== lastSel) {
-                        //         cancelEditing(id);
-                        //     }
-                        //     prepareViewOnStartEdit();
-                        //     gridEditOptions.url = '../../rest/rest/documentPositions/' + id + '.html';
-                        //     lastSel = id;
-                        // },
-                        // afterRestore: function () {
-                        //     cancelEditing();
-                        //     prepareViewOnEndEdit();
-                        //     $("#grid").trigger("reloadGrid");
-                        //     viewRefresh();
-                        // }
-                    }
-                },
-                {
-                    name: 'position',
-                    index: 'position',
-                    width: 50,
-                    hidden: false,
-                    editable: false,
-                    // formatter: numberFormatter
-                },
-                {
-                    name: 'qcNumber',
-                    index: 'qcNumber',
-                    hidden: false,
-                    editable: false,
-                    editoptions: {}
-                },
-                {
-                    name: 'qcName',
-                    index: 'qcName',
-                    hidden: false,
-                    editable: false,
-                    editoptions: {}
-                },
-                {
-                    name: 'qcType',
-                    index: 'qcType',
-                    hidden: false,
-                    editable: false,
-                    editoptions: {}
-                },
-                {
-                    name: 'unit',
-                    index: 'unit',
-                    hidden: false,
-                    editable: false,
-                    stype: 'select',
-                    editoptions: {},
-                    searchoptions: {}
-                },
-                {
-                    name: 'description',
-                    index: 'description',
-                    hidden: false,
-                    editable: false,
-                    editoptions: {}
-                },
-                {
-                    name: 'sampleSize',
-                    index: 'sampleSize',
-                    hidden: false,
-                    editable: false,
-                    editoptions: {}
-                },
-                {
-                    name: 'qualitativeResult',
-                    index: 'qualitativeResult',
-                    hidden: false,
-                    editable: true,
-                    editoptions: {}
-                },
-                {
-                    name: 'quantitativeValue',
-                    index: 'quantitativeValue',
-                    hidden: false,
-                    editable: false,
-                    editoptions: {}
-                },
-                {
-                    name: 'upValue',
-                    index: 'upValue',
-                    hidden: false,
-                    editable: false,
-                    editoptions: {}
-                },
-                {
-                    name: 'downValue',
-                    index: 'downValue',
-                    hidden: false,
-                    editable: false,
-                    editoptions: {}
-                },
-                {
-                    name: 'quantitativeResult',
-                    index: 'quantitativeResult',
-                    hidden: false,
-                    editable: true,
-                    editoptions: {}
-                },
-                {
-                    name: 'quantitativeEvaluation',
-                    index: 'quantitativeEvaluation',
-                    hidden: false,
-                    editable: true,
-                    editoptions: {}
-                },
-                {
-                    name: 'meName',
-                    index: 'meName',
-                    hidden: false,
-                    editable: false,
-                    editoptions: {}
-                },
-                {
-                    name: 'meMeasuringMethod',
-                    index: 'meMeasuringMethod',
-                    hidden: false,
-                    editable: false,
-                    editoptions: {}
-                },
-                {
-                    name: 'sampleNumber',
-                    index: 'sampleNumber',
-                    hidden: false,
-                    editable: false,
-                    editoptions: {}
-                },
-                {
-                    name: 'qualitativeValue',
-                    index: 'qualitativeValue',
-                    hidden: false,
-                    editable: false,
-                    editoptions: {}
-                },
-            ],
-            pager: "#jqGridPager",
-            gridComplete: function () {
-                var grid = $('#grid');
-                var rows = grid.jqGrid('getDataIDs');
-                if ($scope.config.readOnly) {
-                    for (i = 0; i < rows.length; i++)
-                    {
-                        $("tr#" + rows[i] + " div.ui-inline-edit").hide();
-                    }
+        }).then(function successCallback(response) {
+            columnConfiguration = response.data.columns;
+            config.readOnly = response.data.readOnly;
+            config.inBufferDocument = response.data.inBufferDocument;
+            config.suggestResource = !response.data.inBufferDocument && response.data.suggestResource;
+            config.outDocument = response.data.outDocument;
+            config.directionConvertingQuantityAfterChangingConverter = response.data.directionConvertingQuantityAfterChangingConverter;
+
+            var columns = [
+                getColModelByIndex('id', config),
+                getColModelByIndex('qualityInspectionCommandRe', config)];
+            var colNames = ['ID', 'qualityInspectionCommandRe'];
+
+            angular.forEach(response.data.columns, function (columnInGrid, key) {
+                var gridColModel = getColModelOrPrepareForAttribute(columnInGrid, config);
+
+                if (!columnInGrid.checked) {
+                    gridColModel.hidden = true;
+                    gridColModel.editrules = gridColModel.editrules || {};
+                    gridColModel.editrules.edithidden = true;
                 }
-                $('#rows-num').text('(' + grid.getGridParam('records') + ')');
-            },
-            onSelectRow: function (rowid, status) {
-            },
-            beforeSelectRow: function (rowid, e) {
-                var $td = $(e.target).closest("tr.jqgrow>td");
-                if ($td.length > 0) {
-                    var $grid = $(this);
-                    var i = $.jgrid.getCellIndex($td);
-                    var cm = $grid.jqGrid('getGridParam', 'colModel');
-                    if (cm[i].name === 'act') {
-                        if (e.target.className === 'ui-icon ui-icon-cancel') {
-                            return false;
-                        }
-                        $grid.jqGrid('resetSelection');
-                        return true;
-                    }
-                    return (cm[i].name === 'cb');
+                if (gridColModel.editoptions) {
+                    delete gridColModel.editoptions.disabled;
+                    delete gridColModel.editoptions.readonly;
                 }
-                return false;
-            },
-            beforeRequest: function () {
-                $.cookie("jqgrid_conf", JSON.stringify({
-                    rowNum: $(this).getGridParam("rowNum")
-                }));
-            },
-            ajaxRowOptions: {
-                contentType: "application/json"
-            },
-            serializeRowData: function (postdata) {
-                delete postdata.oper;
-                postdata.attrs = {};
-                angular.forEach(columnConfiguration, function (columnInGrid, key) {
-                    if (columnInGrid.forAttribute) {
-                        postdata.attrs[columnInGrid.name] = postdata[columnInGrid.name];
-                        delete postdata[columnInGrid.name];
-                    }
-                });
-
-                return validateSerializeData(postdata);
-            },
-            beforeSubmit: function (postdata, formid) {
-                return [false, 'ble'];
-            }
-        };
-
-        function prepareGridConfig(config) {
-            var c = $.cookie("jqgrid_conf");
-            if (c){
-                $.extend(config, JSON.parse(c));
-            }
-
-            var readOnlyInType = function (outDocument, inBufferDocument, columnIndex) {
-                if (outDocument && (columnIndex === 'expirationDate' || columnIndex === 'productionDate' ||
-                        columnIndex === 'price' ||  columnIndex === 'waste' ||
-                        columnIndex === 'palletNumber' || columnIndex === 'typeOfPallet' || columnIndex === 'storageLocation')) {
-                    return true;
-                }
-                if ((columnIndex === 'resource') && (inBufferDocument || !outDocument)) {
-                    return true;
-                }
-                if (columnIndex === 'lastResource') {
-                    return true;
-                }
-                if (!outDocument && columnIndex === 'sellingPrice') {
-                   return true;
-                }
-
-                return false;
-            };
-
-            $http({
-                method: 'GET',
-                url: '../../rest/rest/qualityStandardSamplesRes/gridConfig/' + config.document_id + '.html'
-
-            }).then(function successCallback(response) {
-                columnConfiguration = response.data.columns;
-                config.readOnly = response.data.readOnly;
-                config.inBufferDocument = response.data.inBufferDocument;
-                config.suggestResource = !response.data.inBufferDocument && response.data.suggestResource;
-                config.outDocument = response.data.outDocument;
-                config.directionConvertingQuantityAfterChangingConverter = response.data.directionConvertingQuantityAfterChangingConverter;
-
-                var columns = [
-                    getColModelByIndex('id', config), 
-                    getColModelByIndex('qualityInspectionCommandRe', config)];
-                var colNames = ['ID', 'qualityInspectionCommandRe'];
-
-                angular.forEach(response.data.columns, function (columnInGrid, key) {
-                    var gridColModel = getColModelOrPrepareForAttribute(columnInGrid, config);
-
-                    if (!columnInGrid.checked) {
-                        gridColModel.hidden = true;
-                        gridColModel.editrules = gridColModel.editrules || {};
-                        gridColModel.editrules.edithidden = true;
-                    }
-                    if (gridColModel.editoptions) {
-                        delete gridColModel.editoptions.disabled;
-                        delete gridColModel.editoptions.readonly;
-                    }
-                    if (readOnlyInType(config.outDocument, config.inBufferDocument, columnInGrid.name)) {
-                        gridColModel.editoptions = gridColModel.editoptions || {};
-                        if (gridColModel.edittype === 'select' || gridColModel.edittype === 'checkbox') {
-                            gridColModel.editoptions.disabled = 'disabled';
-                        } else {
-                            gridColModel.editoptions.readonly = 'readonly';
-                        }
-                    }
-
-                    if (columnInGrid.forAttribute && config.outDocument) {
+                if (readOnlyInType(config.outDocument, config.inBufferDocument, columnInGrid.name)) {
+                    gridColModel.editoptions = gridColModel.editoptions || {};
+                    if (gridColModel.edittype === 'select' || gridColModel.edittype === 'checkbox') {
+                        gridColModel.editoptions.disabled = 'disabled';
+                    } else {
                         gridColModel.editoptions.readonly = 'readonly';
                     }
+                }
 
-                    columns.push(gridColModel);
-                    if(columnInGrid.forAttribute) {
-                        colNames.push(columnInGrid.name);
-                    } else {
-                        colNames.push(QCD.translate('samplesGrid.gridColumn.' + columnInGrid.name));
-                    }
+                if (columnInGrid.forAttribute && config.outDocument) {
+                    gridColModel.editoptions.readonly = 'readonly';
+                }
+
+                columns.push(gridColModel);
+                if (columnInGrid.forAttribute) {
+                    colNames.push(columnInGrid.name);
+                } else {
+                    colNames.push(QCD.translate('samplesGrid.gridColumn.' + columnInGrid.name));
+                }
+            });
+
+            config.colModel = columns;
+            config.colNames = colNames;
+
+            // Search Units -> và đẩy vào config
+            $http({
+                method: 'GET',
+                url: '../../rest/units'
+            }).then(function successCallback(response) {
+                selectOptionsUnits = [':' + translateMessages('samplesGrid.allItem')];
+                angular.forEach(response.data, function (value, key) {
+                    selectOptionsUnits.push(value.key + ':' + value.value);
                 });
 
-                config.colModel = columns;
-                config.colNames = colNames;
+                getColModelByIndex('unit', config).searchoptions.value = selectOptionsUnits.join(';');
 
-                // Search Units -> và đẩy vào config
-                $http({
-                        method: 'GET',
-                        url: '../../rest/units'
-                }).then(function successCallback(response) {
-                        selectOptionsUnits = [':' + translateMessages('samplesGrid.allItem')];
-                        angular.forEach(response.data, function (value, key) {
-                            selectOptionsUnits.push(value.key + ':' + value.value);
-                        });
-
-                        getColModelByIndex('unit', config).searchoptions.value = selectOptionsUnits.join(';');
-
-                        var newConfig = {};
-                        newConfig = angular.merge(newConfig, config);
-                        $scope.config = newConfig;
-                        $('#gridWrapper').unblock();
-
-                }, errorCallback);
+                var newConfig = {};
+                newConfig = angular.merge(newConfig, config);
+                $scope.config = newConfig;
+                $('#gridWrapper').unblock();
 
             }, errorCallback);
 
-            return config;
-        }
-        $scope.qicIdChanged = function (id) {
-            config.url = '../../rest/rest/qualityStandardSamplesRes/' + id + '.html';
-            config.document_id = id;
+        }, errorCallback);
 
-            config.colModel.filter(function (element, index) {
-                return element.index === 'qualityInspectionCommandRe';
-            })[0].editoptions.defaultValue = id;
+        return config;
+    }
+    $scope.qicIdChanged = function (id) {
+        config.url = '../../rest/rest/qualityStandardSamplesRes/' + id + '.html';
+        config.document_id = id;
 
-            prepareGridConfig(config);
-        };
+        config.colModel.filter(function (element, index) {
+            return element.index === 'qualityInspectionCommandRe';
+        })[0].editoptions.defaultValue = id;
+
+        prepareGridConfig(config);
+    };
 }]);
 
