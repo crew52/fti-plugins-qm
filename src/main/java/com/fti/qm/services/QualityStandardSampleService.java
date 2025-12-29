@@ -214,4 +214,32 @@ public class QualityStandardSampleService {
             return false;
         }
     }
+
+    public void updateResults(final QualityStandardSampleDTO dto) {
+        Preconditions.checkNotNull(dto.getId(), "Sample id must not be null");
+
+        StringBuilder setClause = new StringBuilder();
+        Map<String, Object> params = Maps.newHashMap();
+
+        // qualitativeResult
+        setClause.append("qualitativeresult = :qualitativeResult, ");
+        params.put("qualitativeResult", dto.getQualitativeResult());
+
+        // quantitativeResult
+        setClause.append("quantitativeresult = :quantitativeResult, ");
+        params.put("quantitativeResult", dto.getQuantitativeResult());
+
+        // quantitativeEvaluation
+        setClause.append("quantitativeevaluation = :quantitativeEvaluation ");
+        params.put("quantitativeEvaluation", dto.getQuantitativeEvaluation());
+
+        params.put(ID, dto.getId());
+
+        String sql = "UPDATE qm_qualitystandardsamplere "
+                + "SET " + setClause.toString()
+                + "WHERE id = :id";
+
+        jdbcTemplate.update(sql, params);
+    }
+
 }

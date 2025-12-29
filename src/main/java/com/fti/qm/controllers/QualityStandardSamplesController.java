@@ -35,4 +35,9 @@ public class QualityStandardSamplesController {
         return qualityStandardSampleService.getGridConfig(id);
     }
 
+    @ResponseBody
+    @RequestMapping(value = "{id}", method = RequestMethod.PUT)
+    public void update(@RequestBody QualityStandardSampleDTO qualityStandardSampleVO) {
+        qualityStandardSampleService.updateResults(qualityStandardSampleVO);
+    }
 }

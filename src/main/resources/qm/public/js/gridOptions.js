@@ -242,9 +242,9 @@ function addNewRow() {
     angular.element($("#GridController")).scope().addNewRow();
 }
 
-function deleteRow() {
-    angular.element($("#GridController")).scope().deleteRow();
-}
+// function deleteRow() {
+//     angular.element($("#GridController")).scope().deleteRow();
+// }
 
 function openLookup(name, parameters) {
     var lookupHtml = '/lookup.html'
@@ -351,6 +351,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         });
     }
 
+    // Lấy id của QIC từ view
     function getQICId() {
         if (context) {
             var contextObject = JSON.parse(context);
@@ -437,6 +438,52 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         return val || '';
     }
 
+    function errorfunc(rowID, response) {
+        var message = JSON.parse(response.responseText).message;
+        message = translateMessages(message);
+        showMessage('failure', QCD.translate('samplesGrid.notification.failure'), message);
+        return true;
+    }
+
+    function successfunc(rowID, response) {
+        showMessage('success', QCD.translate('samplesGrid.notification.success'), QCD.translate('documentGrid.message.saveMessage'));
+        return true;
+    }
+
+    function aftersavefunc() {
+        refreshForm();
+    }
+
+    function prepareViewOnStartEdit() {
+        mainController.getComponentByReferenceName("samplesGrid").setComponentChanged(true);
+        $("#add_new_row").addClass("disableButton");
+        $("#delete_row").addClass("disableButton");
+    }
+
+    function prepareViewOnEndEdit() {
+        mainController.getComponentByReferenceName("samplesGrid").setComponentChanged(false);
+        $("#add_new_row").removeClass("disableButton");
+        $("#delete_row").removeClass("disableButton");
+    }
+
+
+    function cancelEditing() {
+        var lrid;
+        if (typeof lastSel !== "undefined") {
+            // cancel editing of the previous selected row if it was in editing state.
+            // jqGrid hold intern savedRow array inside of jqGrid object,
+            // so it is safe to call restoreRow method with any id parameter
+            // if jqGrid not in editing state
+            $('#grid').jqGrid('restoreRow', lastSel);
+
+            // now we need to restore the icons in the formatter:"actions"
+            lrid = $.jgrid.jqID(lastSel);
+            $("tr#" + lrid + " div.ui-inline-edit, " + "tr#" + lrid + " div.ui-inline-del").show();
+            $("tr#" + lrid + " div.ui-inline-save, " + "tr#" + lrid + " div.ui-inline-cancel").hide();
+        }
+    }
+    $scope.cancelEditing = cancelEditing;
+
     // resize: Thiết kế màn hình phù hợp cho mọi màn hình
     $scope.resize = function () {
         var $grid = jQuery('#grid').setGridWidth($("#window\\.samplesGridTab").width() - 23, true);
@@ -452,6 +499,15 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
     };
 
     $("#window\\.samplesGridTab").resize($scope.resize);
+
+    var gridEditOptions = {
+        keys: true,
+        url: '../../rest/rest/qualityStandardSamplesRes.html', // base
+        mtype: 'PUT',
+        errorfunc: errorfunc,
+        successfunc: successfunc,
+        aftersavefunc: aftersavefunc
+    };
 
     var config = {
         url: '../../rest/rest/qualityStandardSamplesRes/' + getQICId() + '.html',
@@ -494,25 +550,30 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 search: false,
                 formatter: 'actions',
                 formatoptions: {
-                    // keys: true, // we want use [Enter] key to save the row and [Esc] to cancel editing.
-                    // editOptions: gridEditOptions,
-                    // url: '../../rest/rest/documentPositions/' + 1 + '.html',
-                    // delbutton: false,
-                    // onEdit: function (id) {
-                    //     if (typeof (lastSel) !== "undefined" && id !== lastSel) {
-                    //         cancelEditing(id);
-                    //     }
-                    //     prepareViewOnStartEdit();
-                    //     gridEditOptions.url = '../../rest/rest/documentPositions/' + id + '.html';
-                    //     lastSel = id;
-                    // },
-                    // afterRestore: function () {
-                    //     cancelEditing();
-                    //     prepareViewOnEndEdit();
-                    //     $("#grid").trigger("reloadGrid");
-                    //     viewRefresh();
-                    // }
-                }
+                    keys: true, // we want use [Enter] key to save the row and [Esc] to cancel editing.
+                    editOptions: gridEditOptions,
+                    url: '../../rest/rest/qualityStandardSamplesRes/' + 1 + '.html',
+                    delbutton: false,
+                    onEdit: function (id) {
+                        console.log('edit row id = ', id);
+                        if (typeof (lastSel) !== "undefined" && id !== lastSel) {
+                            console.log('out ');
+                            cancelEditing(id);
+                        }
+                        prepareViewOnStartEdit();
+                        gridEditOptions.url = '../../rest/rest/qualityStandardSamplesRes/' + id + '.html';
+                        console.log('url = ', gridEditOptions.url);
+                        lastSel = id;
+
+                        console.log('lastSel = ', lastSel);
+                    },
+                    afterRestore: function () {
+                        cancelEditing();
+                        prepareViewOnEndEdit();
+                        $("#grid").trigger("reloadGrid");
+                        viewRefresh();
+                    }
+                },
             },
             {
                 name: 'position',
@@ -836,5 +897,36 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         prepareGridConfig(config);
     };
+
+    $scope.data = [];
+
+    // dont close inline edit after fail validations
+    $.extend($.jgrid.inlineEdit, {restoreAfterError: false});
+
+    $.jgrid.edit = $.jgrid.edit || {};
+    $.jgrid.edit.addCaption = '';
+    $.jgrid.edit.editCaption = '';
+    $.jgrid.edit.bSubmit = '<label>' + $.jgrid.edit.bSubmit + '</label>';
+    $.jgrid.edit.bCancel = '<label>' + $.jgrid.edit.bCancel + '</label>';
+
+    $.extend(true, $.jgrid.inlineEdit, {
+        beforeSaveRow: function (option, rowId) {
+            if (rowId === '0') {
+                option.url = '../../rest/rest/qualityStandardSamplesRes.html';
+                option.errorfunc = errorfunc;
+                option.successfunc = successfunc;
+                option.aftersavefunc = aftersavefunc;
+            } else {
+                option.url = '../../rest/rest/qualityStandardSamplesRes/' + rowId + '.html';
+                option.errorfunc = errorfunc;
+                option.successfunc = successfunc;
+                option.aftersavefunc = aftersavefunc;
+            }
+            option.mtype = 'PUT';
+        }
+    });
+
+    // disable close modal on off click
+    $.jqm.params.closeoverlay = false;
 }]);
 
