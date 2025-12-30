@@ -446,7 +446,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
     }
 
     function successfunc(rowID, response) {
-        showMessage('success', QCD.translate('samplesGrid.notification.success'), QCD.translate('documentGrid.message.saveMessage'));
+        showMessage('success', QCD.translate('samplesGrid.notification.success'), QCD.translate('samplesGrid.message.saveMessage'));
         return true;
     }
 
