@@ -132,12 +132,34 @@ public class QualityStandardSampleService {
             }
             dto.setSampleSize(resultSet.getInt("sampleSize"));
             dto.setSampleNumber(resultSet.getInt("sampleNumber"));
-            dto.setQualitativeResult(resultSet.getString("qualitativeResult"));
+            String qualitativeResult = resultSet.getString("qualitativeResult");
+            if (qualitativeResult != null) {
+                String key = "qm.qualityStandardSampleRe.qualitativeResult.value." + qualitativeResult;
+                dto.setQualitativeResult(
+                        translationService.translate(
+                                key,
+                                LocaleContextHolder.getLocale()
+                        )
+                );
+            } else {
+                dto.setQualitativeResult(null);
+            }
             dto.setQuantitativeValue(resultSet.getBigDecimal("quantitativeValue"));
             dto.setUpValue(resultSet.getBigDecimal("upValue"));
             dto.setDownValue(resultSet.getBigDecimal("downValue"));
             dto.setQuantitativeResult(resultSet.getBigDecimal("quantitativeResult"));
-            dto.setQuantitativeEvaluation(resultSet.getString("quantitativeEvaluation"));
+            String quantitativeEvaluation = resultSet.getString("quantitativeEvaluation");
+            if (quantitativeEvaluation != null) {
+                String key = "qm.qualityStandardSampleRe.quantitativeEvaluation.value." + quantitativeEvaluation;
+                dto.setQuantitativeEvaluation(
+                        translationService.translate(
+                                key,
+                                LocaleContextHolder.getLocale()
+                        )
+                );
+            } else {
+                dto.setQuantitativeEvaluation(null);
+            }
             dto.setMeName(resultSet.getString("meName"));
             dto.setMeMeasuringMethod(resultSet.getString("meMeasuringMethod"));
             return dto;

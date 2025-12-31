@@ -362,7 +362,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         var config = angular.element($("#GridController")).scope().config;
 
-        return config ? config.document_id : 0;
+        return config ? config.qic_id : 0;
     }
 
     function getColModelByIndex(index, c) {
@@ -384,8 +384,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         if (columnProperties.forAttribute) {
             var attrColModel = {};
             attrColModel.name = columnProperties.name;
-            // attrColModel.index = "attrs." + columnProperties.name;
-            // attrColModel.jsonmap = "attrs." + columnProperties.name;
             attrColModel.editable = true;
             if (columnProperties.attributeDataType == '01calculated') {
                 attrColModel.edittype = 'custom';
@@ -636,14 +634,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 hidden: false,
                 editable: true,
                 editoptions: {},
+                edittype: 'select',
                 stype: 'select',
-                searchoptions: {
-                    sopt: ['eq'],
-                    value:
-                        ':;' +
-                        '01pass:' + translateMessages('samplesGrid.01pass') + ';' +
-                        '02fail:' + translateMessages('samplesGrid.02fail')
-                }
+                searchoptions: {}
             },
             {
                 name: 'quantitativeValue',
@@ -678,17 +671,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 index: 'quantitativeEvaluation',
                 hidden: false,
                 editable: true,
-                editoptions: {},
                 // loại seach
+                edittype: 'select',
                 stype: 'select',
+                editoptions: {},
                 // option search
-                searchoptions: {
-                    sopt: ['eq'],
-                    value:
-                        ':;' +
-                        '01pass:' + translateMessages('samplesGrid.01pass') + ';' +
-                        '02fail:' + translateMessages('samplesGrid.02fail')
-                }
+                searchoptions: {}
             },
             {
                 name: 'meName',
@@ -765,15 +753,25 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             contentType: "application/json"
         },
         serializeRowData: function (postdata) {
+            // 1. Xóa thuộc tính mặc định của jqGrid
             delete postdata.oper;
-            // postdata.attrs = {};
+
+            // 2. Xóa các cột thuộc tính động (theo logic cũ của bạn)
             angular.forEach(columnConfiguration, function (columnInGrid, key) {
                 if (columnInGrid.forAttribute) {
-                    // postdata.attrs[columnInGrid.name] = postdata[columnInGrid.name];
                     delete postdata[columnInGrid.name];
                 }
             });
 
+            // 3. THÊM MỚI: Xóa các trường không có dữ liệu (rỗng, null, undefined)
+            Object.keys(postdata).forEach(function (key) {
+                var value = postdata[key];
+                if (value === "" || value === null || value === undefined) {
+                    delete postdata[key];
+                }
+            });
+
+            // 4. Trả về dữ liệu sau khi đã được "làm sạch" qua hàm validate
             return validateSerializeData(postdata);
         },
         beforeSubmit: function (postdata, formid) {
@@ -808,7 +806,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         $http({
             method: 'GET',
-            url: '../../rest/rest/qualityStandardSamplesRes/gridConfig/' + config.document_id + '.html'
+            url: '../../rest/rest/qualityStandardSamplesRes/gridConfig/' + config.qic_id + '.html'
 
         }).then(function successCallback(response) {
             columnConfiguration = response.data.columns;
@@ -859,32 +857,48 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             config.colModel = columns;
             config.colNames = colNames;
 
-            // Search Units -> và đẩy vào config
             $http({
                 method: 'GET',
-                url: '../../rest/units'
+                url: '../../rest/rest/qualityStandardSamplesRes/qualityEvaluationOptions'
             }).then(function successCallback(response) {
-                selectOptionsUnits = [':' + translateMessages('samplesGrid.allItem')];
+                var selectOptionsQualityEvaluationOptions = [':' + translateMessages('samplesGrid.allItem')];
+                var selectOptionsQualityEvaluationOptionsEdit = [':' + translateMessages('samplesGrid.emptyItem')];
                 angular.forEach(response.data, function (value, key) {
-                    selectOptionsUnits.push(value.key + ':' + value.value);
+                    selectOptionsQualityEvaluationOptions.push(value.key + ':' + value.value);
+                    selectOptionsQualityEvaluationOptionsEdit.push(value.key + ':' + value.value);
                 });
 
-                getColModelByIndex('unit', config).searchoptions.value = selectOptionsUnits.join(';');
+                getColModelByIndex('quantitativeEvaluation', config).editoptions.value = selectOptionsQualityEvaluationOptionsEdit.join(';');
+                getColModelByIndex('quantitativeEvaluation', config).searchoptions.value = selectOptionsQualityEvaluationOptions.join(';');
 
-                var newConfig = {};
-                newConfig = angular.merge(newConfig, config);
-                $scope.config = newConfig;
-                $('#gridWrapper').unblock();
+                getColModelByIndex('qualitativeResult', config).editoptions.value = selectOptionsQualityEvaluationOptionsEdit.join(';');
+                getColModelByIndex('qualitativeResult', config).searchoptions.value = selectOptionsQualityEvaluationOptions.join(';');;
 
+                $http({
+                    method: 'GET',
+                    url: '../../rest/units'
+                }).then(function successCallback(response) {
+                    selectOptionsUnits = [':' + translateMessages('samplesGrid.allItem')];
+                    angular.forEach(response.data, function (value, key) {
+                        selectOptionsUnits.push(value.key + ':' + value.value);
+                    });
+
+                    getColModelByIndex('unit', config).searchoptions.value = selectOptionsUnits.join(';');
+
+                    var newConfig = {};
+                    newConfig = angular.merge(newConfig, config);
+                    $scope.config = newConfig;
+                    $('#gridWrapper').unblock();
+
+                }, errorCallback);
             }, errorCallback);
-
         }, errorCallback);
 
         return config;
     }
     $scope.qicIdChanged = function (id) {
         config.url = '../../rest/rest/qualityStandardSamplesRes/' + id + '.html';
-        config.document_id = id;
+        config.qic_id = id;
 
         config.colModel.filter(function (element, index) {
             return element.index === 'qualityInspectionCommandRe';
