@@ -1,5 +1,6 @@
 package com.fti.qm.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fti.qm.dto.QualityStandardSampleDTO;
 import com.fti.qm.services.QualityStandardSampleService;
 import com.qcadoo.mes.basic.GridResponse;
@@ -35,35 +36,9 @@ public class QualityStandardSamplesController {
         return qualityStandardSampleService.getGridConfig(id);
     }
 
-    // @ResponseBody
-    // @RequestMapping(value = { "{id}", "{id}.html" }, method = RequestMethod.PUT)
-    // public void update(QualityStandardSampleDTO qualityStandardSampleVO) {
-    //     System.out.println("=== QualityStandardSamplesController.update called, id=" + qualityStandardSampleVO.getId());
-    //     qualityStandardSampleService.updateResults(qualityStandardSampleVO);
-    // }
-
-//    @ResponseBody
-//    @RequestMapping(value = { "{id}", "{id}.html" }, method = RequestMethod.PUT)
-//    public void update(QualityStandardSampleDTO qualityStandardSampleVO) {
-//        System.out.println("=== QualityStandardSamplesController.update called, id=" + qualityStandardSampleVO.getId());
-//        qualityStandardSampleService.updateResults(qualityStandardSampleVO);
-//    }
-
-    @ResponseBody
-    @RequestMapping(value = { "{id}" }, method = RequestMethod.PUT)
-    public void update(@PathVariable Long id,@RequestBody QualityStandardSampleDTO qualityStandardSampleVO) {
-        try {
-            System.out.println("=== QualityStandardSamplesController.update called, pathId=" + id + ", bodyId=" + qualityStandardSampleVO.getId());
-
-            // Ưu tiên id từ path, để chắc chắn
-            qualityStandardSampleVO.setId(id);
-
-            qualityStandardSampleService.updateResults(qualityStandardSampleVO);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            // nếu đang dùng Spring MVC cũ → để exception bubble lên cho container xử lý
-            throw e;
-        }
-    }
+     @ResponseBody
+     @RequestMapping(value = { "{id}" }, method = RequestMethod.PUT)
+     public void update(@RequestBody QualityStandardSampleDTO qualityStandardSampleVO) {
+         qualityStandardSampleService.updateResults(qualityStandardSampleVO);
+     }
 }

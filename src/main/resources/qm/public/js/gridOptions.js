@@ -384,8 +384,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         if (columnProperties.forAttribute) {
             var attrColModel = {};
             attrColModel.name = columnProperties.name;
-            attrColModel.index = "attrs." + columnProperties.name;
-            attrColModel.jsonmap = "attrs." + columnProperties.name;
+            // attrColModel.index = "attrs." + columnProperties.name;
+            // attrColModel.jsonmap = "attrs." + columnProperties.name;
             attrColModel.editable = true;
             if (columnProperties.attributeDataType == '01calculated') {
                 attrColModel.edittype = 'custom';
@@ -555,17 +555,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     url: '../../rest/rest/qualityStandardSamplesRes/' + 1 + '.html',
                     delbutton: false,
                     onEdit: function (id) {
-                        console.log('edit row id = ', id);
                         if (typeof (lastSel) !== "undefined" && id !== lastSel) {
-                            console.log('out ');
                             cancelEditing(id);
                         }
                         prepareViewOnStartEdit();
                         gridEditOptions.url = '../../rest/rest/qualityStandardSamplesRes/' + id + '.html';
-                        console.log('url = ', gridEditOptions.url);
                         lastSel = id;
-
-                        console.log('lastSel = ', lastSel);
                     },
                     afterRestore: function () {
                         cancelEditing();
@@ -771,10 +766,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         },
         serializeRowData: function (postdata) {
             delete postdata.oper;
-            postdata.attrs = {};
+            // postdata.attrs = {};
             angular.forEach(columnConfiguration, function (columnInGrid, key) {
                 if (columnInGrid.forAttribute) {
-                    postdata.attrs[columnInGrid.name] = postdata[columnInGrid.name];
+                    // postdata.attrs[columnInGrid.name] = postdata[columnInGrid.name];
                     delete postdata[columnInGrid.name];
                 }
             });
