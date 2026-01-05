@@ -622,6 +622,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 }
             },
             {
+                name: 'number',
+                index: 'number',
+                width: 50,
+                search: false,
+                hidden: false,
+                editable: false,
+            },
+            {
                 name: 'act',
                 index: 'act',
                 width: 55,
@@ -653,7 +661,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             {
                 name: 'position',
                 index: 'position',
-                width: 50,
                 hidden: false,
                 editable: false,
                 // formatter: numberFormatter

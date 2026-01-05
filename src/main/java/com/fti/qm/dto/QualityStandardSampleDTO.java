@@ -1,13 +1,14 @@
 package com.fti.qm.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.qcadoo.mes.materialFlowResources.BigDecimalDeserializer;
+import com.fti.qm.BigDecimalDeserializer;
 
 import java.math.BigDecimal;
 
 public class QualityStandardSampleDTO {
 
     private Long id;
+    private Long number;
 
     // Liên kết đến lệnh QC (Foreign Key)
     private Long qualityInspectionCommandRe;
@@ -49,6 +50,14 @@ public class QualityStandardSampleDTO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getNumber() {
+        return number;
+    }
+
+    public void setNumber(Long number) {
+        this.number = number;
     }
 
     public Long getQualityInspectionCommandRe() {
@@ -207,6 +216,7 @@ public class QualityStandardSampleDTO {
     public int hashCode() {
         int hash = 3;
         hash = 67 * hash + java.util.Objects.hashCode(this.id);
+        hash = 67 * hash + java.util.Objects.hashCode(this.number);
         hash = 67 * hash + java.util.Objects.hashCode(this.qualityInspectionCommandRe);
         hash = 67 * hash + java.util.Objects.hashCode(this.qualityStandardL);
         hash = 67 * hash + java.util.Objects.hashCode(this.position);
@@ -239,6 +249,9 @@ public class QualityStandardSampleDTO {
         }
         final QualityStandardSampleDTO other = (QualityStandardSampleDTO) obj;
         if (!java.util.Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!java.util.Objects.equals(this.number, other.number)) {
             return false;
         }
         if (!java.util.Objects.equals(this.qualityInspectionCommandRe, other.qualityInspectionCommandRe)) {

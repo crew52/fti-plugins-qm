@@ -46,6 +46,7 @@ public class QualityStandardSampleService {
 
         String query = "SELECT %s FROM ( "
                 + " SELECT "
+                + "   ROW_NUMBER() OVER (ORDER BY s.id) AS number, "
                 + "   s.id AS id, "
                 + "   c.id AS qualityInspectionCommandRe, "
                 + "   l.id AS qualityStandardL, "
@@ -95,6 +96,7 @@ public class QualityStandardSampleService {
         List<QualityStandardSampleDTO> records = jdbcTemplate.query(queryRecords, parameters, (resultSet, i) -> {
             QualityStandardSampleDTO dto = new QualityStandardSampleDTO();
             dto.setId(resultSet.getLong("id"));
+            dto.setNumber(resultSet.getLong("number"));
             dto.setQualityInspectionCommandRe(resultSet.getLong("qualityInspectionCommandRe"));
             dto.setQualityStandardL(resultSet.getLong("qualityStandardL"));
             dto.setPosition(resultSet.getString("position"));
@@ -178,6 +180,7 @@ public class QualityStandardSampleService {
         // Cấu trúc: name, checked, forAttribute, attributeDataType, attributeValueType
 
         columns.add(createColumn("act", true)); // Cột action (edit/delete)
+        columns.add(createColumn("number", true));
         columns.add(createColumn("position", true));
         columns.add(createColumn("qcNumber", true));
         columns.add(createColumn("qcName", true));
