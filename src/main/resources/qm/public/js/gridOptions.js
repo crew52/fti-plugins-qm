@@ -238,110 +238,110 @@ function getSelectedRowId() {
     return jQuery('#grid').jqGrid('getGridParam', 'selarrrow');
 }
 
-function addNewRow() {
-    angular.element($("#GridController")).scope().addNewRow();
-}
+// function addNewRow() {
+//     angular.element($("#GridController")).scope().addNewRow();
+// }
 
 // function deleteRow() {
 //     angular.element($("#GridController")).scope().deleteRow();
 // }
 
-function openLookup(name, parameters) {
-    var lookupHtml = '/lookup.html'
-    if (name == 'attribute') {
-        mainController.openModal('body', '../' + name + "/" + parameters.custom_attr_name + lookupHtml, false, function onModalClose() {
-        }, function onModalRender(modalWindow) {
-        }, { width: 1000, height: 560 });
-    } else {
-        if (parameters) {
-            var urlParams = $.param(parameters);
-            lookupHtml = lookupHtml + "?" + urlParams;
-        }
-        mainController.openModal('body', '../' + name + lookupHtml, false, function onModalClose() {
-        }, function onModalRender(modalWindow) {
-        }, { width: 1000, height: 560 });
-    }
-}
+// function openLookup(name, parameters) {
+//     var lookupHtml = '/lookup.html'
+//     if (name == 'attribute') {
+//         mainController.openModal('body', '../' + name + "/" + parameters.custom_attr_name + lookupHtml, false, function onModalClose() {
+//         }, function onModalRender(modalWindow) {
+//         }, { width: 1000, height: 560 });
+//     } else {
+//         if (parameters) {
+//             var urlParams = $.param(parameters);
+//             lookupHtml = lookupHtml + "?" + urlParams;
+//         }
+//         mainController.openModal('body', '../' + name + lookupHtml, false, function onModalClose() {
+//         }, function onModalRender(modalWindow) {
+//         }, { width: 1000, height: 560 });
+//     }
+// }
 
-function updateFieldValue(field, value, rowId) {
-    // edit inline
-    var selector = $("[id='" + rowId + '_' + field + "']");
+// function updateFieldValue(field, value, rowId) {
+//     // edit inline
+//     var selector = $("[id='" + rowId + '_' + field + "']");
 
-    var element = $(selector);
-    if (element.length && element[0].tagName.toLowerCase() === 'span') {
-        element = $('input', element);
-    }
+//     var element = $(selector);
+//     if (element.length && element[0].tagName.toLowerCase() === 'span') {
+//         element = $('input', element);
+//     }
 
-    if (element.is(':checkbox')) {
-        return element.prop('checked', value);
-    } else {
-        return element.val(value);
-    }
-}
+//     if (element.is(':checkbox')) {
+//         return element.prop('checked', value);
+//     } else {
+//         return element.val(value);
+//     }
+// }
 
-function clearSelect(field, rowId) {
-    var selector = $('#' + rowId + '_' + field);
-    $(selector).empty();
-    $(selector).val([]);
-}
+// function clearSelect(field, rowId) {
+//     var selector = $('#' + rowId + '_' + field);
+//     $(selector).empty();
+//     $(selector).val([]);
+// }
 
-function onSelectLookupRow(row, recordName) {
-    if (row) {
-        var code = row.code || row.number || row.value;
-        recordName = recordName.replace('attribute/', '');
-        var rowId = $('#product').length ? null : jQuery('#grid').jqGrid('getGridParam', 'selrow');
-        var field = updateFieldValue(recordName, code, rowId);
-        if (recordName == "batch") {
-            if (row.id == 0) {
-                var fieldBatchId = updateFieldValue("batchId", null, rowId);
-                fieldBatchId.trigger('change');
-            } else {
-                var fieldBatchId = updateFieldValue("batchId", row.id, rowId);
-                fieldBatchId.trigger('change');
-            }
-        }
-        field.trigger('change');
-    }
+// function onSelectLookupRow(row, recordName) {
+//     if (row) {
+//         var code = row.code || row.number || row.value;
+//         recordName = recordName.replace('attribute/', '');
+//         var rowId = $('#product').length ? null : jQuery('#grid').jqGrid('getGridParam', 'selrow');
+//         var field = updateFieldValue(recordName, code, rowId);
+//         if (recordName == "batch") {
+//             if (row.id == 0) {
+//                 var fieldBatchId = updateFieldValue("batchId", null, rowId);
+//                 fieldBatchId.trigger('change');
+//             } else {
+//                 var fieldBatchId = updateFieldValue("batchId", row.id, rowId);
+//                 fieldBatchId.trigger('change');
+//             }
+//         }
+//         field.trigger('change');
+//     }
 
-    mainController.closeThisModalWindow();
-}
+//     mainController.closeThisModalWindow();
+// }
 
 var messagesController = new QCD.MessagesController();
 var columnConfiguration;
 
 myApp.controller('GridController', ['$scope', '$window', '$http', function ($scope, $window, $http) {
 
-    var _this = this;
-    var quantities = {};
-    var conversionModified = true;
+    // var _this = this;
+    // var quantities = {};
+    // var conversionModified = true;
     var lastSel;
-    var firstLoad = true;
-    var hasAdditionalUnit = false;
+    // var firstLoad = true;
+    // var hasAdditionalUnit = false;
 
-    function getJsonByQuery(url, params, callback) {
-        if (params && params.query) {
-            return $.ajax({
-                dataType: "json",
-                url: url,
-                data: params,
-                success: function (data) {
-                    callback(data);
-                }
-            });
+    // function getJsonByQuery(url, params, callback) {
+    //     if (params && params.query) {
+    //         return $.ajax({
+    //             dataType: "json",
+    //             url: url,
+    //             data: params,
+    //             success: function (data) {
+    //                 callback(data);
+    //             }
+    //         });
 
-        } else {
-            callback({ entities: [], numberOfResults: 0 });
-        }
-    }
+    //     } else {
+    //         callback({ entities: [], numberOfResults: 0 });
+    //     }
+    // }
 
-    function getRowIdFromElement(el) {
-        var rowId = el.attr('rowId');
-        if ('_empty' === rowId) {
-            rowId = 0;
-        }
+    // function getRowIdFromElement(el) {
+    //     var rowId = el.attr('rowId');
+    //     if ('_empty' === rowId) {
+    //         rowId = 0;
+    //     }
 
-        return rowId;
-    }
+    //     return rowId;
+    // }
 
     function showMessage(type, title, content) {
         mainController.showMessage({
@@ -351,21 +351,21 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         });
     }
 
-    function getFieldValue(field, rowId) {
-        return getField(field, rowId).val();
-    }
+    // function getFieldValue(field, rowId) {
+    //     return getField(field, rowId).val();
+    // }
 
-    function getField(field, rowId) {
-        // edit inline
-        var selector = $('#' + rowId + '_' + field);
+    // function getField(field, rowId) {
+    //     // edit inline
+    //     var selector = $('#' + rowId + '_' + field);
 
-        var element = $(selector);
-        if (element.length && element[0].tagName.toLowerCase() === 'span') {
-            element = $('input', element);
-        }
+    //     var element = $(selector);
+    //     if (element.length && element[0].tagName.toLowerCase() === 'span') {
+    //         element = $('input', element);
+    //     }
 
-        return element;
-    }
+    //     return element;
+    // }
 
     function quantitativeResult_createElement(value, options) {
         var $input = $('<input type="customNumber" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
@@ -495,7 +495,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
     }
 
     function errorCallback(response) {
-        showMessage('failure', QCD.translate('documentGrid.notification.failure'), response.data.message);
+        showMessage('failure', QCD.translate('samplesGrid.notification.failure'), response.data.message);
     }
 
     function input_value(elem, operation, value) {
@@ -525,7 +525,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
     }
 
     function successfunc(rowID, response) {
-        prepareViewOnEndEdit();
+        // prepareViewOnEndEdit();
         showMessage('success', QCD.translate('samplesGrid.notification.success'), QCD.translate('samplesGrid.message.saveMessage'));
         return true;
     }
@@ -534,17 +534,17 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         refreshForm();
     }
 
-    function prepareViewOnStartEdit() {
-        mainController.getComponentByReferenceName("samplesGrid").setComponentChanged(true);
-        $("#add_new_row").addClass("disableButton");
-        $("#delete_row").addClass("disableButton");
-    }
+    // function prepareViewOnStartEdit() {
+    //     mainController.getComponentByReferenceName("samplesGrid").setComponentChanged(true);
+    //     $("#add_new_row").addClass("disableButton");
+    //     $("#delete_row").addClass("disableButton");
+    // }
 
-    function prepareViewOnEndEdit() {
-        mainController.getComponentByReferenceName("samplesGrid").setComponentChanged(false);
-        $("#add_new_row").removeClass("disableButton");
-        $("#delete_row").removeClass("disableButton");
-    }
+    // function prepareViewOnEndEdit() {
+    //     mainController.getComponentByReferenceName("samplesGrid").setComponentChanged(false);
+    //     $("#add_new_row").removeClass("disableButton");
+    //     $("#delete_row").removeClass("disableButton");
+    // }
 
 
     function cancelEditing() {
@@ -646,13 +646,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         if (typeof (lastSel) !== "undefined" && id !== lastSel) {
                             cancelEditing(id);
                         }
-                        prepareViewOnStartEdit();
+                        // prepareViewOnStartEdit();
                         gridEditOptions.url = '../../rest/rest/qualityStandardSamplesRes/' + id + '.html';
                         lastSel = id;
                     },
                     afterRestore: function () {
                         cancelEditing();
-                        prepareViewOnEndEdit();
+                        // prepareViewOnEndEdit();
                         $("#grid").trigger("reloadGrid");
                         viewRefresh();
                     }
@@ -663,7 +663,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 index: 'position',
                 hidden: false,
                 editable: false,
-                // formatter: numberFormatter
             },
             {
                 name: 'qcNumber',
@@ -878,24 +877,24 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             $.extend(config, JSON.parse(c));
         }
 
-        var readOnlyInType = function (outDocument, inBufferDocument, columnIndex) {
-            if (outDocument && (columnIndex === 'expirationDate' || columnIndex === 'productionDate' ||
-                columnIndex === 'price' || columnIndex === 'waste' ||
-                columnIndex === 'palletNumber' || columnIndex === 'typeOfPallet' || columnIndex === 'storageLocation')) {
-                return true;
-            }
-            if ((columnIndex === 'resource') && (inBufferDocument || !outDocument)) {
-                return true;
-            }
-            if (columnIndex === 'lastResource') {
-                return true;
-            }
-            if (!outDocument && columnIndex === 'sellingPrice') {
-                return true;
-            }
+        // var readOnlyInType = function (outDocument, inBufferDocument, columnIndex) {
+        //     if (outDocument && (columnIndex === 'expirationDate' || columnIndex === 'productionDate' ||
+        //         columnIndex === 'price' || columnIndex === 'waste' ||
+        //         columnIndex === 'palletNumber' || columnIndex === 'typeOfPallet' || columnIndex === 'storageLocation')) {
+        //         return true;
+        //     }
+        //     if ((columnIndex === 'resource') && (inBufferDocument || !outDocument)) {
+        //         return true;
+        //     }
+        //     if (columnIndex === 'lastResource') {
+        //         return true;
+        //     }
+        //     if (!outDocument && columnIndex === 'sellingPrice') {
+        //         return true;
+        //     }
 
-            return false;
-        };
+        //     return false;
+        // };
 
         $http({
             method: 'GET',
@@ -904,10 +903,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }).then(function successCallback(response) {
             columnConfiguration = response.data.columns;
             config.readOnly = response.data.readOnly;
-            config.inBufferDocument = response.data.inBufferDocument;
-            config.suggestResource = !response.data.inBufferDocument && response.data.suggestResource;
-            config.outDocument = response.data.outDocument;
-            config.directionConvertingQuantityAfterChangingConverter = response.data.directionConvertingQuantityAfterChangingConverter;
+            // config.inBufferDocument = response.data.inBufferDocument;
+            // config.suggestResource = !response.data.inBufferDocument && response.data.suggestResource;
+            // config.outDocument = response.data.outDocument;
+            // config.directionConvertingQuantityAfterChangingConverter = response.data.directionConvertingQuantityAfterChangingConverter;
 
             var columns = [
                 getColModelByIndex('id', config),
@@ -926,16 +925,20 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     delete gridColModel.editoptions.disabled;
                     delete gridColModel.editoptions.readonly;
                 }
-                if (readOnlyInType(config.outDocument, config.inBufferDocument, columnInGrid.name)) {
-                    gridColModel.editoptions = gridColModel.editoptions || {};
-                    if (gridColModel.edittype === 'select' || gridColModel.edittype === 'checkbox') {
-                        gridColModel.editoptions.disabled = 'disabled';
-                    } else {
-                        gridColModel.editoptions.readonly = 'readonly';
-                    }
-                }
+                // if (readOnlyInType(config.outDocument, config.inBufferDocument, columnInGrid.name)) {
+                //     gridColModel.editoptions = gridColModel.editoptions || {};
+                //     if (gridColModel.edittype === 'select' || gridColModel.edittype === 'checkbox') {
+                //         gridColModel.editoptions.disabled = 'disabled';
+                //     } else {
+                //         gridColModel.editoptions.readonly = 'readonly';
+                //     }
+                // }
 
-                if (columnInGrid.forAttribute && config.outDocument) {
+                // if (columnInGrid.forAttribute && config.outDocument) {
+                //     gridColModel.editoptions.readonly = 'readonly';
+                // }
+
+                if (columnInGrid.forAttribute) {
                     gridColModel.editoptions.readonly = 'readonly';
                 }
 
