@@ -12,9 +12,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class QualityStandardSampleService {
@@ -260,6 +258,36 @@ public class QualityStandardSampleService {
                 + "WHERE id = :id";
 
         jdbcTemplate.update(sql, params);
+    }
+
+    public List<Map<String, String>> getQualityEvaluationOptions(final Locale locale) {
+
+        List<Map<String, String>> options = new ArrayList<>();
+
+        options.add(createOption(
+                "01pass",
+                "qm.qualityStandardSampleRe.qualitativeResult.value.01pass",
+                locale
+        ));
+
+        options.add(createOption(
+                "02fail",
+                "qm.qualityStandardSampleRe.qualitativeResult.value.02fail",
+                locale
+        ));
+
+        return options;
+    }
+
+    private Map<String, String> createOption(
+            final String value,
+            final String translationKey,
+            final Locale locale) {
+
+        Map<String, String> option = new HashMap<>();
+        option.put("key", value); // value lưu DB
+        option.put("value", translationService.translate(translationKey, locale));
+        return option;
     }
 
 }

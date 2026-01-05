@@ -351,6 +351,87 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         });
     }
 
+    function getFieldValue(field, rowId) {
+        return getField(field, rowId).val();
+    }
+
+    function getField(field, rowId) {
+        // edit inline
+        var selector = $('#' + rowId + '_' + field);
+
+        var element = $(selector);
+        if (element.length && element[0].tagName.toLowerCase() === 'span') {
+            element = $('input', element);
+        }
+
+        return element;
+    }
+
+    function quantitativeResult_createElement(value, options) {
+        var $input = $('<input type="customNumber" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
+        $input.val(value);
+
+        $($input).bind('change keydown paste input', function () {
+            var t = $(this);
+
+            window.clearTimeout(t.data("timeout"));
+            t.data("timeout", setTimeout(function () {
+                var rowId = t.attr('rowId'); // từ options.rowId
+                var qrRaw = t.val();
+                if (qrRaw === '') {
+                    // nếu quantitativeResult thì quantitativeEvaluation sẽ trống
+                    var evalSelector = '#' + rowId + '_quantitativeEvaluation';
+                    var $evalEl = $(evalSelector);
+
+                    if ($evalEl.length && $evalEl[0].tagName.toLowerCase() === 'span') {
+                        $evalEl = $('select,input', $evalEl);
+                    }
+
+                    if ($evalEl.length) {
+                        $evalEl.val('');          // hoặc null
+                        $evalEl.trigger('change');
+                    }
+                    return;
+                }
+                var qr = parseFloat(qrRaw);
+                if (isNaN(qr)) {
+                    return;
+                }
+
+                // Lấy full dữ liệu hàng từ jqGrid
+                var rowData = $('#grid').jqGrid('getRowData', rowId);
+                var upRaw = rowData.upValue;
+                var downRaw = rowData.downValue;
+
+                if (!upRaw || !downRaw) {
+                    // nếu 1 trong 2 không có dữ liệu hiển thị -> bỏ qua
+                    return;
+                }
+
+                var up = parseFloat(upRaw);
+                var down = parseFloat(downRaw);
+                if (isNaN(up) || isNaN(down)) {
+                    return;
+                }
+
+                var newEval = (qr >= down && qr <= up) ? '01pass' : '02fail';
+
+                // set vào ô quantitativeEvaluation của hàng đang edit
+                var evalSelector = '#' + rowId + '_quantitativeEvaluation';
+                var $evalEl = $(evalSelector);
+                if ($evalEl.length && $evalEl[0].tagName.toLowerCase() === 'span') {
+                    $evalEl = $('select,input', $evalEl);
+                }
+                if ($evalEl.length) {
+                    $evalEl.val(newEval);
+                    $evalEl.trigger('change');
+                }
+            }, 300));
+        });
+
+        return $input;
+    }
+
     // Lấy id của QIC từ view
     function getQICId() {
         if (context) {
@@ -664,7 +745,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 index: 'quantitativeResult',
                 hidden: false,
                 editable: true,
-                editoptions: {}
+                // editoptions: {},
+                edittype: 'custom',
+                editoptions: {
+                    custom_element: quantitativeResult_createElement,
+                    custom_value: input_value // đã có sẵn ở trên
+                }
             },
             {
                 name: 'quantitativeEvaluation',
@@ -910,7 +996,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
     $scope.data = [];
 
     // dont close inline edit after fail validations
-    $.extend($.jgrid.inlineEdit, {restoreAfterError: false});
+    $.extend($.jgrid.inlineEdit, { restoreAfterError: false });
 
     $.jgrid.edit = $.jgrid.edit || {};
     $.jgrid.edit.addCaption = '';
