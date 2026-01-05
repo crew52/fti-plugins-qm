@@ -226,8 +226,8 @@ public class QualityStandardSampleService {
         params.put("qicId", qicId);
         try {
             String status = jdbcTemplate.queryForObject(query, params, String.class);
-            // Nếu trạng thái là '03completed' thì khóa grid không cho sửa
-            return "03completed".equals(status);
+            // Nếu trạng thái là '03completed' hoặc '01new' thì khóa grid không cho sửa
+            return "03completed".equals(status) || "01new".equals(status);
         } catch (Exception e) {
             return false;
         }

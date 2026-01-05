@@ -525,6 +525,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
     }
 
     function successfunc(rowID, response) {
+        prepareViewOnEndEdit();
         showMessage('success', QCD.translate('samplesGrid.notification.success'), QCD.translate('samplesGrid.message.saveMessage'));
         return true;
     }
@@ -745,7 +746,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 index: 'quantitativeResult',
                 hidden: false,
                 editable: true,
-                // editoptions: {},
                 edittype: 'custom',
                 editoptions: {
                     custom_element: quantitativeResult_createElement,
@@ -996,6 +996,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
     $scope.data = [];
 
     // dont close inline edit after fail validations
+    // gọi đến server xử lý
     $.extend($.jgrid.inlineEdit, { restoreAfterError: false });
 
     $.jgrid.edit = $.jgrid.edit || {};
