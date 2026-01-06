@@ -1,5 +1,6 @@
 package com.fti.qm.services;
 
+import com.fti.qm.constants.qualityInspectionCommand.QICFields;
 import com.fti.qm.dto.QualityStandardSampleDTO;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -14,11 +15,31 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+/**
+ * Service xử lý nghiệp vụ liên quan đến
+ * {@link com.fti.qm.dto.QualityStandardSampleDTO}.
+ *
+ * <p>
+ * Service này chịu trách nhiệm:
+ * </p>
+ * <ul>
+ *     <li>Truy vấn danh sách mẫu thử chất lượng theo Lệnh kiểm tra chất lượng (QIC)</li>
+ *     <li>Hỗ trợ phân trang, sắp xếp và filter cho jqGrid</li>
+ *     <li>Cung cấp cấu hình meta-grid cho frontend</li>
+ *     <li>Cập nhật kết quả đánh giá định tính / định lượng</li>
+ * </ul>
+ *
+ * <p>
+ * Dữ liệu được truy vấn trực tiếp từ database thông qua
+ * {@link org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate}.
+ * </p>
+ */
 @Service
 public class QualityStandardSampleService {
 
-    public static final String QIC_ID = "qicId";
-
+    /**
+     * Tên parameter dùng chung cho khóa chính.
+     */
     public static final String ID = "id";
 
     @Autowired
@@ -31,7 +52,32 @@ public class QualityStandardSampleService {
     private TranslationService translationService;
 
     /**
-     * Tìm tất cả các mẫu thử theo ID của Lệnh kiểm tra chất lượng (QIC)
+     * Truy vấn danh sách mẫu thử chất lượng theo ID của
+     * Lệnh kiểm tra chất lượng (Quality Inspection Command).
+     *
+     * <p>
+     * Phương thức này hỗ trợ:
+     * </p>
+     * <ul>
+     *     <li>Phân trang</li>
+     *     <li>Sắp xếp theo cột</li>
+     *     <li>Lọc dữ liệu từ jqGrid thông qua {@link LookupUtils}</li>
+     * </ul>
+     *
+     * <p>
+     * Kết quả trả về theo chuẩn {@link GridResponse} để frontend jqGrid có thể hiển thị trực tiếp.
+     * </p>
+     *
+     * @param qicId        ID của Quality Inspection Command
+     * @param _sidx        Tên cột dùng để sắp xếp (từ jqGrid)
+     * @param _sord        Thứ tự sắp xếp (asc | desc)
+     * @param page         Trang hiện tại (bắt đầu từ 1)
+     * @param perPage      Số bản ghi trên mỗi trang
+     * @param sampleSearch Đối tượng chứa điều kiện filter từ grid
+     *
+     * @return {@link GridResponse} chứa danh sách {@link QualityStandardSampleDTO}
+     *
+     * @throws IllegalStateException nếu giá trị sắp xếp (_sord) không hợp lệ
      */
     public GridResponse<QualityStandardSampleDTO> findAllByCommandId(final Long qicId, final String _sidx, final String _sord,
                                                           int page, int perPage, final QualityStandardSampleDTO sampleSearch) {
@@ -170,7 +216,21 @@ public class QualityStandardSampleService {
     }
 
     /**
-     * Lấy cấu hình Grid theo chuẩn Meta-config của DocumentPosition
+     * Lấy cấu hình meta cho jqGrid hiển thị danh sách mẫu thử chất lượng.
+     *
+     * <p>
+     * Cấu hình chỉ bao gồm metadata (danh sách cột, trạng thái read-only),
+     * không bao gồm style hoặc logic hiển thị UI.
+     * </p>
+     *
+     * <p>
+     * Trạng thái read-only của grid phụ thuộc vào trạng thái của
+     * Lệnh kiểm tra chất lượng (QIC).
+     * </p>
+     *
+     * @param qicId ID của Quality Inspection Command
+     *
+     * @return Map chứa cấu hình grid (columns, readOnly)
      */
     public Map<String, Object> getGridConfig(final Long qicId) {
         Map<String, Object> config = Maps.newHashMap();
@@ -208,7 +268,12 @@ public class QualityStandardSampleService {
     }
 
     /**
-     * Hàm hỗ trợ tạo cấu hình cột chuẩn Meta-config
+     * Tạo cấu hình metadata cho một cột trong jqGrid.
+     *
+     * @param name    Tên cột (mapping với field của DTO)
+     * @param checked Trạng thái hiển thị mặc định của cột
+     *
+     * @return Map chứa metadata của cột
      */
     private Map<String, Object> createColumn(String name, boolean checked) {
         Map<String, Object> col = Maps.newHashMap();
@@ -221,7 +286,20 @@ public class QualityStandardSampleService {
     }
 
     /**
-     * Kiểm tra xem Grid có ở chế độ chỉ đọc hay không (Dựa vào trạng thái QIC)
+     * Kiểm tra grid có ở chế độ chỉ đọc hay không dựa trên
+     * trạng thái của Lệnh kiểm tra chất lượng (QIC).
+     *
+     * <p>
+     * Grid sẽ ở chế độ chỉ đọc nếu trạng thái QIC là:
+     * </p>
+     * <ul>
+     *     <li>{@code 01new}</li>
+     *     <li>{@code 03completed}</li>
+     * </ul>
+     *
+     * @param qicId ID của Quality Inspection Command
+     *
+     * @return {@code true} nếu grid chỉ đọc, {@code false} nếu cho phép chỉnh sửa
      */
     private boolean isReadOnly(final Long qicId) {
         String query = "SELECT status FROM qm_qualityinspectioncommandre WHERE id = :qicId";
@@ -230,12 +308,28 @@ public class QualityStandardSampleService {
         try {
             String status = jdbcTemplate.queryForObject(query, params, String.class);
             // Nếu trạng thái là '03completed' hoặc '01new' thì khóa grid không cho sửa
-            return "03completed".equals(status) || "01new".equals(status);
+            return QICFields.Status.COMPLETED.equals(status) || QICFields.Status.NEW.equals(status);
         } catch (Exception e) {
             return false;
         }
     }
 
+    /**
+     * Cập nhật kết quả đánh giá của một mẫu thử chất lượng.
+     *
+     * <p>
+     * Bao gồm:
+     * </p>
+     * <ul>
+     *     <li>Kết quả định tính</li>
+     *     <li>Kết quả định lượng</li>
+     *     <li>Đánh giá định lượng</li>
+     * </ul>
+     *
+     * @param dto DTO chứa thông tin cần cập nhật
+     *
+     * @throws NullPointerException nếu {@code dto.id} là null
+     */
     public void updateResults(final QualityStandardSampleDTO dto) {
         Preconditions.checkNotNull(dto.getId(), "Sample id must not be null");
 
@@ -263,6 +357,18 @@ public class QualityStandardSampleService {
         jdbcTemplate.update(sql, params);
     }
 
+    /**
+     * Lấy danh sách option đánh giá chất lượng
+     * (Pass / Fail) để hiển thị cho dropdown hoặc select box.
+     *
+     * <p>
+     * Giá trị trả về đã được dịch theo locale truyền vào.
+     * </p>
+     *
+     * @param locale Locale hiện tại
+     *
+     * @return Danh sách option (key / value)
+     */
     public List<Map<String, String>> getQualityEvaluationOptions(final Locale locale) {
 
         List<Map<String, String>> options = new ArrayList<>();
@@ -282,6 +388,15 @@ public class QualityStandardSampleService {
         return options;
     }
 
+    /**
+     * Tạo một option key/value cho dropdown.
+     *
+     * @param value           Giá trị lưu trong database
+     * @param translationKey  Key dùng để dịch hiển thị
+     * @param locale          Locale hiện tại
+     *
+     * @return Map chứa key và value đã được dịch
+     */
     private Map<String, String> createOption(
             final String value,
             final String translationKey,
@@ -292,5 +407,4 @@ public class QualityStandardSampleService {
         option.put("value", translationService.translate(translationKey, locale));
         return option;
     }
-
 }

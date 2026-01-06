@@ -172,46 +172,6 @@
             </component>
         </windowTab>
 
-        <!-- <windowTab name="samplesTab" reference="samplesTab">
-            <component type="gridLayout" name="samplesGridLayout" columns="1" rows="12">
-                <layoutElement column="1" row="1" height="12">
-                    <component type="grid" name="samples" reference="samples" source="#{form}.qualityStandardSampleDtosRe">
-                        <option type="column" name="position" fields="position" link="true"/>
-                        <option type="column" name="qcNumber" fields="qcNumber" link="true"/>
-                        <option type="column" name="qcName" fields="qcName"/>
-                        <option type="column" name="qcType" fields="qcType"/>
-                        <option type="column" name="unit" fields="unit"/>
-                        <option type="column" name="description" fields="description"/>
-                        <option type="column" name="sampleSize" fields="sampleSize"/>
-                        <option type="column" name="sampleNumber" fields="sampleNumber"/>
-                        <option type="column" name="qualitativeValue" fields="qualitativeValue"/>
-                        <option type="column" name="qualitativeResult" fields="qualitativeResult"/>
-                        <option type="column" name="quantitativeValue" fields="quantitativeValue"/>
-                        <option type="column" name="upValue" fields="upValue"/>
-                        <option type="column" name="downValue" fields="downValue"/>
-                        <option type="column" name="quantitativeResult" fields="quantitativeResult"/>
-                        <option type="column" name="quantitativeEvaluation" fields="quantitativeEvaluation"/>
-                        <option type="column" name="meName" fields="meName"/>
-                        <option type="column" name="meMeasuringMethod" fields="meMeasuringMethod"/>
-
-                        <option type="searchable" value="position,qcNumber,qcName,qcType,unit,description,sampleSize,sampleNumber,qualitativeValue,qualitativeResult,quantitativeValue,upValue,downValue,quantitativeResult,quantitativeEvaluation,meName,meMeasuringMethod"/>
-                        <option type="orderable" value="position,qcNumber,qcName,qcType,unit,description,sampleSize,sampleNumber,qualitativeValue,qualitativeResult,quantitativeValue,upValue,downValue,quantitativeResult,quantitativeEvaluation,meName,meMeasuringMethod"/>
-
-                        <option type="order" column="qcNumber" direction="asc"/>
-
-                        <option type="fullscreen" value="true"/>
-                        <option type="multiselect" value="false"/>
-
-                        <option type="correspondingView" value="qm/qualityStandardSampleDetailsRe"/>
-                        <option type="correspondingComponent" value="form"/>
-                        <option type="correspondingViewInModal" value="true"/>
-
-                        <criteriaModifier class="com.fti.qm.criteriaModifiers.common.CommonCriteriaModifier" method="addDeletedFalseCondition"/>
-                    </component>
-                </layoutElement>
-            </component>
-        </windowTab> -->
-
         <windowTab name="qualityDecisionTab" reference="qualityDecisionTab">
             <component type="gridLayout" name="qualityDecisionGridLayout" columns="4" rows="4">
                 <layoutElement column="1" row="1">
