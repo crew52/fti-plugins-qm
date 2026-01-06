@@ -1,10 +1,24 @@
-/*
- * jQuery resize event - v1.1 - 3/14/2010
- * http://benalman.com/projects/jquery-resize-plugin/
- * 
- * Copyright (c) 2010 "Cowboy" Ben Alman
- * Dual licensed under the MIT and GPL licenses.
- * http://benalman.com/about/license/
+/**
+ * ============================================================================
+ * Tổng quan file
+ * ============================================================================
+ *
+ * File này cấu hình jqGrid để hiển thị và chỉnh sửa samples của
+ * lệnh kiểm tra chất lượng (QIC):
+ *
+ * - Tạo directive Angular ngJqGrid để gắn jqGrid vào DOM.
+ *
+ * - Định nghĩa controller GridController để:
+ *   + Tính toán lại kích thước grid (responsive).
+ *   + Cấu hình colModel, editOptions, nguồn dữ liệu, toolbar.
+ *   + Gọi REST /rest/rest/qualityStandardSamplesRes/... để lấy
+ *     config cột + data.
+ *   + Xử lý inline-edit (lưu hàng, hiển thị thông báo).
+ *
+ * - Thêm logic nghiệp vụ auto-đánh giá quantitativeEvaluation
+ *   dựa trên quantitativeResult, upValue, downValue.
+ *
+ * ============================================================================
  */
 (function ($, h, c) {
     var a = $([]), e = $.resize = $.extend($.resize, {}), i, k = "setTimeout", j = "resize", d = j + "-special-event", b = "delay", f = "throttleWindow";
@@ -65,13 +79,44 @@
 }
 )(jQuery, this);
 
+/**
+ * ============================================================================
+ * Các hàm tiện ích chung (ngoài controller)
+ * ============================================================================
+ **/
 var myApp = angular.module('gridApp', []);
 
+/**
+ * gridRunner(action)
+ *
+ * Bọc một action() trong loading indicator của Qcadoo:
+ * - Gọi QCD.components.elements.utils.LoadingIndicator.blockElement(...) trước,
+ * - Chạy action(),
+ * - Gọi ...unblockElement(...) sau.
+ *
+ * Dùng khi cần thực hiện thao tác lâu, muốn chặn UI tạm thời
+ * (ở file này hiện chưa dùng nhiều, nhưng là pattern từ
+ * materialFlowResources).
+ */
 function gridRunner(action) {
     QCD.components.elements.utils.LoadingIndicator.blockElement(parent.$('body'));
     action();
     QCD.components.elements.utils.LoadingIndicator.unblockElement(parent.$('body'));
 }
+
+/**
+ * parseAndValidateInputNumber($element)
+ *
+ * Chuẩn hóa và validate input số (dùng chung cho các input kiểu customNumber):
+ * - Loại bỏ 0 ở đầu (00012.3 → 12.3).
+ * - Cho phép format 12, 12.3, 12,3.
+ * - Kiểm tra phần nguyên/fraction là số hợp lệ; nếu không,
+ *   đánh dấu input bằng CSS class error-grid.
+ * - Nếu hợp lệ, chuẩn hóa dấu phẩy thành dấu chấm,
+ *   cập nhật lại giá trị.
+ *
+ * Trả về giá trị sau khi chuẩn hóa (hoặc nguyên gốc nếu lỗi).
+ */
 
 function parseAndValidateInputNumber($element) {
     function countEmptyElements(arr) {
@@ -121,7 +166,26 @@ function parseAndValidateInputNumber($element) {
 
     return $element.val();
 }
-
+/**
+ * Directive ngJqGrid
+ *
+ * js
+ * myApp.directive('ngJqGrid', function ($window) { ... });
+ *
+ * Directive này chịu trách nhiệm:
+ * - Gắn jqGrid vào DOM khi config có giá trị:
+ *   + Xóa nội dung cũ của element,
+ *   + Thêm <table id="grid"> và <div id="jqGridPager">,
+ *   + Gọi $(table).jqGrid(newValue) để khởi tạo grid
+ *     với config đã chuẩn bị trong controller.
+ *
+ * - Thêm tiêu đề samplesHeader và hiển thị tổng số rows.
+ *
+ * - Gọi filterToolbar để bật filter trên header.
+ *
+ * - Reset trạng thái samplesGrid là “chưa thay đổi”
+ *   (setComponentChanged(false)).
+ */
 myApp.directive('ngJqGrid', function ($window) {
     return {
         restrict: 'E',
@@ -155,6 +219,17 @@ myApp.directive('ngJqGrid', function ($window) {
     };
 });
 
+/**
+ * validateSerializeData(data)
+ *
+ * Thu thập các element có class error-grid trong form edit
+ * (#FrmGrid_grid hoặc #gridContainer).
+ *
+ * Hiện tại chỉ đơn giản trả về JSON.stringify(data).
+ *
+ * Được dùng trong serializeRowData để biến object postdata
+ * thành JSON string gửi lên server.
+ */
 function validateSerializeData(data) {
     var elements = null;
     if ($('#FrmGrid_grid').length) {
@@ -167,11 +242,26 @@ function validateSerializeData(data) {
     return JSON.stringify(data);
 }
 
+/**
+ * roundTo(n)
+ *
+ * Làm tròn số n đến 5 chữ số thập phân,
+ * bằng kỹ thuật e+places / e-places.
+ *
+ * Dùng để đảm bảo các giá trị số (nếu cần)
+ * không bị quá nhiều chữ số.
+ */
 function roundTo(n) {
     var places = 5;
     return +(Math.floor(parseFloat(n) + "e+" + places) + "e-" + places);
 }
 
+/**
+ * validatorNumber(val)
+ *
+ * validatorNumber: trả về true nếu val rỗng
+ * hoặc là số bằng roundTo(val).
+ */
 function validatorNumber(val) {
     if (val === '') {
         return true;
@@ -180,6 +270,12 @@ function validatorNumber(val) {
     return parseFloat(val) === roundTo(val);
 }
 
+/**
+ * validateElement(el, validator)
+ *
+ * validateElement: dùng một validator (vd validatorNumber)
+ * để đặt/bỏ class error-grid trên element.
+ */
 function validateElement(el, validator) {
     el = $(el);
     if (validator(el.val())) {
@@ -190,6 +286,19 @@ function validateElement(el, validator) {
     }
 }
 
+/**
+ * translateMessages(messages)
+ *
+ * Chuyển các message nội bộ (string, có thể là nhiều dòng)
+ * thành message hiển thị cho user:
+ * - Tách theo \n,
+ * - Thay " thành &#039;,
+ * - Dùng QCD.translate để dịch,
+ * - Xử lý nội dung dạng ["something"] thành something,
+ * - Gộp các dòng lại bằng \n.
+ *
+ * Được dùng cho text lỗi và text trên UI.
+ */
 function translateMessages(messages) {
     var message = [];
     if (messages) {
@@ -208,6 +317,15 @@ function translateMessages(messages) {
     return message;
 }
 
+/**
+ * saveAllRows()
+ *
+ * Lấy tất cả id của rows trong grid và gọi saveRow(id)
+ * cho từng row.
+ *
+ * Đảm bảo mọi edit inline được lưu khi QIC thay đổi
+ * hoặc khi chuyển context.
+ */
 function saveAllRows() {
     var grid = $("#grid");
     var ids = grid.jqGrid('getDataIDs');
@@ -217,10 +335,22 @@ function saveAllRows() {
     }
 }
 
+/**
+ * viewRefresh()
+ *
+ * viewRefresh: gọi cancelEditing() trên scope GridController
+ * để hủy edit inline.
+ */
 function viewRefresh() {
     angular.element($("#GridController")).scope().cancelEditing();
 }
 
+/**
+ * refreshForm()
+ *
+ * refreshForm: gọi performRefresh() trên main view component
+ * (form hoặc grid) để reload lại form/grid từ server.
+ */
 function refreshForm() {
     var mainViewComponent = mainController.getComponentByReferenceName("form") || mainController.getComponentByReferenceName("grid");
     if (mainViewComponent) {
@@ -228,23 +358,47 @@ function refreshForm() {
     }
 }
 
+/**
+ * qicIdChanged(id)
+ *
+ * Khi ID của QIC (quality inspection command) thay đổi:
+ * - Gọi saveAllRows() để lưu edit hiện tại,
+ * - Gọi $scope.qicIdChanged(id) trong controller để:
+ *   + Đổi URL data config.url,
+ *   + Đặt qic_id mới,
+ *   + Gọi prepareGridConfig(config) để tải lại
+ *     config cột & grid.
+ */
 function qicIdChanged(id) {
     saveAllRows();
     angular.element($("#GridController")).scope().qicIdChanged(id);
     return false;
 }
 
+/**
+ * getSelectedRowId()
+ *
+ * Trả về danh sách selarrrow hiện tại của jqGrid,
+ * dùng nếu cần biết row nào đang được chọn.
+ */
 function getSelectedRowId() {
     return jQuery('#grid').jqGrid('getGridParam', 'selarrrow');
 }
 
+// Controller GridController
 var messagesController = new QCD.MessagesController();
 var columnConfiguration;
 
 myApp.controller('GridController', ['$scope', '$window', '$http', function ($scope, $window, $http) {
 
+    // Lưu id row đang edit inline gần nhất.
     var lastSel;
 
+    /**
+    * showMessage(type, title, content)
+    * - Wrapper gọi mainController.showMessage để hiển thị
+    *   thông báo (thành công/thất bại).
+    */
     function showMessage(type, title, content) {
         mainController.showMessage({
             type: type,
@@ -253,6 +407,50 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         });
     }
 
+    /**
+     * quantitativeResult_createElement(value, options)
+     *
+     * Custom editor cho cột quantitativeResult (inline edit):
+     *
+     * - Tạo <input type="customNumber" ... rowId="...">.
+     *
+     * - Bind change/keydown/paste/input:
+     *   + Debounce 300ms để user gõ xong.
+     *   + Lấy rowId từ attribute rowId trên input.
+     *   + Đọc qrRaw (giá trị mới của quantitativeResult).
+     *
+     * - Nếu qrRaw rỗng:
+     *   + Xóa giá trị quantitativeEvaluation
+     *     (set '' và trigger change).
+     *   + Kết thúc.
+     *
+     * - Parse qr = parseFloat(qrRaw), nếu NaN thì bỏ qua.
+     *
+     * - Lấy rowData từ $('#grid').jqGrid('getRowData', rowId):
+     *   + upRaw = rowData.upValue
+     *   + downRaw = rowData.downValue
+     *
+     * - Nếu upRaw hoặc downRaw rỗng
+     *   → không có dữ liệu chuẩn trên hàng này
+     *   → bỏ qua, không auto set.
+     *
+     * - Parse up, down từ upRaw, downRaw; nếu NaN thì bỏ qua.
+     *
+     * - Nếu down ≤ qr ≤ up → newEval = '01pass',
+     *   ngược lại newEval = '02fail'.
+     *
+     * - Tìm element #rowId_quantitativeEvaluation
+     *   (select đang edit inline cho cột đánh giá):
+     *   + Nếu đó là <span> wrapper
+     *     → lấy select/input bên trong.
+     *
+     * - Set .val(newEval) và trigger change.
+     *
+     * Tóm lại: đây là chỗ hiện thực logic:
+     * - Tự động cập nhật quantitativeEvaluation
+     *   dựa trên quantitativeResult so với upValue/downValue.
+     * - Nếu thiếu upValue/downValue thì không can thiệp.
+     */
     function quantitativeResult_createElement(value, options) {
         var $input = $('<input type="customNumber" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
         $input.val(value);
@@ -318,7 +516,22 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         return $input;
     }
 
-    // Lấy id của QIC từ view
+    /**
+     * getQICId()
+     *
+     * Lấy ID của QIC cho grid:
+     * - Nếu có global context (JSON string) với key
+     *   'window.generalTab.form.id' → dùng giá trị đó.
+     * - Nếu không, lấy từ $scope.config.qic_id
+     *   (do controller đặt).
+     * - Nếu vẫn chưa có, trả 0.
+     *
+     * Giá trị này được dùng để:
+     * - Đặt URL cho grid
+     *   (...qualityStandardSamplesRes/{qicId}.html),
+     * - Fill defaultValue cho cột
+     *   qualityInspectionCommandRe.
+     */
     function getQICId() {
         if (context) {
             var contextObject = JSON.parse(context);
@@ -332,6 +545,19 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         return config ? config.qic_id : 0;
     }
 
+    /**
+     * getColModelByIndex(index, c)
+     *
+     * Tìm một colModel entry theo name == index trong config:
+     * - c mặc định là $scope.config.
+     *
+     * Nếu không tìm thấy cột, log error
+     * console.error(index).
+     *
+     * Dùng để chỉnh sửa cấu hình cột
+     * (thêm searchoptions, editoptions.value, v.v.)
+     * sau khi load gridConfig.
+     */
     function getColModelByIndex(index, c) {
         c = c || $scope.config;
         var col = c.colModel.filter(function (element, i) {
@@ -343,6 +569,34 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         return col;
     }
 
+    /**
+     * getColModelOrPrepareForAttribute(columnProperties, c)
+     *
+     * Được gọi cho mỗi columnInGrid từ backend gridConfig.
+     *
+     * Nếu columnProperties.forAttribute == true:
+     * - Tạo attrColModel cho cột thuộc tính động:
+     *   + name = columnProperties.name.
+     *   + editable = true.
+     *
+     * - Nếu attributeDataType == '01calculated':
+     *   + Sử dụng custom lookup attributeLookup_createElement.
+     *
+     * - Nếu attributeValueType == '02numeric':
+     *   + Sử dụng numberFormatter và custom number editor
+     *     attribute_createElement.
+     *
+     * - Ngược lại, chỉ set editoptions rỗng.
+     *
+     * - Trả về attrColModel.
+     *
+     * Nếu không phải attribute:
+     * - Tìm cột hiện có qua index === columnProperties.name.
+     *
+     * Mục đích:
+     * - Map cấu hình meta từ backend
+     *   thành colModel thực tế cho jqGrid.
+     */
     function getColModelOrPrepareForAttribute(columnProperties, c) {
         c = c || $scope.config;
         var col = c.colModel.filter(function (element, i) {
@@ -380,10 +634,29 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         return col;
     }
 
+    /**
+     * errorCallback(response)
+     *
+     * Dùng chung cho lỗi HTTP của $http:
+     * - Lấy response.data.message,
+     * - Dùng translateMessages,
+     * - Hiển thị bằng showMessage('failure', ...).
+     */
     function errorCallback(response) {
         showMessage('failure', QCD.translate('samplesGrid.notification.failure'), response.data.message);
     }
 
+    /**
+     * input_value(elem, operation, value)
+     *
+     * Custom custom_value cho editor jqGrid:
+     * - Nếu operation === 'get' → trả $(elem).val().
+     * - Nếu operation === 'set' → gán $('input', elem).val(value).
+     *
+     * Dùng cho quantitativeResult_createElement
+     * (và các custom editor khác)
+     * để jqGrid biết cách lấy/đặt giá trị.
+     */
     function input_value(elem, operation, value) {
         if (operation === 'get') {
             return $(elem).val();
@@ -393,16 +666,37 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
     }
 
+    /**
+     * numberFormatter
+     *
+     * Format số hiển thị trong cell:
+     * - Bọc giá trị trong
+     *   <span class="number-cell">...</span>.
+     */
     function numberFormatter(cellvalue, options, rowObject) {
         var val = cellvalue || '';
         return '<span class="number-cell">' + val + '</span>';
     }
 
+    /**
+     * numberUnformat
+     *
+     * Unformat số hiển thị trong cell:
+     * - Lấy text bên trong span.
+     */
     function numberUnformat(cellvalue, options, cell) {
         var val = $('span', cell).text();
         return val || '';
     }
 
+    /**
+     * errorfunc(rowID, response)
+     *
+     * Dùng cho jqGrid inline-edit error:
+     * - Parse response.responseText để lấy .message,
+     * - Dịch và hiển thị thông báo lỗi “failure”
+     *   cho samples grid.
+     */
     function errorfunc(rowID, response) {
         var message = JSON.parse(response.responseText).message;
         message = translateMessages(message);
@@ -410,15 +704,39 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         return true;
     }
 
+    /**
+     * successfunc(rowID, response)
+     *
+     * Hiển thị thông báo “success”
+     * khi lưu sample thành công.
+     */
     function successfunc(rowID, response) {
         showMessage('success', QCD.translate('samplesGrid.notification.success'), QCD.translate('samplesGrid.message.saveMessage'));
         return true;
     }
 
+    /**
+     * aftersavefunc()
+     *
+     * Gọi refreshForm()
+     * để reload lại form sau khi lưu row.
+     */
     function aftersavefunc() {
         refreshForm();
     }
 
+    /**
+     * cancelEditing()
+     *
+     * Hủy inline-edit row hiện tại (lastSel):
+     * - Gọi restoreRow(lastSel) trên jqGrid.
+     * - Hiển thị lại icon edit/del,
+     *   ẩn icon save/cancel.
+     *
+     * Gán lên $scope.cancelEditing
+     * để gọi từ bên ngoài
+     * (vd viewRefresh).
+     */
     function cancelEditing() {
         var lrid;
         if (typeof lastSel !== "undefined") {
@@ -452,6 +770,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
     $("#window\\.samplesGridTab").resize($scope.resize);
 
+    // Cấu hình grid (config) và các cột quan trọng
+    /**
+     * gridEditOptions
+     * - keys: true → Enter để lưu, Esc để cancel.
+     * - mtype: 'PUT' → sử dụng HTTP PUT.
+     * - errorfunc, successfunc, aftersavefunc
+     *   như mô tả trên.
+     */
     var gridEditOptions = {
         keys: true,
         url: '../../rest/rest/qualityStandardSamplesRes.html', // base
@@ -461,6 +787,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         aftersavefunc: aftersavefunc
     };
 
+    //  Đối tượng cấu hình jqGrid (URL dữ liệu, phân trang, cột, toolbar, v.v.).
     var config = {
         url: '../../rest/rest/qualityStandardSamplesRes/' + getQICId() + '.html',
         datatype: "json",
@@ -714,6 +1041,20 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         ajaxRowOptions: {
             contentType: "application/json"
         },
+        /**
+         * serializeRowData(postdata)
+         *
+         * Chạy trước khi gửi dữ liệu lên server khi lưu row:
+         * - Xóa postdata.oper (tham số mặc định của jqGrid).
+         * - Xóa các cột thuộc tính động (forAttribute).
+         * - Xóa các key có giá trị "", null, undefined.
+         *
+         * - Gọi validateSerializeData(postdata)
+         *   để trả về JSON string.
+         *
+         * → Mục tiêu: chỉ gửi những field
+         *   có giá trị thực sự cần update.
+         */
         serializeRowData: function (postdata) {
             // 1. Xóa thuộc tính mặc định của jqGrid
             delete postdata.oper;
@@ -741,6 +1082,37 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
     };
 
+    /**
+     * prepareGridConfig(config)
+     *
+     * Gọi backend:
+     * - GET ../../rest/rest/qualityStandardSamplesRes/gridConfig/{qic_id}.html
+     *
+     *   + Lấy meta cấu hình cột
+     *     (tên, checked, forAttribute, v.v.).
+     *   + Dựa trên đó build config.colModel
+     *     và config.colNames.
+     *
+     * - GET ../../rest/rest/qualityStandardSamplesRes/qualityEvaluationOptions
+     *
+     *   + Lấy options cho đánh giá
+     *     (01pass, 02fail, ...).
+     *   + Set editoptions.value
+     *     + searchoptions.value cho:
+     *       * quantitativeEvaluation
+     *       * qualitativeResult
+     *
+     * - GET ../../rest/units
+     *
+     *   + Lấy danh sách đơn vị,
+     *   + Set searchoptions.value
+     *     cho cột unit.
+     *
+     * Cuối cùng:
+     * - Merge config mới vào $scope.config,
+     * - $('#gridWrapper').unblock()
+     *   để bỏ loading.
+     */
     function prepareGridConfig(config) {
         var c = $.cookie("jqgrid_conf");
         if (c) {
@@ -839,6 +1211,33 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
     };
 
     $scope.data = [];
+
+    /**
+     * Inline-edit save hook
+     *
+     * js
+     * $.extend(true, $.jgrid.inlineEdit, {
+     *     beforeSaveRow: function (option, rowId) {
+     *         if (rowId === '0') {
+     *             option.url = '../../rest/rest/qualityStandardSamplesRes.html';
+     *             ...
+     *         } else {
+     *             option.url = '../../rest/rest/qualityStandardSamplesRes/' + rowId + '.html';
+     *             ...
+     *         }
+     *         option.mtype = 'PUT';
+     *     }
+     * });
+     *
+     * Trước khi jqGrid gọi saveRow:
+     * - Nếu rowId = '0' (row mới)
+     *   → gọi URL base không id.
+     * - Nếu rowId != '0'
+     *   → gọi URL REST với id .html.
+     *
+     * - Gắn errorfunc, successfunc, aftersavefunc
+     *   vào option.
+     */
 
     // dont close inline edit after fail validations
     // gọi đến server xử lý
