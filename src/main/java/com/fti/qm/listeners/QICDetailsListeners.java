@@ -1,5 +1,7 @@
 package com.fti.qm.listeners;
 
+import com.fti.qm.constants.GlobalFields;
+import com.fti.qm.constants.QualityStandardSampleFields;
 import com.fti.qm.constants.qualityInspectionCommand.QICFields;
 import com.fti.qm.utils.DecimalFieldFormatter;
 import com.fti.qm.utils.DecimalFieldListenerUtils;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class QICDetailsListeners {
@@ -28,13 +31,19 @@ public class QICDetailsListeners {
      *
      * <p>Luồng xử lý:</p>
      * <ul>
-     *   <li>Nếu checkbox = false → chỉ disable 4 field liên quan, không xóa dữ liệu.</li>
-     *   <li>Nếu checkbox = true → so sánh quyết định hiện tại với quyết định gốc trong DB:
+     *   <li>Nếu checkbox = true:
      *       <ul>
-     *           <li>Giống quyết định gốc → giữ nguyên dữ liệu 4 field.</li>
-     *           <li>Khác quyết định gốc → reset (set null) 4 field và enable lại theo loại quyết định.</li>
+     *           <li>Kiểm tra tất cả Sample của QIC đã được đánh giá PASS.</li>
+     *           <li>Nếu còn Sample chưa PASS hoặc không tồn tại Sample hợp lệ thì dừng xử lý và hiển thị thông báo.</li>
+     *           <li>So sánh quyết định hiện tại với quyết định gốc trong DB:
+     *               <ul>
+     *                   <li>Giống quyết định gốc → giữ nguyên dữ liệu 4 field.</li>
+     *                   <li>Khác quyết định gốc → reset (set null) 4 field và enable lại theo loại quyết định.</li>
+     *               </ul>
+     *           </li>
      *       </ul>
      *   </li>
+     *   <li>Nếu checkbox = false → chỉ disable 4 field liên quan, không xóa dữ liệu.</li>
      * </ul>
      *
      * <p>Quy tắc enable field theo quyết định:</p>
@@ -44,9 +53,9 @@ public class QICDetailsListeners {
      *   <li>PARTIAL → enable cả 4 field.</li>
      * </ul>
      *
-     * @param view            trạng thái view hiện tại
-     * @param componentState  component phát sinh sự kiện
-     * @param args            tham số sự kiện
+     * @param view trạng thái view hiện tại
+     * @param componentState component phát sinh sự kiện
+     * @param args tham số sự kiện
      */
     public void onQualityDecisionCheckBoxChange(final ViewDefinitionState view,
                                                 final ComponentState componentState,
@@ -69,6 +78,23 @@ public class QICDetailsListeners {
         // Lấy entity từ form (entity hiện trên màn hình)
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity entity = form.getEntity();
+
+        /**
+         * Validate sample trước khi xử lý tiếp.
+         */
+        if (isChecked) {
+
+            if (!areAllSamplesPassed(entity)) {
+
+                view.addMessage(
+                        "qm.qualityInspectionCommand.samplesMustPass",
+                        ComponentState.MessageType.FAILURE
+                );
+
+                return;
+            }
+        }
+
         BigDecimal transactionQty = entity.getDecimalField(QICFields.TRANSACTION_QUANTITY);
 
         String decision = decisionField.getFieldValue() != null
@@ -264,6 +290,46 @@ public class QICDetailsListeners {
         warehouseLoc.requestComponentUpdateState();
         ngQty.requestComponentUpdateState();
         ngLoc.requestComponentUpdateState();
+    }
+
+    /**
+     * Kiểm tra tất cả Sample của QIC đều đạt PASS.
+     *
+     * @param qic QIC cần kiểm tra
+     * @return true nếu tất cả Sample hợp lệ đều PASS; ngược lại false
+     */
+    private boolean areAllSamplesPassed(final Entity qic) {
+
+        if (qic == null || qic.getId() == null) {
+            return false;
+        }
+
+        Entity freshQic = qic.getDataDefinition().get(qic.getId());
+
+        if (freshQic == null) {
+            return false;
+        }
+
+        List<Entity> samples =
+                freshQic.getHasManyField(QICFields.QUALITY_STANDARD_SAMPLES_RES);
+
+        if (samples.isEmpty()) {
+            return false;
+        }
+
+        for (Entity sample : samples) {
+
+            if (Boolean.TRUE.equals(sample.getBooleanField(GlobalFields.DELETED))) {
+                continue;
+            }
+
+            if (!QualityStandardSampleFields.Result.PASS.equals(sample.getStringField(QualityStandardSampleFields.QUALITATIVE_RESULT))
+                    || !QualityStandardSampleFields.Result.PASS.equals(sample.getStringField(QualityStandardSampleFields.QUANTITATIVE_EVALUATION))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }
