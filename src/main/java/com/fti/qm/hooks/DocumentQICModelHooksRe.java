@@ -52,9 +52,15 @@ public class DocumentQICModelHooksRe {
         String type = document.getStringField(DocumentFields.TYPE);
         String state = document.getStringField(DocumentFields.STATE);
         Entity deliveryEntity = document.getBelongsToField(FIELD_DELIVERY);
+        Entity locationTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
 
-        // --- NẾU LÀ EDIT THÌ BỎ QUA - Chỉ xử lý khi là phiếu nhập, đã được chấp nhận, và có delivery
-        if (document.getId() != null || !TYPE_RECEIPT.equals(type) || !STATE_ACCEPTED.equals(state) || deliveryEntity == null) {
+        // --- NẾU LÀ EDIT THÌ BỎ QUA - Chỉ xử lý khi là phiếu nhập, đã được chấp nhận, và có delivery, Location To = QC
+        if (document.getId() != null
+                || !TYPE_RECEIPT.equals(type)
+                || !STATE_ACCEPTED.equals(state)
+                || deliveryEntity == null
+                || locationTo == null
+                || !"QC".equals(locationTo.getStringField("number"))) {
             return;
         }
 
