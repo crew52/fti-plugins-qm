@@ -88,7 +88,7 @@ public class QICDetailsListeners {
 
                 view.addMessage(
                         "qm.qualityInspectionCommand.samplesMustPass",
-                        ComponentState.MessageType.FAILURE
+                        ComponentState.MessageType.INFO
                 );
 
                 return;
