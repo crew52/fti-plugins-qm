@@ -9,7 +9,9 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,6 +62,10 @@ public class QICWarehouseTransferListeners {
 
             if (id == null) {
                 view.addMessage("qm.qic.transferWarehouse.noData", ComponentState.MessageType.FAILURE);
+                return;
+            }
+
+            if (!validateTransferData(view)) {
                 return;
             }
 
@@ -185,5 +191,68 @@ public class QICWarehouseTransferListeners {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Validate dữ liệu chuyển kho trên giao diện trước khi tạo Document.
+     *
+     * <p>
+     * Kiểm tra các trường bắt buộc theo Quality Decision:
+     * ACCEPT, REJECT hoặc PARTIAL.
+     * Nếu thiếu dữ liệu, hiển thị thông báo lỗi và dừng xử lý.
+     * </p>
+     *
+     * @param view trạng thái hiện tại của màn hình
+     * @return {@code true} nếu dữ liệu hợp lệ, ngược lại {@code false}
+     */
+    private boolean validateTransferData(final ViewDefinitionState view) {
+
+        FieldComponent decisionField = (FieldComponent) view.getComponentByReference(QICFields.QUALITY_DECISION);
+        FieldComponent warehouseQty = (FieldComponent) view.getComponentByReference(QICFields.WAREHOUSE_QUANTITY);
+        LookupComponent warehouseLoc = (LookupComponent) view.getComponentByReference(QICFields.WAREHOUSE_LOCATION);
+        FieldComponent ngQty = (FieldComponent) view.getComponentByReference(QICFields.NG_QUANTITY);
+        LookupComponent ngLoc = (LookupComponent) view.getComponentByReference(QICFields.NG_LOCATION);
+
+        String decision = decisionField.getFieldValue() != null
+                ? decisionField.getFieldValue().toString().trim()
+                : "";
+
+        if (decision.isEmpty()) {
+            view.addMessage("qm.qic.transferWarehouse.requiredData", ComponentState.MessageType.FAILURE);
+            return false;
+        }
+
+        Object warehouseQtyValue = warehouseQty.getFieldValue();
+        Object ngQtyValue = ngQty.getFieldValue();
+
+        switch (decision) {
+
+            case QICFields.QualityDecision.ACCEPT:
+                if (warehouseLoc.getEntity() == null || warehouseQtyValue == null) {
+                    view.addMessage("qm.qic.transferWarehouse.requiredData", ComponentState.MessageType.FAILURE);
+                    return false;
+                }
+                break;
+
+            case QICFields.QualityDecision.REJECT:
+                if (ngLoc.getEntity() == null || ngQtyValue == null) {
+                    view.addMessage("qm.qic.transferWarehouse.requiredData", ComponentState.MessageType.FAILURE);
+                    return false;
+                }
+                break;
+
+            case QICFields.QualityDecision.PARTIAL:
+                if (warehouseLoc.getEntity() == null || warehouseQtyValue == null || ngLoc.getEntity() == null || ngQtyValue == null) {
+                    view.addMessage("qm.qic.transferWarehouse.requiredData", ComponentState.MessageType.FAILURE);
+                    return false;
+                }
+                break;
+
+            default:
+                view.addMessage("qm.qic.transferWarehouse.requiredData", ComponentState.MessageType.FAILURE);
+                return false;
+        }
+
+        return true;
     }
 }
