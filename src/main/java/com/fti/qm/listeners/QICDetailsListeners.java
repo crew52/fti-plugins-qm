@@ -5,7 +5,12 @@ import com.fti.qm.constants.QualityStandardSampleFields;
 import com.fti.qm.constants.qualityInspectionCommand.QICFields;
 import com.fti.qm.utils.DecimalFieldFormatter;
 import com.fti.qm.utils.DecimalFieldListenerUtils;
+import com.qcadoo.mes.materialFlow.constants.LocationFields;
+import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -26,31 +31,24 @@ public class QICDetailsListeners {
     @Autowired
     private DecimalFieldListenerUtils decimalFieldListenerUtils;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    public static final String NG_LOCATION_NUMBER = "NG";
+
     /**
-     * Xử lý thay đổi trạng thái checkbox và quyết định chất lượng (qualityDecision).
+     * Xử lý thay đổi trạng thái xác nhận quyết định chất lượng.
      *
-     * <p>Luồng xử lý:</p>
+     * <p>Khi được chọn:
      * <ul>
-     *   <li>Nếu checkbox = true:
-     *       <ul>
-     *           <li>Kiểm tra tất cả Sample của QIC đã được đánh giá PASS.</li>
-     *           <li>Nếu còn Sample chưa PASS hoặc không tồn tại Sample hợp lệ thì dừng xử lý và hiển thị thông báo.</li>
-     *           <li>So sánh quyết định hiện tại với quyết định gốc trong DB:
-     *               <ul>
-     *                   <li>Giống quyết định gốc → giữ nguyên dữ liệu 4 field.</li>
-     *                   <li>Khác quyết định gốc → reset (set null) 4 field và enable lại theo loại quyết định.</li>
-     *               </ul>
-     *           </li>
-     *       </ul>
-     *   </li>
-     *   <li>Nếu checkbox = false → chỉ disable 4 field liên quan, không xóa dữ liệu.</li>
+     *     <li>Kiểm tra tất cả Sample phải đạt PASS.</li>
+     *     <li>Enable và khởi tạo dữ liệu theo Quality Decision.</li>
+     *     <li>Tự động gán kho NG cho quyết định REJECT và PARTIAL.</li>
      * </ul>
      *
-     * <p>Quy tắc enable field theo quyết định:</p>
+     * <p>Khi bỏ chọn:
      * <ul>
-     *   <li>ACCEPT → chỉ enable Warehouse quantity + location.</li>
-     *   <li>REJECT → chỉ enable NG quantity + location.</li>
-     *   <li>PARTIAL → enable cả 4 field.</li>
+     *     <li>Disable các trường liên quan và giữ nguyên dữ liệu.</li>
      * </ul>
      *
      * @param view trạng thái view hiện tại
@@ -135,17 +133,18 @@ public class QICDetailsListeners {
                 break;
 
             case QICFields.QualityDecision.REJECT:
-                ngLoc.setEnabled(true);
                 if (transactionQty != null && !isSameDecision) {
                     ngQty.setFieldValue(transactionQty.toString());
                 }
+                setDefaultNgLocation(ngLoc);
                 break;
 
             case QICFields.QualityDecision.PARTIAL:
                 warehouseQty.setEnabled(true);
                 warehouseLoc.setEnabled(true);
                 ngQty.setEnabled(true);
-                ngLoc.setEnabled(true);
+                setDefaultNgLocation(ngLoc);
+
                 break;
 
             default:
@@ -295,6 +294,9 @@ public class QICDetailsListeners {
     /**
      * Kiểm tra tất cả Sample của QIC đều đạt PASS.
      *
+     * <p>Chỉ kiểm tra các Sample chưa bị soft-delete.
+     * Cả qualitativeResult và quantitativeEvaluation phải có giá trị PASS.</p>
+     *
      * @param qic QIC cần kiểm tra
      * @return true nếu tất cả Sample hợp lệ đều PASS; ngược lại false
      */
@@ -330,6 +332,33 @@ public class QICDetailsListeners {
         }
 
         return true;
+    }
+
+    /**
+     * Thiết lập kho NG mặc định cho trường NG Location.
+     *
+     * <p>Tìm Location có mã "NG" và tự động gán vào lookup.</p>
+     *
+     * @param ngLoc component NG Location
+     */
+    private void setDefaultNgLocation(final LookupComponent ngLoc) {
+
+        DataDefinition locationDD =
+                dataDefinitionService.get(
+                        MaterialFlowConstants.PLUGIN_IDENTIFIER,
+                        MaterialFlowConstants.MODEL_LOCATION);
+
+        Entity ngLocation = locationDD.find()
+                .add(SearchRestrictions.eq(
+                        LocationFields.NUMBER,
+                        NG_LOCATION_NUMBER))
+                .setMaxResults(1)
+                .uniqueResult();
+
+        if (ngLocation != null) {
+            ngLoc.setFieldValue(ngLocation.getId());
+            ngLoc.requestComponentUpdateState();
+        }
     }
 
 }
