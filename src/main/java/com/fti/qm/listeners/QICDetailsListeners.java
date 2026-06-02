@@ -133,6 +133,7 @@ public class QICDetailsListeners {
                 break;
 
             case QICFields.QualityDecision.REJECT:
+                ngLoc.setEnabled(true);
                 if (transactionQty != null && !isSameDecision) {
                     ngQty.setFieldValue(transactionQty.toString());
                 }
@@ -143,6 +144,7 @@ public class QICDetailsListeners {
                 warehouseQty.setEnabled(true);
                 warehouseLoc.setEnabled(true);
                 ngQty.setEnabled(true);
+                ngLoc.setEnabled(true);
                 setDefaultNgLocation(ngLoc);
 
                 break;
