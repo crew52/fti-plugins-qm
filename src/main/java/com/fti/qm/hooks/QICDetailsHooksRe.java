@@ -57,9 +57,13 @@ public class QICDetailsHooksRe {
      * <ol>
      *   <li>Kiểm tra tiêu chuẩn theo loại kiểm tra và sản phẩm</li>
      *   <li>Tự động gán tên các trường thuộc (company, product, tool)</li>
-     *   <li>Điền người dùng hiện tại vào field `user`</li>
+     *   <li>Hiển thị số lệnh kiểm tra</li>
+     *   <li>Điền người dùng hiện tại vào field {@code user}</li>
      *   <li>Cập nhật trạng thái phiếu</li>
      *   <li>Tự động điền ngày kiểm tra nếu trống</li>
+     *   <li>Thiết lập filter cho các lookup location</li>
+     *   <li>Khóa các field khi phiếu đã hoàn thành</li>
+     *   <li>Cập nhật trạng thái enable/disable của nút Transfer Warehouse</li>
      * </ol>
      */
     public void beforeRender(final ViewDefinitionState view) {
@@ -71,10 +75,9 @@ public class QICDetailsHooksRe {
         fillCurrentUser(view);
         updateStatusDisplay(view);
         fillCurrentInspectionDate(view);
-
         setupLocationFilters(view);
-
         disableFieldsIfCompleted(view);
+        updateTransferWarehouseButton(view);
     }
 
     /**
@@ -357,6 +360,68 @@ public class QICDetailsHooksRe {
             }
         }
         RibbonUtils.disableActionsExceptNavigation(view);
+    }
+
+    /**
+     * Điều khiển quyền thực hiện nghiệp vụ chuyển kho từ màn hình QIC.
+     *
+     * <p>Nút {@code transferWarehouse} chỉ được enable khi:
+     * <ul>
+     *     <li>QIC đang ở trạng thái {@code IN_PROGRESS}.</li>
+     *     <li>Người dùng đã đưa ra quyết định chất lượng ({@code qualityDecision}).</li>
+     * </ul>
+     * </p>
+     *
+     * @param view trạng thái view hiện tại
+     */
+    private void updateTransferWarehouseButton(final ViewDefinitionState view) {
+
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        if (form == null || form.getEntityId() == null) {
+            return;
+        }
+
+        DataDefinition qicDD = dataDefinitionService.get(
+                QMConstants.PLUGIN_IDENTIFIER,
+                QMConstants.MODEL_QUALITY_INSPECTION_COMMAND);
+
+        Entity qic = qicDD.get(form.getEntityId());
+
+        if (qic == null) {
+            return;
+        }
+
+        String status = qic.getStringField(QICFields.STATUS);
+        String qualityDecision = qic.getStringField(QICFields.QUALITY_DECISION);
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+
+        if (window == null) {
+            return;
+        }
+
+        Ribbon ribbon = window.getRibbon();
+
+        RibbonGroup customActions = ribbon.getGroupByName("customActions");
+
+        if (customActions == null) {
+            return;
+        }
+
+        RibbonActionItem transferButton = customActions.getItemByName("transferWarehouse");
+
+        if (transferButton == null) {
+            return;
+        }
+
+        boolean enable =
+                QICFields.Status.IN_PROGRESS.equals(status)
+                        && qualityDecision != null
+                        && !qualityDecision.trim().isEmpty();
+
+        transferButton.setEnabled(enable);
+        transferButton.requestUpdate(true);
     }
 }
 
