@@ -57,9 +57,13 @@ public class QICDetailsHooksRe {
      * <ol>
      *   <li>Kiểm tra tiêu chuẩn theo loại kiểm tra và sản phẩm</li>
      *   <li>Tự động gán tên các trường thuộc (company, product, tool)</li>
-     *   <li>Điền người dùng hiện tại vào field `user`</li>
+     *   <li>Hiển thị số lệnh kiểm tra</li>
+     *   <li>Điền người dùng hiện tại vào field {@code user}</li>
      *   <li>Cập nhật trạng thái phiếu</li>
      *   <li>Tự động điền ngày kiểm tra nếu trống</li>
+     *   <li>Thiết lập filter cho các lookup location</li>
+     *   <li>Khóa các field khi phiếu đã hoàn thành</li>
+     *   <li>Cập nhật trạng thái enable/disable của nút Transfer Warehouse</li>
      * </ol>
      */
     public void beforeRender(final ViewDefinitionState view) {
@@ -71,10 +75,9 @@ public class QICDetailsHooksRe {
         fillCurrentUser(view);
         updateStatusDisplay(view);
         fillCurrentInspectionDate(view);
-
         setupLocationFilters(view);
-
         disableFieldsIfCompleted(view);
+        updateTransferWarehouseButton(view);
     }
 
     /**
@@ -201,21 +204,30 @@ public class QICDetailsHooksRe {
         }
     }
 
+    /**
+     * Thiết lập filter cho các lookup kho trên tab Quality Decision.
+     *
+     * <p>Filter sẽ:
+     * <ul>
+     *     <li>Loại trừ location hiện tại của QIC khỏi danh sách chọn.</li>
+     *     <li>Truyền qualityDecision hiện tại từ UI vào criteria modifier.</li>
+     * </ul>
+     * </p>
+     *
+     * @param view trạng thái view hiện tại
+     */
     private void setupLocationFilters(ViewDefinitionState view) {
 
-        // 1) Lấy QIC ID từ form
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form == null) return;
 
         Long qicId = form.getEntityId();
         if (qicId == null) return;
 
-        // 2) Lấy QIC từ DB
         DataDefinition qicDD = dataDefinitionService.get(QMConstants.PLUGIN_IDENTIFIER, QMConstants.MODEL_QUALITY_INSPECTION_COMMAND);
         Entity qic = qicDD.get(qicId);
         if (qic == null) return;
 
-        // 3) Lấy location từ DB
         Entity location = qic.getBelongsToField(QICFields.LOCATION);
         if (location == null) {
             return;
@@ -223,12 +235,35 @@ public class QICDetailsHooksRe {
 
         Long locationId = location.getId();
 
-        // 4) Apply filter cho từng lookup
-        applyFilter(view, QICFields.WAREHOUSE_LOCATION, locationId);
-        applyFilter(view, QICFields.NG_LOCATION, locationId);
+        FieldComponent qualityDecision =
+                (FieldComponent) view.getComponentByReference(
+                        QICFields.QUALITY_DECISION);
+
+        String decision =
+                qualityDecision.getFieldValue() != null
+                        ? qualityDecision.getFieldValue().toString()
+                        : null;
+
+        applyFilter(view, QICFields.WAREHOUSE_LOCATION, locationId, decision);
+        applyFilter(view, QICFields.NG_LOCATION, locationId, decision);
     }
 
-    private void applyFilter(ViewDefinitionState view, String lookupName, Long excludedId) {
+    /**
+     * Gán giá trị filter cho lookup location.
+     *
+     * <p>Filter bao gồm:
+     * <ul>
+     *     <li>excludedLocationId: ID location cần loại trừ.</li>
+     *     <li>qualityDecision: quyết định chất lượng hiện tại trên màn hình.</li>
+     * </ul>
+     * </p>
+     *
+     * @param view view hiện tại
+     * @param lookupName tên lookup cần áp dụng filter
+     * @param excludedId ID location cần loại trừ
+     * @param decision quality decision hiện tại
+     */
+    private void applyFilter(ViewDefinitionState view, String lookupName, Long excludedId, String decision) {
 
         LookupComponent lookup = (LookupComponent) view.getComponentByReference(lookupName);
         if (lookup == null) {
@@ -237,6 +272,7 @@ public class QICDetailsHooksRe {
 
         FilterValueHolder filter = lookup.getFilterValue();
         filter.put("excludedLocationId", excludedId);
+        filter.put("qualityDecision", decision);
         lookup.setFilterValue(filter);
     }
 
@@ -324,6 +360,68 @@ public class QICDetailsHooksRe {
             }
         }
         RibbonUtils.disableActionsExceptNavigation(view);
+    }
+
+    /**
+     * Điều khiển quyền thực hiện nghiệp vụ chuyển kho từ màn hình QIC.
+     *
+     * <p>Nút {@code transferWarehouse} chỉ được enable khi:
+     * <ul>
+     *     <li>QIC đang ở trạng thái {@code IN_PROGRESS}.</li>
+     *     <li>Người dùng đã đưa ra quyết định chất lượng ({@code qualityDecision}).</li>
+     * </ul>
+     * </p>
+     *
+     * @param view trạng thái view hiện tại
+     */
+    private void updateTransferWarehouseButton(final ViewDefinitionState view) {
+
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        if (form == null || form.getEntityId() == null) {
+            return;
+        }
+
+        DataDefinition qicDD = dataDefinitionService.get(
+                QMConstants.PLUGIN_IDENTIFIER,
+                QMConstants.MODEL_QUALITY_INSPECTION_COMMAND);
+
+        Entity qic = qicDD.get(form.getEntityId());
+
+        if (qic == null) {
+            return;
+        }
+
+        String status = qic.getStringField(QICFields.STATUS);
+        String qualityDecision = qic.getStringField(QICFields.QUALITY_DECISION);
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+
+        if (window == null) {
+            return;
+        }
+
+        Ribbon ribbon = window.getRibbon();
+
+        RibbonGroup customActions = ribbon.getGroupByName("customActions");
+
+        if (customActions == null) {
+            return;
+        }
+
+        RibbonActionItem transferButton = customActions.getItemByName("transferWarehouse");
+
+        if (transferButton == null) {
+            return;
+        }
+
+        boolean enable =
+                QICFields.Status.IN_PROGRESS.equals(status)
+                        && qualityDecision != null
+                        && !qualityDecision.trim().isEmpty();
+
+        transferButton.setEnabled(enable);
+        transferButton.requestUpdate(true);
     }
 }
 
