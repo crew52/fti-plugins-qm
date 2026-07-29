@@ -145,7 +145,7 @@ public class QICWarehouseTransferListeners {
 
         try {
             Entity newDoc = documentDD.create();
-            newDoc.setField("name", "Transfer from QIC " + qic.getStringField(QICFields.PO_NUMBER));
+            newDoc.setField("name", "Transfer from QIC " + qic.getStringField(QICFields.INSPECTION_ORDER_NUMBER) + qic.getStringField(QICFields.INSPECTION_ORDER_NUMBER_INT));
             newDoc.setField("type", "05transfer");
             newDoc.setField("time", java.util.Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
             newDoc.setField("locationFrom", locationFrom);
