@@ -81,15 +81,10 @@ public class QICDetailsListeners {
          * Validate sample trước khi xử lý tiếp.
          */
         if (isChecked) {
-            String inspectionType = entity.getStringField(QICFields.INSPECTION_TYPE);
-            if (!QICFields.InspectionType.IN_PROCESS.equals(inspectionType)) {
-                if (!areAllSamplesPassed(entity)) {
-                    view.addMessage(
-                            "qm.qualityInspectionCommand.samplesMustPass",
-                            ComponentState.MessageType.INFO
-                    );
-                    return;
-                }
+            if (!areAllSamplesPassed(entity)) {
+                view.addMessage("qm.qualityInspectionCommand.samplesMustPass", ComponentState.MessageType.INFO
+                );
+                return;
             }
         }
 
